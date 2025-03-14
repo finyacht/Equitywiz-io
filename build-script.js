@@ -10,6 +10,20 @@ if (!fs.existsSync(distDir)) {
   console.log('Created dist directory');
 }
 
+// Create a dummy .next directory to satisfy Netlify's Next.js plugin check
+const dummyNextDir = path.join(distDir, '.next');
+if (!fs.existsSync(dummyNextDir)) {
+  fs.mkdirSync(dummyNextDir, { recursive: true });
+  console.log('Created dummy .next directory to satisfy Netlify plugin check');
+  
+  // Create a dummy manifest file
+  fs.writeFileSync(
+    path.join(dummyNextDir, 'build-manifest.json'), 
+    JSON.stringify({ pages: { '/': [] } })
+  );
+  console.log('Created dummy build-manifest.json');
+}
+
 // Create css directory in dist if it doesn't exist
 const distCssDir = path.join(distDir, 'css');
 if (!fs.existsSync(distCssDir)) {
@@ -75,6 +89,7 @@ const netlifyConfig = `
 
 [build.environment]
   NETLIFY_USE_NEXTJS = "false"
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
 [[redirects]]
   from = "/*"

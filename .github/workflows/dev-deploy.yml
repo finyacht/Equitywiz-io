@@ -25,6 +25,7 @@ jobs:
         run: npm run build
         env:
           NETLIFY_USE_NEXTJS: "false"
+          NETLIFY_NEXT_PLUGIN_SKIP: "true"
 
       - name: Deploy to Netlify (Staging)
         uses: nwtgck/actions-netlify@v2
@@ -41,4 +42,5 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_USE_NEXTJS: "false"
+          NETLIFY_NEXT_PLUGIN_SKIP: "true"
         timeout-minutes: 5 

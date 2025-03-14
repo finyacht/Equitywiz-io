@@ -5,6 +5,7 @@
 # Disable Next.js plugin
 [build.environment]
   NETLIFY_USE_NEXTJS = "false"
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
 
 # Redirect all traffic to index.html for SPA routing
 [[redirects]]
@@ -22,7 +23,7 @@
 
 # Branch-specific settings
 [context.dev]
-  environment = { NODE_ENV = "development" }
+  environment = { NODE_ENV = "development", NETLIFY_NEXT_PLUGIN_SKIP = "true" }
   command = "npm run build"
 
 # Custom headers for security
