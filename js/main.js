@@ -24,31 +24,82 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize the application
 function init() {
-    // Load default data
-    shareClasses = [...waterfallCalculator.DEFAULT_SHARE_CLASSES];
-    transactions = [...waterfallCalculator.DEFAULT_TRANSACTIONS];
-    
-    // Set up event listeners
-    setupEventListeners();
-    
-    // Render initial data
-    renderShareClasses();
-    renderTransactions();
-    
-    // Update waterfall analysis
-    updateWaterfallAnalysis();
+    try {
+        console.log("Initializing application...");
+        
+        // Load default data
+        shareClasses = [...waterfallCalculator.DEFAULT_SHARE_CLASSES];
+        transactions = [...waterfallCalculator.DEFAULT_TRANSACTIONS];
+        
+        // Get DOM elements
+        elements = {
+            shareClassesTableBody: document.querySelector('#shareClassesTable tbody'),
+            transactionsTableBody: document.querySelector('#transactionsTable tbody'),
+            summaryTableBody: document.querySelector('#summaryTable tbody'),
+            combinedChart: document.getElementById('combinedChart'),
+            exitDistributionChart: document.getElementById('exitDistributionChart'),
+            exitAmountInput: document.getElementById('exitAmount'),
+            addShareClassBtn: document.getElementById('addShareClassBtn'),
+            addTransactionBtn: document.getElementById('addTransactionBtn'),
+            closeModalButtons: document.querySelectorAll('.close-modal, .cancel-modal')
+        };
+        
+        console.log("Elements initialized:", elements);
+        
+        // Store references to table bodies
+        shareClassesTableBody = elements.shareClassesTableBody;
+        transactionsTableBody = elements.transactionsTableBody;
+        
+        // Set up event listeners
+        setupEventListeners();
+        
+        // Set up numeric inputs
+        setupNumericInputs();
+        
+        // Render initial data
+        renderShareClasses();
+        renderTransactions();
+        
+        // Calculate and display initial waterfall analysis
+        updateWaterfallAnalysis();
+        
+        console.log("Application initialized successfully");
+    } catch (error) {
+        console.error("Error initializing application:", error);
+    }
 }
 
 // Set up event listeners
 function setupEventListeners() {
     // Add share class button
-    document.getElementById('addShareClassBtn').addEventListener('click', addNewShareClassRow);
+    document.getElementById('addShareClassBtn').addEventListener('click', function() {
+        addNewShareClassRow();
+    });
     
     // Add transaction button
-    document.getElementById('addTransactionBtn').addEventListener('click', addNewTransactionRow);
+    document.getElementById('addTransactionBtn').addEventListener('click', function() {
+        addNewTransactionRow();
+    });
     
     // Exit amount input
-    setupNumericInputs();
+    const exitAmountInput = document.getElementById('exitAmount');
+    exitAmountInput.addEventListener('input', function() {
+        const value = parseNumberWithCommas(this.value);
+        updateWaterfallAnalysis();
+    });
+    
+    exitAmountInput.addEventListener('blur', function() {
+        const value = parseNumberWithCommas(this.value);
+        this.value = formatNumberWithCommas(value);
+        updateWaterfallAnalysis();
+    });
+    
+    // Modal close buttons
+    if (elements.closeModalButtons) {
+        elements.closeModalButtons.forEach(button => {
+            button.addEventListener('click', closeModal);
+        });
+    }
 }
 
 // Format number with commas
@@ -56,31 +107,54 @@ function formatNumberWithCommas(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// Parse number from string with commas
+// Parse number with commas
 function parseNumberWithCommas(str) {
-    return parseFloat(str.replace(/,/g, '')) || 0;
+    if (!str) return 0;
+    return parseFloat(str.toString().replace(/,/g, '')) || 0;
 }
 
-// Add input event listeners for numeric fields
+// Setup numeric inputs
 function setupNumericInputs() {
-    // Exit amount input
-    const exitAmountInput = document.getElementById('exitAmount');
-    exitAmountInput.addEventListener('input', function(e) {
-        const value = parseNumberWithCommas(this.value);
-        exitAmount = value;
-        updateWaterfallAnalysis();
+    // Find all numeric inputs
+    const numericInputs = document.querySelectorAll('input[type="text"].shares, input[type="text"].investment, #exitAmount');
+    
+    numericInputs.forEach(input => {
+        // Format on blur
+        input.addEventListener('blur', function() {
+            const value = parseNumberWithCommas(this.value);
+            this.value = formatNumberWithCommas(value);
+        });
+        
+        // Remove commas on focus
+        input.addEventListener('focus', function() {
+            this.value = this.value.replace(/,/g, '');
+        });
     });
     
-    exitAmountInput.addEventListener('focus', function() {
-        this.value = exitAmount.toString();
+    // Apply formatting to initial values
+    document.querySelectorAll('#exitAmount').forEach(input => {
+        const value = parseNumberWithCommas(input.value);
+        input.value = formatNumberWithCommas(value);
     });
     
-    exitAmountInput.addEventListener('blur', function() {
-        this.value = formatNumberWithCommas(exitAmount);
+    // Add event listener for dynamic inputs
+    document.addEventListener('DOMNodeInserted', function(e) {
+        if (e.target.querySelectorAll) {
+            const newInputs = e.target.querySelectorAll('input[type="text"].shares, input[type="text"].investment');
+            newInputs.forEach(input => {
+                // Format on blur
+                input.addEventListener('blur', function() {
+                    const value = parseNumberWithCommas(this.value);
+                    this.value = formatNumberWithCommas(value);
+                });
+                
+                // Remove commas on focus
+                input.addEventListener('focus', function() {
+                    this.value = this.value.replace(/,/g, '');
+                });
+            });
+        }
     });
-    
-    // Format initial value
-    exitAmountInput.value = formatNumberWithCommas(exitAmount);
 }
 
 // Render share classes to the table
@@ -226,78 +300,53 @@ function addTooltipsToShareClassRow(row) {
     });
 }
 
-// Modify the addNewShareClassRow function to include tooltips
+// Add new share class row
 function addNewShareClassRow() {
     const row = document.createElement('tr');
     row.className = 'editing-row';
-    
     row.innerHTML = `
-        <td><input type="text" class="name" placeholder="Series A"></td>
+        <td><input type="text" class="name" placeholder="e.g., Series A"></td>
         <td>
-            <select class="type">
-                <option value="preferred">Preferred</option>
+            <select class="type" onchange="togglePreferredFields(this)">
                 <option value="common">Common</option>
+                <option value="preferred">Preferred</option>
             </select>
         </td>
+        <td><input type="number" class="seniority" min="1" value="1"></td>
+        <td><input type="number" class="liquidationPref preferred-only" min="0" step="0.1" value="1"></td>
         <td>
-            <label class="seniority-label">
-                <input type="number" class="seniority" min="1" value="1">
-            </label>
+            <select class="prefType preferred-only" onchange="toggleCapField(this)">
+                <option value="non-participating">Non-Participating</option>
+                <option value="participating">Participating</option>
+            </select>
         </td>
-        <td>
-            <label class="liquidationPref-label">
-                <input type="number" class="liquidationPref" min="1" step="0.1" value="1">
-            </label>
-        </td>
-        <td>
-            <label class="prefType-label">
-                <select class="prefType">
-                    <option value="non-participating">Non-Participating</option>
-                    <option value="participating">Participating</option>
-                </select>
-            </label>
-        </td>
-        <td>
-            <label class="cap-label">
-                <input type="number" class="cap" min="0" step="0.1" placeholder="No cap">
-            </label>
-        </td>
+        <td><input type="number" class="cap preferred-only participating-only hidden" min="0" step="0.1" placeholder="e.g., 3"></td>
         <td class="action-buttons">
-            <button class="save" onclick="saveShareClass(this)">Save</button>
-            <button class="cancel" onclick="cancelShareClass(this)">Cancel</button>
+            <button class="save">Save</button>
+            <button class="cancel">Cancel</button>
         </td>
     `;
-
-    // Add tooltips to the row
-    addTooltipsToShareClassRow(row);
-
-    // Add type change handler
-    const typeSelect = row.querySelector('.type');
-    const prefFields = [row.querySelector('.liquidationPref'), row.querySelector('.prefType')];
-    const capField = row.querySelector('.cap');
     
-    typeSelect.addEventListener('change', function() {
-        const isPreferred = this.value === 'preferred';
-        prefFields.forEach(field => {
-            field.parentElement.style.display = isPreferred ? '' : 'none';
-        });
-        capField.parentElement.style.display = 
-            (isPreferred && row.querySelector('.prefType').value === 'participating') ? '' : 'none';
+    // Add event listeners to the save and cancel buttons
+    const saveButton = row.querySelector('.save');
+    const cancelButton = row.querySelector('.cancel');
+    
+    saveButton.addEventListener('click', function() {
+        saveShareClass(this);
     });
-
-    // Add preference type change handler
-    row.querySelector('.prefType').addEventListener('change', function() {
-        if (typeSelect.value === 'preferred') {
-            capField.parentElement.style.display = 
-                this.value === 'participating' ? '' : 'none';
-        }
+    
+    cancelButton.addEventListener('click', function() {
+        cancelShareClass(this);
     });
+    
+    addTooltipsToShareClassRow(row);
+    togglePreferredFields(row.querySelector('.type'));
     
     shareClassesTableBody.appendChild(row);
 }
 
 // Save share class
-window.saveShareClass = function(button) {
+function saveShareClass(button) {
     const row = button.closest('tr');
     
     const name = row.querySelector('.name').value.trim();
@@ -324,13 +373,13 @@ window.saveShareClass = function(button) {
     renderShareClasses();
     renderTransactions(); // Re-render transactions to update share class options
     updateWaterfallAnalysis();
-};
+}
 
 // Cancel share class addition
-window.cancelShareClass = function(button) {
+function cancelShareClass(button) {
     const row = button.closest('tr');
     row.remove();
-};
+}
 
 // Edit share class
 function editShareClass(id) {
@@ -457,38 +506,38 @@ function deleteShareClass(id) {
 function addNewTransactionRow() {
     const row = document.createElement('tr');
     row.className = 'editing-row';
-    
     row.innerHTML = `
         <td>
             <select class="shareClass">
-                <option value="">Select Class</option>
-                ${shareClasses.map(sc => `<option value="${sc.name}">${sc.name}</option>`).join('')}
+                <option value="">Select Share Class</option>
+                ${shareClasses.map(sc => `<option value="${sc.id}">${sc.name}</option>`).join('')}
             </select>
         </td>
-        <td>
-            <input type="text" class="shares" value="0" 
-            onfocus="this.value=this.value.replace(/,/g, '')"
-            onblur="this.value=formatNumberWithCommas(parseFloat(this.value.replace(/,/g, '')) || 0)">
-        </td>
-        <td>
-            <label class="investment-label">
-                <input type="text" class="investment" value="0"
-                onfocus="this.value=this.value.replace(/,/g, '')"
-                onblur="this.value=formatNumberWithCommas(parseFloat(this.value.replace(/,/g, '')) || 0)">
-                ${createTooltip('The amount of money invested to acquire these shares. Used to calculate liquidation preferences for preferred shares.')}
-            </label>
-        </td>
+        <td><input type="text" class="shares" placeholder="e.g., 1000000"></td>
+        <td><input type="text" class="investment" placeholder="e.g., 1000000"></td>
         <td class="action-buttons">
-            <button class="save" onclick="saveTransaction(this)">Save</button>
-            <button class="cancel" onclick="cancelTransaction(this)">Cancel</button>
+            <button class="save">Save</button>
+            <button class="cancel">Cancel</button>
         </td>
     `;
+    
+    // Add event listeners to the save and cancel buttons
+    const saveButton = row.querySelector('.save');
+    const cancelButton = row.querySelector('.cancel');
+    
+    saveButton.addEventListener('click', function() {
+        saveTransaction(this);
+    });
+    
+    cancelButton.addEventListener('click', function() {
+        cancelTransaction(this);
+    });
     
     transactionsTableBody.appendChild(row);
 }
 
 // Save transaction
-window.saveTransaction = function(button) {
+function saveTransaction(button) {
     const row = button.closest('tr');
     
     const shareClass = row.querySelector('.shareClass').value;
@@ -507,13 +556,13 @@ window.saveTransaction = function(button) {
     transactions.push(newTransaction);
     renderTransactions();
     updateWaterfallAnalysis();
-};
+}
 
 // Cancel transaction addition
-window.cancelTransaction = function(button) {
+function cancelTransaction(button) {
     const row = button.closest('tr');
     row.remove();
-};
+}
 
 // Edit transaction
 function editTransaction(id) {
@@ -588,15 +637,29 @@ function closeModal() {
 
 // Update the waterfall analysis charts and tables
 function updateWaterfallAnalysis() {
-    const waterfallSteps = waterfallCalculator.calculateDetailedWaterfall(shareClasses, transactions, exitAmount);
-    const summaryData = waterfallCalculator.calculateSummaryWaterfall(shareClasses, transactions, exitAmount);
-    
-    // Update the summary table
-    renderSummaryTable(summaryData);
-    
-    // Update the charts
-    renderCombinedChart(summaryData);
-    renderExitDistributionChart();
+    try {
+        console.log("Updating waterfall analysis with exit amount:", exitAmount);
+        
+        // Get the current exit amount from the input field
+        const exitAmountInput = document.getElementById('exitAmount');
+        if (exitAmountInput) {
+            exitAmount = parseNumberWithCommas(exitAmountInput.value);
+        }
+        
+        const waterfallSteps = waterfallCalculator.calculateDetailedWaterfall(shareClasses, transactions, exitAmount);
+        const summaryData = waterfallCalculator.calculateSummaryWaterfall(shareClasses, transactions, exitAmount);
+        
+        // Update the summary table
+        renderSummaryTable(summaryData);
+        
+        // Update the charts
+        renderCombinedChart(summaryData);
+        renderExitDistributionChart();
+        
+        console.log("Waterfall analysis updated successfully");
+    } catch (error) {
+        console.error("Error updating waterfall analysis:", error);
+    }
 }
 
 // Render summary table
@@ -632,195 +695,219 @@ function renderSummaryTable(summaryData) {
 
 // Render combined chart
 function renderCombinedChart(summaryData) {
-    const ctx = document.getElementById('combinedChart');
-    if (!ctx) return;
-    
-    if (summaryChart) {
-        summaryChart.destroy();
-    }
-    
-    // Create datasets for each distribution type
-    const distributionTypes = [
-        'Liquidation Preference',
-        'Participation',
-        'Common Distribution',
-        'Additional Distribution',
-        'Retained'
-    ];
-    
-    const datasets = distributionTypes.map(type => ({
-        label: type,
-        data: summaryData.map(summary => summary.components[type] || 0),
-        backgroundColor: getDistributionTypeColor(type),
-        borderColor: getDistributionTypeColor(type, 0.8),
-        borderWidth: 1
-    })).filter(dataset => dataset.data.some(value => value > 0)); // Only include datasets with non-zero values
-    
-    summaryChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: summaryData.map(d => d.name),
-            datasets: datasets
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    stacked: true,
-                    grid: {
-                        display: false
-                    }
-                },
-                y: {
-                    stacked: true,
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function(value) {
-                            return '$' + value.toLocaleString();
-                        }
-                    }
-                }
+    try {
+        console.log("Rendering combined chart with data:", summaryData);
+        
+        const ctx = document.getElementById('combinedChart');
+        if (!ctx) {
+            console.error("Combined chart canvas element not found");
+            return;
+        }
+        
+        if (summaryChart) {
+            summaryChart.destroy();
+        }
+        
+        // Create datasets for each distribution type
+        const distributionTypes = [
+            'Liquidation Preference',
+            'Participation',
+            'Common Distribution',
+            'Additional Distribution',
+            'Retained'
+        ];
+        
+        const datasets = distributionTypes.map(type => ({
+            label: type,
+            data: summaryData.map(summary => summary.components[type] || 0),
+            backgroundColor: getDistributionTypeColor(type),
+            borderColor: getDistributionTypeColor(type, 0.8),
+            borderWidth: 1
+        })).filter(dataset => dataset.data.some(value => value > 0)); // Only include datasets with non-zero values
+        
+        console.log("Chart datasets:", datasets);
+        
+        summaryChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: summaryData.map(d => d.name),
+                datasets: datasets
             },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        title: function(context) {
-                            const shareClass = context[0].label;
-                            if (shareClass === 'Retained by Company') return 'Retained by Company';
-                            
-                            const sc = shareClasses.find(s => s.name === shareClass);
-                            if (!sc) return shareClass;
-                            
-                            let title = shareClass;
-                            if (sc.type === 'preferred') {
-                                title += ` (${sc.prefType})`;
-                                if (sc.prefType === 'participating' && sc.cap) {
-                                    title += ` - ${sc.cap}x cap`;
-                                }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
                             }
-                            return title;
-                        },
-                        label: function(context) {
-                            const value = context.raw;
-                            if (value === 0) return null;
-                            const percentage = ((value / exitAmount) * 100).toFixed(1);
-                            return `${context.dataset.label}: $${value.toLocaleString()} (${percentage}%)`;
-                        },
-                        afterBody: function(context) {
-                            const shareClass = context[0].label;
-                            const total = datasets.reduce((sum, dataset) => 
-                                sum + (dataset.data[context[0].dataIndex] || 0), 0
-                            );
-                            const percentage = ((total/exitAmount)*100).toFixed(1);
-                            return [`Total Payout: $${total.toLocaleString()} (${percentage}%)`];
                         }
                     }
                 },
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        boxWidth: 12,
-                        padding: 15
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                const shareClass = context[0].label;
+                                if (shareClass === 'Retained by Company') return 'Retained by Company';
+                                
+                                const sc = shareClasses.find(s => s.name === shareClass);
+                                if (!sc) return shareClass;
+                                
+                                let title = shareClass;
+                                if (sc.type === 'preferred') {
+                                    title += ` (${sc.prefType})`;
+                                    if (sc.prefType === 'participating' && sc.cap) {
+                                        title += ` - ${sc.cap}x cap`;
+                                    }
+                                }
+                                return title;
+                            },
+                            label: function(context) {
+                                const value = context.raw;
+                                if (value === 0) return null;
+                                const percentage = ((value / exitAmount) * 100).toFixed(1);
+                                return `${context.dataset.label}: $${value.toLocaleString()} (${percentage}%)`;
+                            },
+                            afterBody: function(context) {
+                                const shareClass = context[0].label;
+                                const total = datasets.reduce((sum, dataset) => 
+                                    sum + (dataset.data[context[0].dataIndex] || 0), 0
+                                );
+                                const percentage = ((total/exitAmount)*100).toFixed(1);
+                                return [`Total Payout: $${total.toLocaleString()} (${percentage}%)`];
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 15
+                        }
                     }
                 }
             }
-        }
-    });
+        });
+        
+        console.log("Combined chart rendered successfully");
+    } catch (error) {
+        console.error("Error rendering combined chart:", error);
+    }
 }
 
 // Render exit distribution chart
 function renderExitDistributionChart() {
-    const ctx = document.getElementById('exitDistributionChart');
-    if (!ctx) return;
-    
-    if (exitDistributionChart) {
-        exitDistributionChart.destroy();
-    }
-    
-    // Generate exit values from 0 to 2x current exit amount
-    const maxExit = exitAmount * 2;
-    const numPoints = 20;
-    const exitDistribution = waterfallCalculator.calculateExitDistribution(
-        shareClasses, 
-        transactions, 
-        maxExit,
-        numPoints
-    );
-    
-    // Get all unique share classes
-    const activeShareClasses = [...new Set(
-        shareClasses
-            .filter(sc => transactions.some(tx => tx.shareClass === sc.name))
-            .map(sc => sc.name)
-    )];
-    
-    // Create datasets for each share class
-    const datasets = activeShareClasses.map((className, index) => {
-        const data = exitDistribution.exitValues.map((_, i) => {
-            const distribution = exitDistribution.distributions[i];
-            const shareData = distribution.find(d => d.name === className);
-            return shareData ? shareData.payout : 0;
+    try {
+        console.log("Rendering exit distribution chart");
+        
+        const ctx = document.getElementById('exitDistributionChart');
+        if (!ctx) {
+            console.error("Exit distribution chart canvas element not found");
+            return;
+        }
+        
+        if (exitDistributionChart) {
+            exitDistributionChart.destroy();
+        }
+        
+        // Generate exit values from 0 to 2x current exit amount
+        const maxExit = exitAmount * 2;
+        const numPoints = 20;
+        const exitDistribution = waterfallCalculator.calculateExitDistribution(
+            shareClasses, 
+            transactions, 
+            maxExit,
+            numPoints
+        );
+        
+        // Get all unique share classes
+        const activeShareClasses = [...new Set(
+            shareClasses
+                .filter(sc => transactions.some(tx => tx.shareClass === sc.name))
+                .map(sc => sc.name)
+        )];
+        
+        // Create datasets for each share class
+        const datasets = activeShareClasses.map((className, index) => {
+            const data = exitDistribution.exitValues.map((_, i) => {
+                const distribution = exitDistribution.distributions[i];
+                const shareData = distribution.find(d => d.name === className);
+                return shareData ? shareData.payout : 0;
+            });
+            
+            return {
+                label: className,
+                data: data,
+                fill: false,
+                borderColor: waterfallCalculator.getShareClassColor(className, index),
+                backgroundColor: waterfallCalculator.getShareClassColor(className, index, 0.1),
+                tension: 0.4
+            };
         });
         
-        return {
-            label: className,
-            data: data,
-            fill: false,
-            borderColor: waterfallCalculator.getShareClassColor(className, index),
-            backgroundColor: waterfallCalculator.getShareClassColor(className, index, 0.1),
-            tension: 0.4
-        };
-    });
-    
-    exitDistributionChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: exitDistribution.exitValues.map(value => waterfallCalculator.formatCurrency(value)),
-            datasets: datasets
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
+        exitDistributionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: exitDistribution.exitValues.map(value => waterfallCalculator.formatCurrency(value)),
+                datasets: datasets
             },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Exit Value'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Exit Value'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Distribution Amount'
+                        },
+                        ticks: {
+                            callback: value => waterfallCalculator.formatCurrency(value)
+                        }
                     }
                 },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Distribution Amount'
-                    },
-                    ticks: {
-                        callback: value => waterfallCalculator.formatCurrency(value)
-                    }
-                }
-            },
-            plugins: {
-                tooltip: {
-                    enabled: true,
-                    mode: 'index',
-                    intersect: false,
-                    callbacks: {
-                        title: function(tooltipItems) {
-                            return `Exit Value: ${tooltipItems[0].label}`;
-                        },
-                        label: function(tooltipItem) {
-                            return `${tooltipItem.dataset.label}: ${waterfallCalculator.formatCurrency(tooltipItem.raw)}`;
+                plugins: {
+                    tooltip: {
+                        enabled: true,
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                return `Exit Value: ${tooltipItems[0].label}`;
+                            },
+                            label: function(tooltipItem) {
+                                return `${tooltipItem.dataset.label}: ${waterfallCalculator.formatCurrency(tooltipItem.raw)}`;
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+        
+        console.log("Exit distribution chart rendered successfully");
+    } catch (error) {
+        console.error("Error rendering exit distribution chart:", error);
+    }
 }
 
 // Helper function to get colors for distribution types
@@ -935,4 +1022,53 @@ window.updateTransactionField = function(id, field, value) {
     
     // Update the analysis
     updateWaterfallAnalysis();
-}; 
+};
+
+// Make functions available globally for inline event handlers
+window.saveShareClass = saveShareClass;
+window.cancelShareClass = cancelShareClass;
+window.saveTransaction = saveTransaction;
+window.cancelTransaction = cancelTransaction;
+window.togglePreferredFields = togglePreferredFields;
+window.toggleCapField = toggleCapField;
+window.editShareClass = editShareClass;
+window.updateShareClass = updateShareClass;
+window.deleteShareClass = deleteShareClass;
+window.editTransaction = editTransaction;
+window.updateTransaction = updateTransaction;
+window.deleteTransaction = deleteTransaction;
+window.closeModal = closeModal;
+
+// Toggle preferred fields based on share class type
+function togglePreferredFields(selectElement) {
+    const row = selectElement.closest('tr');
+    const isPreferred = selectElement.value === 'preferred';
+    const preferredFields = row.querySelectorAll('.preferred-only');
+    
+    preferredFields.forEach(field => {
+        if (isPreferred) {
+            field.classList.remove('hidden');
+        } else {
+            field.classList.add('hidden');
+        }
+    });
+    
+    // Also update cap field visibility
+    if (isPreferred) {
+        const prefTypeSelect = row.querySelector('.prefType');
+        toggleCapField(prefTypeSelect);
+    }
+}
+
+// Toggle cap field based on preference type
+function toggleCapField(selectElement) {
+    const row = selectElement.closest('tr');
+    const isParticipating = selectElement.value === 'participating';
+    const capField = row.querySelector('.cap');
+    
+    if (isParticipating) {
+        capField.classList.remove('hidden');
+    } else {
+        capField.classList.add('hidden');
+    }
+} 

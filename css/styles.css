@@ -442,6 +442,10 @@ th:nth-last-child(2) .tooltip .tooltip-text::after {
     font-weight: 600; 
 }
 
+.hidden {
+    display: none !important;
+}
+
 .preferred-only {
     transition: all 0.3s ease;
 }
