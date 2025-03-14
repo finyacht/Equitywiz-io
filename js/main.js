@@ -954,6 +954,10 @@ window.updateShareClassField = function(id, field, value) {
                     tx.shareClass = newName;
                 }
             });
+            
+            // Re-render everything to reflect the name change
+            renderShareClasses();
+            renderTransactions();
             break;
             
         case 'type':
@@ -996,7 +1000,6 @@ window.updateShareClassField = function(id, field, value) {
     }
     
     // Update the UI and analysis
-    renderTransactions(); // Re-render transactions to update share class options
     updateWaterfallAnalysis();
 };
 
