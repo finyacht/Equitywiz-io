@@ -4,8 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Waterfall Analysis Tool</title>
-    <link rel="stylesheet" href="/css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Security measures to make copying harder -->
+    <script>
+        // Disable right-click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+        document.addEventListener('keydown', function(e) {
+            if (
+                // F12 key
+                e.keyCode === 123 || 
+                // Ctrl+Shift+I
+                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
+                // Ctrl+Shift+J
+                (e.ctrlKey && e.shiftKey && e.keyCode === 74) || 
+                // Ctrl+U
+                (e.ctrlKey && e.keyCode === 85)
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Detect DevTools opening
+        const devtools = {
+            isOpen: false,
+            orientation: undefined
+        };
+        
+        // Function to check if DevTools is open
+        (function() {
+            const threshold = 160;
+            
+            const emitEvent = (isOpen, orientation) => {
+                window.dispatchEvent(new CustomEvent('devtoolschange', {
+                    detail: {
+                        isOpen,
+                        orientation
+                    }
+                }));
+            };
+            
+            setInterval(() => {
+                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                const orientation = widthThreshold ? 'vertical' : 'horizontal';
+                
+                if (
+                    !(heightThreshold && widthThreshold) &&
+                    ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || widthThreshold || heightThreshold)
+                ) {
+                    if (!devtools.isOpen || devtools.orientation !== orientation) {
+                        emitEvent(true, orientation);
+                    }
+                    
+                    devtools.isOpen = true;
+                    devtools.orientation = orientation;
+                } else {
+                    if (devtools.isOpen) {
+                        emitEvent(false, undefined);
+                    }
+                    
+                    devtools.isOpen = false;
+                    devtools.orientation = undefined;
+                }
+            }, 500);
+        })();
+        
+        // Listen for DevTools change event
+        window.addEventListener('devtoolschange', function(e) {
+            if (e.detail.isOpen) {
+                // Optional: Redirect or show warning when DevTools is opened
+                // window.location.href = 'about:blank';
+                console.clear();
+                console.log('%c⚠️ Warning: This is a proprietary tool.', 'font-size: 24px; color: red;');
+                console.log('%cUnauthorized copying or distribution is prohibited.', 'font-size: 18px;');
+            }
+        });
+    </script>
 </head>
 <body>
     <h1>Waterfall Analysis Tool</h1>
@@ -195,6 +276,7 @@
         </div>
     </div>
 
+    <!-- Use original JavaScript files instead of minified versions -->
     <script src="/js/waterfallCalculator.js"></script>
     <script src="/js/main.js"></script>
 </body>
