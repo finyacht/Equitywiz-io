@@ -63,6 +63,11 @@ function init() {
         // Calculate and display initial waterfall analysis
         updateWaterfallAnalysis();
         
+        // Add global event listeners for debugging
+        window.addEventListener('error', function(event) {
+            console.error('Global error caught:', event.error);
+        });
+        
         console.log("Application initialized successfully");
     } catch (error) {
         console.error("Error initializing application:", error);
@@ -166,22 +171,22 @@ function renderShareClasses() {
         row.dataset.id = sc.id;
         
         row.innerHTML = `
-            <td><input type="text" class="name" value="${sc.name}" onchange="updateShareClassField(${sc.id}, 'name', this.value)"></td>
+            <td><input type="text" class="name" value="${sc.name}" data-field="name" data-id="${sc.id}"></td>
             <td>
-                <select class="type" onchange="updateShareClassField(${sc.id}, 'type', this.value)">
+                <select class="type" data-field="type" data-id="${sc.id}">
                     <option value="preferred" ${sc.type === 'preferred' ? 'selected' : ''}>Preferred</option>
                     <option value="common" ${sc.type === 'common' ? 'selected' : ''}>Common</option>
                 </select>
             </td>
-            <td><input type="number" class="seniority" min="1" value="${sc.seniority}" onchange="updateShareClassField(${sc.id}, 'seniority', this.value)"></td>
+            <td><input type="number" class="seniority" min="1" value="${sc.seniority}" data-field="seniority" data-id="${sc.id}"></td>
             <td>
                 <input type="number" class="liquidationPref" min="1" step="0.1" value="${sc.liquidationPref}" 
-                onchange="updateShareClassField(${sc.id}, 'liquidationPref', this.value)" 
+                data-field="liquidationPref" data-id="${sc.id}" 
                 style="display: ${sc.type === 'preferred' ? 'block' : 'none'}">
                 <span style="display: ${sc.type === 'preferred' ? 'none' : 'block'}">-</span>
             </td>
             <td>
-                <select class="prefType" onchange="updateShareClassField(${sc.id}, 'prefType', this.value)" 
+                <select class="prefType" data-field="prefType" data-id="${sc.id}" 
                 style="display: ${sc.type === 'preferred' ? 'block' : 'none'}">
                     <option value="non-participating" ${sc.prefType === 'non-participating' ? 'selected' : ''}>Non-Part.</option>
                     <option value="participating" ${sc.prefType === 'participating' ? 'selected' : ''}>Part.</option>
@@ -191,12 +196,12 @@ function renderShareClasses() {
             <td>
                 <input type="number" class="cap" min="0" step="0.1" 
                 value="${sc.cap || ''}" placeholder="No cap"
-                onchange="updateShareClassField(${sc.id}, 'cap', this.value)"
+                data-field="cap" data-id="${sc.id}"
                 style="display: ${sc.type === 'preferred' && sc.prefType === 'participating' ? 'block' : 'none'}">
                 <span style="display: ${sc.type === 'preferred' && sc.prefType === 'participating' ? 'none' : 'block'}">${sc.type === 'preferred' && sc.prefType === 'participating' ? '' : 'No Cap'}</span>
             </td>
             <td>
-                <button class="delete" onclick="deleteShareClass(${sc.id})">Delete</button>
+                <button class="delete" data-action="delete" data-id="${sc.id}">Delete</button>
             </td>
         `;
         
@@ -209,17 +214,17 @@ function renderShareClasses() {
         
         typeSelect.addEventListener('change', function() {
             const isPreferred = this.value === 'preferred';
-            prefFields.forEach((field, index) => {
+            prefFields.forEach((field, i) => {
                 field.style.display = isPreferred ? 'block' : 'none';
-                prefSpans[index].style.display = isPreferred ? 'none' : 'block';
+                prefSpans[i].style.display = isPreferred ? 'none' : 'block';
             });
             
             const isParticipating = row.querySelector('.prefType').value === 'participating';
-            capField.style.display = (isPreferred && isParticipating) ? 'block' : 'none';
-            capSpan.style.display = (isPreferred && isParticipating) ? 'none' : 'block';
+            capField.style.display = isPreferred && isParticipating ? 'block' : 'none';
+            capSpan.style.display = isPreferred && isParticipating ? 'none' : 'block';
             capSpan.textContent = 'No Cap';
         });
-
+        
         // Add preference type change handler
         row.querySelector('.prefType')?.addEventListener('change', function() {
             if (typeSelect.value === 'preferred') {
@@ -232,6 +237,9 @@ function renderShareClasses() {
         
         shareClassesTableBody.appendChild(row);
     });
+    
+    // Add event listeners for all share class fields
+    addShareClassEventListeners();
 }
 
 // Render transactions to the table
@@ -244,7 +252,7 @@ function renderTransactions() {
         
         row.innerHTML = `
             <td>
-                <select class="shareClass" onchange="updateTransactionField(${tx.id}, 'shareClass', this.value)">
+                <select class="shareClass" data-field="shareClass" data-id="${tx.id}">
                     ${shareClasses.map(sc => 
                         `<option value="${sc.name}" ${tx.shareClass === sc.name ? 'selected' : ''}>${sc.name}</option>`
                     ).join('')}
@@ -252,23 +260,45 @@ function renderTransactions() {
             </td>
             <td>
                 <input type="text" class="shares" value="${formatNumberWithCommas(tx.shares)}" 
-                onfocus="this.value=this.value.replace(/,/g, '')"
-                onblur="this.value=formatNumberWithCommas(parseFloat(this.value.replace(/,/g, '')) || 0)"
-                onchange="updateTransactionField(${tx.id}, 'shares', parseNumberWithCommas(this.value))">
+                data-field="shares" data-id="${tx.id}">
             </td>
             <td>
                 <input type="text" class="investment" value="${formatNumberWithCommas(tx.investment)}" 
-                onfocus="this.value=this.value.replace(/,/g, '')"
-                onblur="this.value=formatNumberWithCommas(parseFloat(this.value.replace(/,/g, '')) || 0)"
-                onchange="updateTransactionField(${tx.id}, 'investment', parseNumberWithCommas(this.value))">
+                data-field="investment" data-id="${tx.id}">
             </td>
             <td>
-                <button class="delete" onclick="deleteTransaction(${tx.id})">Delete</button>
+                <button class="edit" data-action="edit" data-id="${tx.id}">Edit</button>
+                <button class="delete" data-action="delete" data-id="${tx.id}">Delete</button>
             </td>
         `;
         
+        // Add event listeners for numeric inputs
+        const sharesInput = row.querySelector('.shares');
+        const investmentInput = row.querySelector('.investment');
+        
+        sharesInput.addEventListener('focus', function() {
+            this.value = this.value.replace(/,/g, '');
+        });
+        
+        sharesInput.addEventListener('blur', function() {
+            const value = parseNumberWithCommas(this.value);
+            this.value = formatNumberWithCommas(value);
+        });
+        
+        investmentInput.addEventListener('focus', function() {
+            this.value = this.value.replace(/,/g, '');
+        });
+        
+        investmentInput.addEventListener('blur', function() {
+            const value = parseNumberWithCommas(this.value);
+            this.value = formatNumberWithCommas(value);
+        });
+        
         transactionsTableBody.appendChild(row);
     });
+    
+    // Add event listeners for all transaction fields
+    addTransactionEventListeners();
 }
 
 // Function to create a tooltip element
@@ -307,7 +337,7 @@ function addNewShareClassRow() {
     row.innerHTML = `
         <td><input type="text" class="name" placeholder="e.g., Series A"></td>
         <td>
-            <select class="type" onchange="togglePreferredFields(this)">
+            <select class="type">
                 <option value="common">Common</option>
                 <option value="preferred">Preferred</option>
             </select>
@@ -315,15 +345,15 @@ function addNewShareClassRow() {
         <td><input type="number" class="seniority" min="1" value="1"></td>
         <td><input type="number" class="liquidationPref preferred-only" min="0" step="0.1" value="1"></td>
         <td>
-            <select class="prefType preferred-only" onchange="toggleCapField(this)">
+            <select class="prefType preferred-only">
                 <option value="non-participating">Non-Participating</option>
                 <option value="participating">Participating</option>
             </select>
         </td>
         <td><input type="number" class="cap preferred-only participating-only hidden" min="0" step="0.1" placeholder="e.g., 3"></td>
         <td class="action-buttons">
-            <button class="save">Save</button>
-            <button class="cancel">Cancel</button>
+            <button class="save" data-action="save">Save</button>
+            <button class="cancel" data-action="cancel">Cancel</button>
         </td>
     `;
     
@@ -337,6 +367,18 @@ function addNewShareClassRow() {
     
     cancelButton.addEventListener('click', function() {
         cancelShareClass(this);
+    });
+    
+    // Add type change handler
+    const typeSelect = row.querySelector('.type');
+    typeSelect.addEventListener('change', function() {
+        togglePreferredFields(this);
+    });
+    
+    // Add preference type change handler
+    const prefTypeSelect = row.querySelector('.prefType');
+    prefTypeSelect.addEventListener('change', function() {
+        toggleCapField(this);
     });
     
     addTooltipsToShareClassRow(row);
@@ -516,8 +558,8 @@ function addNewTransactionRow() {
         <td><input type="text" class="shares" placeholder="e.g., 1000000"></td>
         <td><input type="text" class="investment" placeholder="e.g., 1000000"></td>
         <td class="action-buttons">
-            <button class="save">Save</button>
-            <button class="cancel">Cancel</button>
+            <button class="save" data-action="save">Save</button>
+            <button class="cancel" data-action="cancel">Cancel</button>
         </td>
     `;
     
@@ -531,6 +573,28 @@ function addNewTransactionRow() {
     
     cancelButton.addEventListener('click', function() {
         cancelTransaction(this);
+    });
+    
+    // Add event listeners for numeric inputs
+    const sharesInput = row.querySelector('.shares');
+    const investmentInput = row.querySelector('.investment');
+    
+    sharesInput.addEventListener('focus', function() {
+        this.value = this.value.replace(/,/g, '');
+    });
+    
+    sharesInput.addEventListener('blur', function() {
+        const value = parseNumberWithCommas(this.value);
+        this.value = formatNumberWithCommas(value);
+    });
+    
+    investmentInput.addEventListener('focus', function() {
+        this.value = this.value.replace(/,/g, '');
+    });
+    
+    investmentInput.addEventListener('blur', function() {
+        const value = parseNumberWithCommas(this.value);
+        this.value = formatNumberWithCommas(value);
     });
     
     transactionsTableBody.appendChild(row);
@@ -1074,4 +1138,66 @@ function toggleCapField(selectElement) {
     } else {
         capField.classList.add('hidden');
     }
+}
+
+// Add event listeners for share class fields
+function addShareClassEventListeners() {
+    // Use event delegation for all share class fields
+    shareClassesTableBody.addEventListener('change', function(event) {
+        const target = event.target;
+        const field = target.dataset.field;
+        const id = parseInt(target.dataset.id);
+        
+        if (field && id) {
+            updateShareClassField(id, field, target.value);
+        }
+    });
+    
+    // Use event delegation for delete buttons
+    shareClassesTableBody.addEventListener('click', function(event) {
+        const target = event.target;
+        
+        if (target.dataset.action === 'delete') {
+            const id = parseInt(target.dataset.id);
+            if (id) {
+                deleteShareClass(id);
+            }
+        }
+    });
+}
+
+// Add event listeners for transaction fields
+function addTransactionEventListeners() {
+    // Use event delegation for all transaction fields
+    transactionsTableBody.addEventListener('change', function(event) {
+        const target = event.target;
+        const field = target.dataset.field;
+        const id = parseInt(target.dataset.id);
+        
+        if (field && id) {
+            let value = target.value;
+            
+            // Handle numeric fields
+            if (field === 'shares' || field === 'investment') {
+                value = parseNumberWithCommas(value);
+            }
+            
+            updateTransactionField(id, field, value);
+        }
+    });
+    
+    // Use event delegation for action buttons
+    transactionsTableBody.addEventListener('click', function(event) {
+        const target = event.target;
+        const action = target.dataset.action;
+        const id = parseInt(target.dataset.id);
+        
+        if (action && id) {
+            if (action === 'delete') {
+                deleteTransaction(id);
+            } else if (action === 'edit') {
+                editTransaction(id);
+            }
+        }
+    });
 } 
