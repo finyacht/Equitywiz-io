@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waterfall Analysis Tool</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-content">
+            <div class="title-container">
+                <div class="logo-container">
+                    <div class="logo">
+                        <div class="logo-waterfall"></div>
+                    </div>
+                </div>
+                <div class="title-text">
+                    <h1>Waterfall Analysis Tool</h1>
+                    <p class="subtitle">Investment Distribution Calculator <span class="author-inline">by Amal Ganatra <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer"><svg class="linkedin-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" fill="#0077B5"/></svg></a></span></p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="grid">
+        <!-- Share Classes Management -->
+        <div class="card">
+            <div class="space-between">
+                <h2>Share Classes</h2>
+                <button id="addShareClassBtn" class="primary">+ Add Share Class</button>
+            </div>
+            
+            <div class="overflow-auto">
+                <table id="shareClassesTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>
+                                Seniority
+                                <span class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Determines the order in which share classes receive distributions. Higher numbers have higher priority (3 is highest).</span>
+                                </span>
+                            </th>
+                            <th>
+                                Liquidation Pref
+                                <span class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Multiplier applied to the original investment that preferred shareholders receive before common shareholders. E.g., 1x means 100% of investment is returned first.</span>
+                                </span>
+                            </th>
+                            <th>
+                                Pref Type
+                                <span class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">Non-participating: Preferred shareholders choose either liquidation preference OR pro-rata share. Participating: Preferred shareholders receive BOTH liquidation preference AND pro-rata share.</span>
+                                </span>
+                            </th>
+                            <th>
+                                Cap
+                                <span class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">For participating preferred shares, limits the total return as a multiple of the original investment. E.g., 3x cap means maximum return is 3 times the investment.</span>
+                                </span>
+                            </th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Transactions Management -->
+        <div class="card">
+            <div class="space-between">
+                <h2>Transactions</h2>
+                <button id="addTransactionBtn" class="primary">+ Add Transaction</button>
+            </div>
+            
+            <div class="overflow-auto">
+                <table id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>Share Class</th>
+                            <th>Shares</th>
+                            <th>
+                                Investment
+                                <span class="tooltip">
+                                    <span class="tooltip-icon">?</span>
+                                    <span class="tooltip-text">The amount of money invested to acquire these shares. Used to calculate liquidation preferences for preferred shares.</span>
+                                </span>
+                            </th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Waterfall Analysis Results -->
+    <div class="card">
+        <div class="space-between">
+            <h2>
+                Waterfall Results
+                <span class="tooltip">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">Shows how proceeds from a company sale or liquidation event would be distributed among different share classes according to their rights and preferences.</span>
+                </span>
+            </h2>
+            <div>
+                <label for="exitAmount">
+                    Exit Amount ($)
+                    <span class="tooltip">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">The total proceeds from a company sale, acquisition, or liquidation event that will be distributed to shareholders.</span>
+                    </span>
+                </label>
+                <input id="exitAmount" type="text" min="0" value="10000000">
+            </div>
+        </div>
+        
+        <!-- Combined Distribution Chart -->
+        <div>
+            <h3>
+                Distribution Breakdown
+                <span class="tooltip">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">Visual representation of how the exit proceeds are distributed among share classes, broken down by liquidation preferences and participation.</span>
+                </span>
+            </h3>
+            <div class="chart-container">
+                <canvas id="combinedChart"></canvas>
+            </div>
+            <div class="summary-info">
+                <p>This chart shows the total distribution and breakdown for each share class.</p>
+                <ul>
+                    <li>Each bar represents a share class's total proceeds</li>
+                    <li>Segments show how the proceeds are distributed (liquidation preference, participation, etc.)</li>
+                    <li>Hover over segments to see detailed amounts</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Summary Table -->
+        <div>
+            <h3>Distribution Summary</h3>
+            <div class="overflow-auto">
+                <table id="summaryTable">
+                    <thead>
+                        <tr>
+                            <th>Share Class</th>
+                            <th>Amount ($)</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Exit Value Distribution Chart -->
+        <div>
+            <h3>
+                Exit Value Distribution
+                <span class="tooltip">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">Shows how the distribution changes across different potential exit values, helping stakeholders understand outcomes at various company valuations.</span>
+                </span>
+            </h3>
+            <div class="chart-container">
+                <canvas id="exitDistributionChart"></canvas>
+            </div>
+            <div class="summary-info">
+                <p>This chart shows how proceeds are distributed across different exit values.</p>
+                <ul>
+                    <li>X-axis shows different exit values</li>
+                    <li>Y-axis shows the amount each share class receives</li>
+                    <li>Hover over the lines to see exact values</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer Section -->
+    <div class="card disclaimer-section">
+        <h3>Disclaimer</h3>
+        <div class="disclaimer-content">
+            <p><strong>Educational Purpose Only:</strong> This Waterfall Analysis Tool is provided for educational and informational purposes only. It is designed to help users understand the mechanics of equity waterfall distributions but should not be relied upon for making investment decisions.</p>
+            
+            <p><strong>Not Legal or Financial Advice:</strong> The information provided by this tool does not constitute legal, financial, or investment advice. For specific guidance related to your investment decisions or legal matters, please consult with qualified legal counsel, financial advisors, or investment professionals.</p>
+            
+            <p><strong>Limitation of Liability:</strong> The creators and maintainers of this tool make no representations or warranties about the accuracy, reliability, completeness, or timeliness of the information provided. Use of this tool is at your own risk. In no event shall the creators be liable for any direct, indirect, incidental, special, or consequential damages arising out of the use of this tool.</p>
+        </div>
+    </div>
+
+    <script src="/js/waterfallCalculator.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html> 

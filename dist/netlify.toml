@@ -1,0 +1,12 @@
+
+[build]
+  publish = "."
+  command = "echo 'Already built'"
+
+[build.environment]
+  NETLIFY_USE_NEXTJS = "false"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
