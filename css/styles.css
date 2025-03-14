@@ -128,20 +128,25 @@ h3 {
 .logo-text {
     display: flex;
     flex-direction: column;
+    margin-left: 1rem;
 }
 
 .logo-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--gray-900);
     margin: 0;
-    line-height: 1.2;
+    font-size: 1.75rem;
+    color: var(--gray-800);
+    font-weight: 700;
 }
 
 .logo-subtitle {
-    font-size: 0.9rem;
     color: var(--gray-600);
-    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.logo-text .author-info {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
 }
 
 /* Tool description */
@@ -499,4 +504,9 @@ th:nth-last-child(2) .tooltip .tooltip-text::after {
 
 .linkedin-icon {
     vertical-align: middle;
+}
+
+.copyright {
+    text-align: center;
+    padding: 1rem 0;
 } 
