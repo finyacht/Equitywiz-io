@@ -12,11 +12,14 @@
 [context.production]
   environment = { NODE_ENV = "production" }
 
-[context.deploy-preview]
-  environment = { NODE_ENV = "development" }
-
 [context.branch-deploy]
   environment = { NODE_ENV = "development" }
+  command = "npm run build"
+
+# Branch-specific settings
+[context.dev]
+  environment = { NODE_ENV = "development" }
+  command = "npm run build"
 
 # Custom headers for security
 [[headers]]
