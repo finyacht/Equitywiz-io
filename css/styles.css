@@ -356,4 +356,34 @@ th .tooltip .tooltip-text::after {
         left: auto;
         right: 10px;
     }
+}
+
+/* Footer styles */
+.footer {
+    margin-top: 2rem;
+    padding: 1rem 0;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.author-info span {
+    font-weight: 500;
+}
+
+.linkedin-icon {
+    color: #0a66c2;
+    transition: color 0.2s ease;
+}
+
+.author-info a:hover .linkedin-icon {
+    color: #004182;
 } 
