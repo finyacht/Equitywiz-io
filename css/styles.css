@@ -28,7 +28,7 @@ body {
     line-height: 1.5;
     margin: 0;
     padding: 20px;
-    color: var(--gray-800);
+    color: var(--gray-700);
     background-color: #f5f7fa;
 }
 
@@ -37,15 +37,41 @@ h1, h2, h3 {
     color: var(--gray-900);
 }
 
-h1 { font-size: 1.75rem; margin-bottom: 1rem; }
-h2 { font-size: 1.25rem; margin-bottom: 0.75rem; }
-h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+h1 { 
+    font-size: 1.75rem; 
+    margin-bottom: 0.5rem; 
+    text-align: left;
+}
+
+h2 { 
+    font-size: 1.25rem; 
+    margin-bottom: 0.75rem; 
+}
+
+h3 { 
+    font-size: 1rem; 
+    margin-bottom: 0.5rem; 
+}
+
+/* Tool description */
+.tool-description {
+    max-width: 100%;
+    margin: 0 0 1.5rem;
+    text-align: left;
+    color: var(--gray-600);
+    font-size: 1rem;
+    line-height: 1.6;
+    background-color: var(--gray-100);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
 
 /* Card styles */
 .card {
     background-color: white;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
 }
@@ -54,13 +80,19 @@ h3 { font-size: 1rem; margin-bottom: 0.5rem; }
 input, select, button {
     font-size: 14px;
     padding: 8px 12px;
-    border-radius: var(--radius);
+    border-radius: 6px;
     border: 1px solid var(--gray-300);
     background-color: white;
 }
 
-input[type="number"] { width: 100px; }
-select { min-width: 150px; background-color: white; }
+input[type="number"], input[type="text"] { 
+    width: 100px; 
+}
+
+select { 
+    min-width: 150px; 
+    background-color: white; 
+}
 
 button {
     background-color: var(--primary-color);
@@ -69,26 +101,53 @@ button {
     cursor: pointer;
     padding: 8px 16px;
     margin-top: 8px;
+    transition: background-color 0.2s;
 }
 
-button:hover { background-color: var(--primary-hover); }
+button:hover { 
+    background-color: var(--primary-hover); 
+}
+
+button.primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+button.primary:hover {
+    background-color: var(--primary-hover);
+}
 
 button.delete {
     background-color: var(--danger-color);
     padding: 4px 8px;
     font-size: 12px;
+    margin-top: 0;
 }
 
-button.delete:hover { background-color: var(--danger-hover); }
+button.delete:hover { 
+    background-color: var(--danger-hover); 
+}
 
-button.edit {
-    background-color: var(--gray-500);
-    padding: 4px 8px;
-    font-size: 12px;
+button.save {
+    background-color: var(--success-color);
     margin-right: 4px;
 }
 
-button.edit:hover { background-color: var(--gray-600); }
+button.save:hover {
+    background-color: var(--success-hover);
+}
+
+button.cancel {
+    background-color: var(--danger-color);
+}
+
+button.cancel:hover {
+    background-color: var(--danger-hover);
+}
 
 /* Form layouts */
 .form-row {
@@ -101,14 +160,6 @@ button.edit:hover { background-color: var(--gray-600); }
 .form-field {
     flex: 1;
     min-width: 200px;
-    margin-bottom: 1rem;
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 1rem;
 }
 
 label {
@@ -116,7 +167,6 @@ label {
     font-size: 14px;
     margin-bottom: 4px;
     font-weight: 500;
-    color: var(--gray-700);
 }
 
 /* Grid layout */
@@ -127,7 +177,9 @@ label {
 }
 
 @media (min-width: 768px) {
-    .grid { grid-template-columns: repeat(2, 1fr); }
+    .grid { 
+        grid-template-columns: repeat(2, 1fr); 
+    }
 }
 
 /* Tables */
@@ -146,12 +198,7 @@ th, td {
 
 th { 
     font-weight: 600; 
-    color: var(--gray-700);
-    background-color: var(--gray-100);
-}
-
-tr:hover {
-    background-color: var(--gray-100);
+    position: relative;
 }
 
 /* Chart containers */
@@ -173,43 +220,90 @@ tr:hover {
     margin-top: 0.25rem;
 }
 
-/* Modal */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
+/* Tooltip styles */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.tooltip-icon {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--gray-400);
+    color: white;
+    font-size: 12px;
+    cursor: help;
 }
 
-.modal-content {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
+.tooltip-text {
+    visibility: hidden;
+    width: 280px;
+    background-color: var(--gray-800);
+    color: white;
+    text-align: left;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 1.5;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    pointer-events: none; /* Prevents tooltip from blocking mouse events */
 }
 
-/* Helper classes */
-.text-right { text-align: right; }
-.space-between {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--gray-800) transparent transparent transparent;
 }
-.overflow-auto { overflow: auto; }
-.font-bold { font-weight: 600; }
-.hidden { display: none; }
 
-/* Add to existing styles */
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Make sure tooltips don't get cut off at the edges */
+th:first-child .tooltip .tooltip-text,
+th:nth-child(2) .tooltip .tooltip-text {
+    left: 0;
+    transform: translateX(0);
+}
+
+th:first-child .tooltip .tooltip-text::after,
+th:nth-child(2) .tooltip .tooltip-text::after {
+    left: 10px;
+}
+
+th:last-child .tooltip .tooltip-text,
+th:nth-last-child(2) .tooltip .tooltip-text {
+    left: auto;
+    right: 0;
+    transform: translateX(0);
+}
+
+th:last-child .tooltip .tooltip-text::after,
+th:nth-last-child(2) .tooltip .tooltip-text::after {
+    left: auto;
+    right: 10px;
+}
+
+/* Editing row styles */
 .editing-row input, .editing-row select {
     width: 100%;
     padding: 4px 8px;
@@ -233,157 +327,56 @@ tr:hover {
     font-size: 12px;
 }
 
-button.primary {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: var(--radius);
-    padding: 8px 16px;
-    cursor: pointer;
+/* Helper classes */
+.text-right { 
+    text-align: right; 
 }
 
-button.primary:hover {
-    background-color: var(--primary-hover);
-}
-
-button.save {
-    background-color: var(--success-color);
-}
-
-button.save:hover {
-    background-color: var(--success-hover);
-}
-
-button.cancel {
-    background-color: var(--danger-color);
-}
-
-button.cancel:hover {
-    background-color: var(--danger-hover);
-}
-
-/* Tooltip styles */
-.tooltip {
-    position: relative;
-    display: inline-flex;
+.space-between {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    cursor: help;
-    margin-left: 4px;
 }
 
-.tooltip-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: var(--gray-400);
-    color: white;
-    font-size: 11px;
-    font-weight: bold;
-    margin-left: 2px;
-    transition: background-color 0.2s;
+.overflow-auto { 
+    overflow: auto; 
 }
 
-.tooltip:hover .tooltip-icon {
-    background-color: var(--primary-color);
+.font-bold { 
+    font-weight: 600; 
 }
 
-.tooltip-text {
-    visibility: hidden;
-    position: absolute;
-    z-index: 1000;
-    bottom: 130%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 280px;
-    max-width: 90vw;
-    background-color: var(--gray-800);
-    color: white;
-    text-align: center;
-    border-radius: var(--radius);
-    padding: 10px 12px;
-    font-size: 12px;
-    line-height: 1.4;
-    opacity: 0;
-    transition: opacity 0.3s, visibility 0.3s;
-    box-shadow: var(--shadow-md);
-    pointer-events: none;
-    white-space: normal;
-    word-wrap: break-word;
+.preferred-only {
+    transition: all 0.3s ease;
 }
 
-.tooltip-text::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--gray-800) transparent transparent transparent;
+.preferred-only.hidden {
+    display: none;
 }
 
-.tooltip:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* For table headers, position tooltips differently */
-th .tooltip .tooltip-text {
-    bottom: 140%;
-    left: -50px;
-    transform: none;
-    z-index: 2000;
-}
-
-th .tooltip .tooltip-text::after {
-    left: 60px;
-    margin-left: 0;
-}
-
-/* For mobile - adjust tooltip position */
-@media (max-width: 768px) {
-    .tooltip-text {
-        width: 220px;
-        left: auto;
-        right: 0;
-        transform: none;
-    }
-    
-    .tooltip-text::after {
-        left: auto;
-        right: 10px;
-    }
-}
-
-/* Disclaimer styles */
+/* Disclaimer section */
 .disclaimer-container {
-    margin: 2rem 0;
-    padding: 0 1rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
 
 .disclaimer {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-left: 4px solid #6c757d;
-    border-radius: 4px;
-    padding: 1.5rem;
+    background-color: var(--gray-100);
+    border-left: 4px solid var(--gray-400);
+    padding: 1rem 1.5rem;
     font-size: 0.875rem;
-    color: #495057;
+    color: var(--gray-600);
+    border-radius: 4px;
 }
 
 .disclaimer h3 {
     margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    color: #343a40;
+    font-size: 1rem;
+    color: var(--gray-700);
 }
 
 .disclaimer p {
     margin-bottom: 0.75rem;
-    line-height: 1.6;
 }
 
 .disclaimer p:last-child {
@@ -393,29 +386,26 @@ th .tooltip .tooltip-text::after {
 /* Footer styles */
 .footer {
     margin-top: 2rem;
-    padding: 1rem 0;
-    border-top: 1px solid #e5e7eb;
-    text-align: center;
-    color: #6b7280;
+    text-align: left;
+    color: var(--gray-500);
     font-size: 0.875rem;
 }
 
 .author-info {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
 }
 
-.author-info span {
-    font-weight: 500;
+.author-info a {
+    color: var(--gray-500);
+    text-decoration: none;
+}
+
+.author-info a:hover {
+    color: var(--primary-color);
 }
 
 .linkedin-icon {
-    color: #0a66c2;
-    transition: color 0.2s ease;
-}
-
-.author-info a:hover .linkedin-icon {
-    color: #004182;
+    vertical-align: middle;
 } 

@@ -211,7 +211,7 @@ function createTooltip(text) {
 function addTooltipsToShareClassRow(row) {
     // Add tooltips to table headers in the edit mode
     const tooltips = {
-        'seniority': 'Determines the order in which share classes receive distributions. Lower numbers have higher priority (1 is highest).',
+        'seniority': 'Determines the order in which share classes receive distributions. Higher numbers have higher priority (3 is higher than 1).',
         'liquidationPref': 'Multiplier applied to the original investment that preferred shareholders receive before common shareholders. E.g., 1x means 100% of investment is returned first.',
         'prefType': 'Non-participating: Preferred shareholders choose either liquidation preference OR pro-rata share. Participating: Preferred shareholders receive BOTH liquidation preference AND pro-rata share.',
         'cap': 'For participating preferred shares, limits the total return as a multiple of the original investment. E.g., 3x cap means maximum return is 3 times the investment.'
