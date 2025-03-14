@@ -32,6 +32,7 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    margin-bottom: 1rem;
 }
 
 .title-container {
@@ -61,6 +62,22 @@
     font-size: 0.875rem;
     color: var(--gray-600);
     margin-left: 5px;
+}
+
+/* Tool description */
+.tool-description {
+    background-color: var(--gray-100);
+    border-radius: var(--radius);
+    padding: 1rem;
+    margin-top: 0.5rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.tool-description p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--gray-700);
+    line-height: 1.5;
 }
 
 /* Logo styles */
