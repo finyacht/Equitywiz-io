@@ -71,6 +71,45 @@ A web application for analyzing equity waterfall distributions in various exit s
 
 ISC
 
+## Development Workflow
+
+This project follows a structured development workflow to ensure code quality and stability:
+
+1. **Development Branch**: All new features and bug fixes should be developed on the `dev` branch or feature-specific branches created from `dev`.
+
+2. **Staging Environment**: Changes pushed to the `dev` branch are automatically deployed to a staging environment at [demo.equitywiz.io](https://demo.equitywiz.io) for testing.
+
+3. **Pull Requests**: To merge changes into the `main` branch, create a pull request from `dev` to `main` using the provided PR template.
+
+4. **Code Review**: All pull requests require code review before merging.
+
+5. **Production Deployment**: After merging to `main`, changes are automatically deployed to the production environment.
+
+### Branch Structure
+
+- `main`: Production-ready code, deployed to [equitywiz.io](https://equitywiz.io)
+- `dev`: Development code, deployed to [demo.equitywiz.io](https://demo.equitywiz.io)
+- Feature branches: Created from `dev` for specific features or bug fixes
+
+### Local Development
+
+For local development:
+
+```bash
+# Switch to dev branch
+git checkout dev
+
+# Create a feature branch (optional)
+git checkout -b feature/your-feature-name
+
+# Make your changes and commit
+git add .
+git commit -m "Description of changes"
+
+# Push to dev branch
+git push origin dev
+```
+
 ## Author
 
 Created by [Your Name] 
