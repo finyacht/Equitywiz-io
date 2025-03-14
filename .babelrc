@@ -1,0 +1,11 @@
+{
+  "presets": [
+    ["@babel/preset-env", { "targets": { "node": "current" } }],
+    ["next/babel", {
+      "preset-react": {
+        "runtime": "automatic",
+        "importSource": "react"
+      }
+    }]
+  ]
+} 

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waterfall Analysis Tool</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Include Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Waterfall Analysis Tool</h1>
+            <p>Calculate and visualize equity distributions in various exit scenarios</p>
+        </header>
+
+        <main>
+            <div class="app-container">
+                <div class="sidebar">
+                    <div class="panel">
+                        <h2>Share Classes</h2>
+                        <div id="shareClassesContainer">
+                            <!-- Share classes will be added here dynamically -->
+                        </div>
+                        <button id="addShareClassBtn" class="btn btn-primary">Add Share Class</button>
+                    </div>
+
+                    <div class="panel">
+                        <h2>Transactions</h2>
+                        <div id="transactionsContainer">
+                            <!-- Transactions will be added here dynamically -->
+                        </div>
+                        <button id="addTransactionBtn" class="btn btn-primary">Add Transaction</button>
+                    </div>
+
+                    <div class="panel">
+                        <h2>Exit Value</h2>
+                        <div class="input-group">
+                            <label for="exitValue">Exit Value ($):</label>
+                            <input type="number" id="exitValue" value="10000000" min="0" step="1000000">
+                        </div>
+                        <button id="calculateBtn" class="btn btn-success">Calculate Distribution</button>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="detailed">Detailed Waterfall</button>
+                        <button class="tab-btn" data-tab="summary">Summary</button>
+                        <button class="tab-btn" data-tab="chart">Distribution Chart</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div id="detailed" class="tab-pane active">
+                            <h3>Detailed Waterfall Analysis</h3>
+                            <div class="waterfall-container">
+                                <table id="detailedTable" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Step</th>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Remaining</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Detailed waterfall steps will be added here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="summary" class="tab-pane">
+                            <h3>Summary Distribution</h3>
+                            <div class="summary-container">
+                                <table id="summaryTable" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Share Class</th>
+                                            <th>Total Payout</th>
+                                            <th>Percentage</th>
+                                            <th>Components</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Summary distribution will be added here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="chart" class="tab-pane">
+                            <h3>Distribution Chart</h3>
+                            <div class="chart-container">
+                                <canvas id="distributionChart"></canvas>
+                            </div>
+                            <div class="chart-controls">
+                                <div class="input-group">
+                                    <label for="maxExitValue">Max Exit Value ($):</label>
+                                    <input type="number" id="maxExitValue" value="20000000" min="1000000" step="1000000">
+                                </div>
+                                <button id="updateChartBtn" class="btn btn-primary">Update Chart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2023 Waterfall Analysis Tool</p>
+        </footer>
+    </div>
+
+    <!-- Templates for dynamic content -->
+    <template id="shareClassTemplate">
+        <div class="share-class-item" data-id="{id}">
+            <div class="item-header">
+                <h4>{name}</h4>
+                <div class="item-actions">
+                    <button class="btn-icon edit-share-class"><span>✏️</span></button>
+                    <button class="btn-icon delete-share-class"><span>🗑️</span></button>
+                </div>
+            </div>
+            <div class="item-details">
+                <div><strong>Type:</strong> {type}</div>
+                <div><strong>Seniority:</strong> {seniority}</div>
+                <div><strong>Liquidation Pref:</strong> {liquidationPref}x</div>
+                <div><strong>Preference Type:</strong> {prefType}</div>
+                <div><strong>Cap:</strong> {cap}</div>
+            </div>
+        </div>
+    </template>
+
+    <template id="transactionTemplate">
+        <div class="transaction-item" data-id="{id}">
+            <div class="item-header">
+                <h4>{shareClass}</h4>
+                <div class="item-actions">
+                    <button class="btn-icon edit-transaction"><span>✏️</span></button>
+                    <button class="btn-icon delete-transaction"><span>🗑️</span></button>
+                </div>
+            </div>
+            <div class="item-details">
+                <div><strong>Shares:</strong> {shares}</div>
+                <div><strong>Investment:</strong> ${investment}</div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Modal for adding/editing share classes -->
+    <div id="shareClassModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="shareClassModalTitle">Add Share Class</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="shareClassForm">
+                    <input type="hidden" id="shareClassId">
+                    <div class="form-group">
+                        <label for="shareClassName">Name:</label>
+                        <input type="text" id="shareClassName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="shareClassType">Type:</label>
+                        <select id="shareClassType" required>
+                            <option value="preferred">Preferred</option>
+                            <option value="common">Common</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="shareClassSeniority">Seniority (lower is more senior):</label>
+                        <input type="number" id="shareClassSeniority" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="shareClassLiquidationPref">Liquidation Preference (multiple):</label>
+                        <input type="number" id="shareClassLiquidationPref" min="0" step="0.1" value="1" required>
+                    </div>
+                    <div class="form-group preferred-only">
+                        <label for="shareClassPrefType">Preference Type:</label>
+                        <select id="shareClassPrefType">
+                            <option value="participating">Participating</option>
+                            <option value="non-participating">Non-Participating</option>
+                        </select>
+                    </div>
+                    <div class="form-group preferred-only">
+                        <label for="shareClassCap">Participation Cap (multiple, leave empty for no cap):</label>
+                        <input type="number" id="shareClassCap" min="0" step="0.1">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary cancel-modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding/editing transactions -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="transactionModalTitle">Add Transaction</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <input type="hidden" id="transactionId">
+                    <div class="form-group">
+                        <label for="transactionShareClass">Share Class:</label>
+                        <select id="transactionShareClass" required>
+                            <!-- Share class options will be added dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionShares">Number of Shares:</label>
+                        <input type="number" id="transactionShares" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionInvestment">Investment Amount ($):</label>
+                        <input type="number" id="transactionInvestment" min="0" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary cancel-modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+</body>
+</html> 

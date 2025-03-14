@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waterfall Analysis Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* General styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+        
+        h1, h2, h3 {
+            margin-top: 0;
+            color: #111;
+        }
+        
+        h1 { font-size: 1.75rem; margin-bottom: 1rem; }
+        h2 { font-size: 1.25rem; margin-bottom: 0.75rem; }
+        h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+        
+        /* Card styles */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Form elements */
+        input, select, button {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            background-color: white;
+        }
+        
+        input[type="number"] { width: 100px; }
+        select { min-width: 150px; background-color: white; }
+        
+        button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 8px 16px;
+            margin-top: 8px;
+        }
+        
+        button:hover { background-color: #2563eb; }
+        
+        button.delete {
+            background-color: #ef4444;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        button.delete:hover { background-color: #dc2626; }
+        
+        /* Form layouts */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+        
+        .form-field {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+        
+        /* Grid layout */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        th { font-weight: 600; }
+        
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+        
+        /* Summary section */
+        .summary-info {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        
+        .summary-info ul {
+            padding-left: 1.5rem;
+            margin-top: 0.25rem;
+        }
+        
+        /* Helper classes */
+        .text-right { text-align: right; }
+        .space-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .overflow-auto { overflow: auto; }
+        .font-bold { font-weight: 600; }
+        .preferred-only {
+            transition: all 0.3s ease;
+        }
+        .preferred-only.hidden {
+            display: none;
+        }
+        
+        /* Add to existing styles */
+        .editing-row input, .editing-row select {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .editing-row {
+            background-color: #f9fafb;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .action-buttons button {
+            margin: 0;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        button.primary {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        button.primary:hover {
+            background-color: #2563eb;
+        }
+
+        button.save {
+            background-color: #10b981;
+        }
+
+        button.save:hover {
+            background-color: #059669;
+        }
+
+        button.cancel {
+            background-color: #ef4444;
+        }
+
+        button.cancel:hover {
+            background-color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <h1>Waterfall Analysis Tool</h1>
+    
+    <div class="grid">
+        <!-- Share Classes Management -->
+        <div class="card">
+            <div class="space-between">
+                <h2>Share Classes</h2>
+                <button id="addShareClassBtn" class="primary">+ Add Share Class</button>
+            </div>
+            
+            <div class="overflow-auto">
+                <table id="shareClassesTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Seniority</th>
+                            <th>Liquidation Pref</th>
+                            <th>Pref Type</th>
+                            <th>Cap</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Transactions Management -->
+        <div class="card">
+            <div class="space-between">
+                <h2>Transactions</h2>
+                <button id="addTransactionBtn" class="primary">+ Add Transaction</button>
+            </div>
+            
+            <div class="overflow-auto">
+                <table id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>Share Class</th>
+                            <th>Shares</th>
+                            <th>Investment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Waterfall Analysis Results -->
+    <div class="card">
+        <div class="space-between">
+            <h2>Waterfall Results</h2>
+            <div>
+                <label for="exitAmount">Exit Amount ($)</label>
+                <input id="exitAmount" type="number" min="0" value="10000000">
+            </div>
+        </div>
+        
+        <!-- Combined Distribution Chart -->
+        <div>
+            <h3>Distribution Breakdown</h3>
+            <div class="chart-container">
+                <canvas id="combinedChart"></canvas>
+            </div>
+            <div class="summary-info">
+                <p>This chart shows the total distribution and breakdown for each share class.</p>
+                <ul>
+                    <li>Each bar represents a share class's total proceeds</li>
+                    <li>Segments show how the proceeds are distributed (liquidation preference, participation, etc.)</li>
+                    <li>Hover over segments to see detailed amounts</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Summary Table -->
+        <div>
+            <h3>Distribution Summary</h3>
+            <div class="overflow-auto">
+                <table id="summaryTable">
+                    <thead>
+                        <tr>
+                            <th>Share Class</th>
+                            <th>Amount ($)</th>
+                            <th>Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Exit Value Distribution Chart -->
+        <div>
+            <h3>Exit Value Distribution</h3>
+            <div class="chart-container">
+                <canvas id="exitDistributionChart"></canvas>
+            </div>
+            <div class="summary-info">
+                <p>This chart shows how proceeds are distributed across different exit values.</p>
+                <ul>
+                    <li>X-axis shows different exit values</li>
+                    <li>Y-axis shows the amount each share class receives</li>
+                    <li>Hover over the lines to see exact values</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const DEFAULT_SHARE_CLASSES = [
+            { id: 1, name: "Series A", type: "preferred", seniority: 1, liquidationPref: 1, prefType: "participating", cap: null },
+            { id: 2, name: "Series B", type: "preferred", seniority: 2, liquidationPref: 1.5, prefType: "participating", cap: 3 },
+            { id: 3, name: "Series C", type: "common", seniority: 3, liquidationPref: 1, prefType: "non-participating", cap: null }
+        ];
+        
+        const DEFAULT_TRANSACTIONS = [
+            { id: 1, shareClass: "Series A", shares: 1000000, investment: 1000000 },
+            { id: 2, shareClass: "Series B", shares: 2000000, investment: 2000000 },
+            { id: 3, shareClass: "Series C", shares: 750000, investment: 0 }
+        ];
+
+        let shareClasses = [...DEFAULT_SHARE_CLASSES];
+        let transactions = [...DEFAULT_TRANSACTIONS];
+        let exitAmount = 10000000;
+        
+        // Charts
+        let summaryChart = null;
+        let exitDistributionChart = null;
+        
+        // DOM Elements
+        const shareClassesTableBody = document.querySelector('#shareClassesTable tbody');
+        const transactionsTableBody = document.querySelector('#transactionsTable tbody');
+        const summaryTableBody = document.querySelector('#summaryTable tbody');
+        const txShareClassSelect = document.querySelector('#txShareClass');
+        
+        // Make functions globally accessible for onclick handlers
+        window.deleteShareClass = function(id) {
+            const shareClass = shareClasses.find(sc => sc.id === id);
+            shareClasses = shareClasses.filter(sc => sc.id !== id);
+            transactions = transactions.filter(tx => tx.shareClass !== shareClass.name);
+            
+            renderShareClasses();
+            renderTransactions();
+            updateWaterfallAnalysis();
+        };
+        
+        window.deleteTransaction = function(id) {
+            transactions = transactions.filter(tx => tx.id !== id);
+            
+            renderTransactions();
+            updateWaterfallAnalysis();
+        };
+        
+        // Reset to default data
+        function resetToDefault() {
+            shareClasses = [...DEFAULT_SHARE_CLASSES];
+            transactions = [...DEFAULT_TRANSACTIONS];
+            exitAmount = 10000000;
+            document.getElementById('exitAmount').value = exitAmount;
+            
+            renderShareClasses();
+            renderTransactions();
+            updateWaterfallAnalysis();
+        }
+
+        // Initialize the application
+        function init() {
+            // Event listeners for add buttons
+            document.getElementById('addShareClassBtn').addEventListener('click', addNewShareClassRow);
+            document.getElementById('addTransactionBtn').addEventListener('click', addNewTransactionRow);
+            document.getElementById('exitAmount').addEventListener('input', updateExitAmount);
+            
+            // Load default data
+            resetToDefault();
+        }
+        
+        // Update exit amount
+        function updateExitAmount() {
+            exitAmount = parseFloat(document.getElementById('exitAmount').value) || 0;
+            updateWaterfallAnalysis();
+        }
+        
+        // Render share classes to the table
+        function renderShareClasses() {
+            shareClassesTableBody.innerHTML = '';
+            
+            shareClasses.forEach(sc => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td><input type="text" class="name" value="${sc.name}" onchange="updateShareClass(${sc.id}, this)"></td>
+                    <td>
+                        <select class="type" onchange="updateShareClass(${sc.id}, this)">
+                            <option value="preferred" ${sc.type === 'preferred' ? 'selected' : ''}>Preferred</option>
+                            <option value="common" ${sc.type === 'common' ? 'selected' : ''}>Common</option>
+                        </select>
+                    </td>
+                    <td><input type="number" class="seniority" min="1" value="${sc.seniority}" onchange="updateShareClass(${sc.id}, this)"></td>
+                    <td>
+                        <input type="number" class="liquidationPref" min="1" step="0.1" value="${sc.liquidationPref}" 
+                        onchange="updateShareClass(${sc.id}, this)" 
+                        style="display: ${sc.type === 'preferred' ? 'block' : 'none'}">
+                    </td>
+                    <td>
+                        <select class="prefType" onchange="updateShareClass(${sc.id}, this)" 
+                        style="display: ${sc.type === 'preferred' ? 'block' : 'none'}">
+                            <option value="non-participating" ${sc.prefType === 'non-participating' ? 'selected' : ''}>Non-Part.</option>
+                            <option value="participating" ${sc.prefType === 'participating' ? 'selected' : ''}>Part.</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="cap" min="0" step="0.1" 
+                        value="${sc.cap || ''}" placeholder="No cap"
+                        onchange="updateShareClass(${sc.id}, this)"
+                        style="display: ${sc.type === 'preferred' && sc.prefType === 'participating' ? 'block' : 'none'}">
+                    </td>
+                    <td><button class="delete" onclick="deleteShareClass(${sc.id})">Delete</button></td>
+                `;
+                
+                // Add type change handler
+                const typeSelect = row.querySelector('.type');
+                const prefFields = [row.querySelector('.liquidationPref'), row.querySelector('.prefType')];
+                const capField = row.querySelector('.cap');
+                
+                typeSelect.addEventListener('change', function() {
+                    const isPreferred = this.value === 'preferred';
+                    prefFields.forEach(field => {
+                        field.style.display = isPreferred ? 'block' : 'none';
+                    });
+                    capField.style.display = 
+                        (isPreferred && row.querySelector('.prefType').value === 'participating') ? 'block' : 'none';
+                });
+
+                // Add preference type change handler
+                row.querySelector('.prefType')?.addEventListener('change', function() {
+                    if (typeSelect.value === 'preferred') {
+                        capField.style.display = 
+                            this.value === 'participating' ? 'block' : 'none';
+                    }
+                });
+                
+                shareClassesTableBody.appendChild(row);
+            });
+        }
+        
+        // Render transactions to the table
+        function renderTransactions() {
+            transactionsTableBody.innerHTML = '';
+            
+            transactions.forEach(tx => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>
+                        <select class="shareClass" onchange="updateTransaction(${tx.id}, this)">
+                            ${shareClasses.map(sc => 
+                                `<option value="${sc.name}" ${tx.shareClass === sc.name ? 'selected' : ''}>${sc.name}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="shares" min="0" value="${tx.shares}" 
+                        onchange="updateTransaction(${tx.id}, this)">
+                    </td>
+                    <td>
+                        <input type="number" class="investment" min="0" value="${tx.investment}" 
+                        onchange="updateTransaction(${tx.id}, this)">
+                    </td>
+                    <td><button class="delete" onclick="deleteTransaction(${tx.id})">Delete</button></td>
+                `;
+                
+                transactionsTableBody.appendChild(row);
+            });
+        }
+
+        // Update share class
+        window.updateShareClass = function(id, element) {
+            const shareClass = shareClasses.find(sc => sc.id === id);
+            if (!shareClass) return;
+
+            const row = element.closest('tr');
+            const type = row.querySelector('.type').value;
+            
+            shareClass.name = row.querySelector('.name').value.trim();
+            shareClass.type = type;
+            shareClass.seniority = parseInt(row.querySelector('.seniority').value) || 1;
+            
+            if (type === 'preferred') {
+                shareClass.liquidationPref = parseFloat(row.querySelector('.liquidationPref').value) || 1;
+                shareClass.prefType = row.querySelector('.prefType').value;
+                const capInput = row.querySelector('.cap').value;
+                shareClass.cap = capInput !== '' ? parseFloat(capInput) : null;
+            } else {
+                shareClass.liquidationPref = 1;
+                shareClass.prefType = 'non-participating';
+                shareClass.cap = null;
+            }
+
+            // Update any transactions that reference this share class
+            const oldName = shareClass.name;
+            transactions.forEach(tx => {
+                if (tx.shareClass === oldName) {
+                    tx.shareClass = shareClass.name;
+                }
+            });
+
+            renderShareClasses();
+            renderTransactions();
+            updateWaterfallAnalysis();
+        };
+
+        // Update transaction
+        window.updateTransaction = function(id, element) {
+            const transaction = transactions.find(tx => tx.id === id);
+            if (!transaction) return;
+
+            const row = element.closest('tr');
+            
+            transaction.shareClass = row.querySelector('.shareClass').value;
+            transaction.shares = parseFloat(row.querySelector('.shares').value) || 0;
+            transaction.investment = parseFloat(row.querySelector('.investment').value) || 0;
+
+            renderTransactions();
+            updateWaterfallAnalysis();
+        };
+        
+        // Calculate the detailed waterfall analysis
+        function calculateDetailedWaterfall() {
+            let results = [];
+            let remainingProceeds = exitAmount;
+            
+            // Start with total proceeds
+            results.push({
+                name: "Total Exit Proceeds",
+                value: exitAmount,
+                remainingProceeds: remainingProceeds,
+                isStarting: true
+            });
+            
+            if (transactions.length === 0) return results;
+            
+            // Get active share classes with transactions
+            const activeShareClasses = shareClasses.filter(sc => 
+                transactions.some(tx => tx.shareClass === sc.name)
+            );
+            
+            // Calculate total ownership percentages
+            const totalShares = transactions.reduce((sum, tx) => sum + (parseFloat(tx.shares) || 0), 0);
+            const ownershipByClass = {};
+            
+            transactions.forEach(tx => {
+                if (!ownershipByClass[tx.shareClass]) {
+                    ownershipByClass[tx.shareClass] = 0;
+                }
+                ownershipByClass[tx.shareClass] += (parseFloat(tx.shares) || 0) / totalShares;
+            });
+
+            // First Round - Liquidation Preferences (only for preferred shares, in order of seniority)
+            const preferredClasses = [...activeShareClasses]
+                .filter(sc => sc.type === 'preferred')
+                .sort((a, b) => b.seniority - a.seniority);
+
+            // Handle preferred shares liquidation preferences first
+            for (const sc of preferredClasses) {
+                if (remainingProceeds <= 0) break;
+                
+                const transactionsForClass = transactions.filter(tx => tx.shareClass === sc.name);
+                let totalInvestment = transactionsForClass.reduce((sum, tx) => sum + parseFloat(tx.investment || 0), 0);
+                
+                // Calculate liquidation preference
+                let liquidationPrefAmount = totalInvestment * parseFloat(sc.liquidationPref || 1);
+                let prefPayout = Math.min(liquidationPrefAmount, remainingProceeds);
+                
+                if (prefPayout > 0) {
+                    results.push({ 
+                        name: `${sc.name} (Liquidation Preference)`, 
+                        value: -prefPayout,
+                        description: `${sc.name} receives liquidation preference of $${prefPayout.toLocaleString()}`,
+                        remainingProceeds,
+                        shareClass: sc.name
+                    });
+                    
+                    remainingProceeds -= prefPayout;
+                }
+            }
+
+            // Second Round - Pro-rata distribution among participating preferred and common
+            if (remainingProceeds > 0) {
+                // Get participating preferred and common classes
+                const participatingClasses = [
+                    ...preferredClasses.filter(sc => sc.prefType === "participating"),
+                    ...activeShareClasses.filter(sc => sc.type === "common")
+                ];
+
+                // Calculate total participating shares
+                const participatingTotal = participatingClasses.reduce((sum, sc) => 
+                    sum + ownershipByClass[sc.name], 0
+                );
+
+                if (participatingTotal > 0) {
+                    for (const sc of participatingClasses) {
+                        const proRataShare = ownershipByClass[sc.name] / participatingTotal;
+                        let participationAmount = proRataShare * remainingProceeds;
+
+                        // Apply caps for participating preferred if they exist
+                        if (sc.type === 'preferred' && sc.cap) {
+                            const transactionsForClass = transactions.filter(tx => tx.shareClass === sc.name);
+                            const totalInvestment = transactionsForClass.reduce((sum, tx) => sum + parseFloat(tx.investment || 0), 0);
+                            const currentPayout = results
+                                .filter(r => r.shareClass === sc.name)
+                                .reduce((sum, r) => sum - r.value, 0);
+                            
+                            const capAmount = totalInvestment * sc.cap;
+                            participationAmount = Math.min(participationAmount, capAmount - currentPayout);
+                        }
+
+                        if (participationAmount > 0) {
+                            const distributionType = sc.type === 'common' ? 'Common Distribution' : 'Participation';
+                            results.push({ 
+                                name: `${sc.name} (${distributionType})`, 
+                                value: -participationAmount,
+                                description: `${sc.name} receives ${distributionType.toLowerCase()} of $${participationAmount.toLocaleString()}`,
+                                remainingProceeds,
+                                shareClass: sc.name
+                            });
+                            
+                            remainingProceeds -= participationAmount;
+                        }
+                    }
+                }
+            }
+
+            // If there are still remaining proceeds and some classes hit their caps,
+            // distribute remaining among uncapped classes
+            if (remainingProceeds > 0) {
+                const uncappedClasses = activeShareClasses.filter(sc => {
+                    if (sc.type === 'common') return true;
+                    if (sc.type === 'preferred' && sc.prefType === 'participating') {
+                        const transactionsForClass = transactions.filter(tx => tx.shareClass === sc.name);
+                        const totalInvestment = transactionsForClass.reduce((sum, tx) => sum + parseFloat(tx.investment || 0), 0);
+                        const currentPayout = results
+                            .filter(r => r.shareClass === sc.name)
+                            .reduce((sum, r) => sum - r.value, 0);
+                        if (sc.cap) {
+                            return currentPayout < (totalInvestment * sc.cap);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+
+                const uncappedTotal = uncappedClasses.reduce((sum, sc) => 
+                    sum + ownershipByClass[sc.name], 0
+                );
+
+                if (uncappedTotal > 0) {
+                    for (const sc of uncappedClasses) {
+                        const proRataShare = ownershipByClass[sc.name] / uncappedTotal;
+                        const additionalAmount = proRataShare * remainingProceeds;
+
+                        if (additionalAmount > 0) {
+                            const distributionType = sc.type === 'common' ? 'Additional Common' : 'Additional Participation';
+                            results.push({ 
+                                name: `${sc.name} (${distributionType})`, 
+                                value: -additionalAmount,
+                                description: `${sc.name} receives additional distribution of $${additionalAmount.toLocaleString()}`,
+                                remainingProceeds,
+                                shareClass: sc.name
+                            });
+                            
+                            remainingProceeds -= additionalAmount;
+                        }
+                    }
+                }
+            }
+            
+            return results;
+        }
+        
+        // Calculate summary waterfall distribution
+        function calculateSummaryWaterfall() {
+            const detailedResults = calculateDetailedWaterfall();
+            const summaryByClass = {};
+            
+            // Skip the first "Total Exit Proceeds" entry
+            detailedResults.slice(1).forEach(result => {
+                if (!result.shareClass) return;
+                
+                if (!summaryByClass[result.shareClass]) {
+                    summaryByClass[result.shareClass] = {
+                        name: result.shareClass,
+                        payout: 0,
+                        components: {
+                            'Liquidation Preference': 0,
+                            'Participation': 0,
+                            'Common Distribution': 0
+                        }
+                    };
+                }
+                
+                const amount = Math.abs(result.value);
+                summaryByClass[result.shareClass].payout += amount;
+                
+                // Categorize the payment
+                if (result.name.includes('Liquidation Preference')) {
+                    summaryByClass[result.shareClass].components['Liquidation Preference'] += amount;
+                } else if (result.name.includes('Participation')) {
+                    summaryByClass[result.shareClass].components['Participation'] += amount;
+                } else if (result.name.includes('Common Distribution')) {
+                    summaryByClass[result.shareClass].components['Common Distribution'] += amount;
+                }
+            });
+            
+            return Object.values(summaryByClass).map(summary => ({
+                ...summary,
+                percentage: Math.round((summary.payout / exitAmount) * 10000) / 100
+            }));
+        }
+        
+        // Update the waterfall analysis charts and tables
+        function updateWaterfallAnalysis() {
+            const waterfallSteps = calculateDetailedWaterfall();
+            const summaryData = calculateSummaryWaterfall();
+            
+            // Update the summary table
+            renderSummaryTable(summaryData);
+            
+            // Update the charts
+            renderCombinedChart(waterfallSteps, summaryData);
+            renderExitDistributionChart();
+        }
+        
+        // Calculate distribution for a specific exit value
+        function calculateDistributionAtExit(exitValue) {
+            const originalExitAmount = exitAmount;
+            exitAmount = exitValue;
+            const distribution = calculateSummaryWaterfall();
+            exitAmount = originalExitAmount;
+            return distribution;
+        }
+        
+        // Render summary table
+        function renderSummaryTable(summaryData) {
+            // Clear the table
+            summaryTableBody.innerHTML = '';
+            
+            // Add each summary row
+            summaryData.forEach(result => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${result.name}</td>
+                    <td>$${result.payout.toLocaleString()}</td>
+                    <td>${result.percentage}%</td>
+                `;
+                
+                summaryTableBody.appendChild(row);
+            });
+            
+            // Add total row
+            const totalRow = document.createElement('tr');
+            totalRow.className = 'font-bold';
+            
+            totalRow.innerHTML = `
+                <td>Total</td>
+                <td>$${exitAmount.toLocaleString()}</td>
+                <td>100%</td>
+            `;
+            
+            summaryTableBody.appendChild(totalRow);
+        }
+        
+        // Render combined chart
+        function renderCombinedChart(waterfallSteps, summaryData) {
+            const ctx = document.getElementById('combinedChart').getContext('2d');
+            
+            if (summaryChart) {
+                summaryChart.destroy();
+            }
+
+            // Group steps by share class and distribution type
+            const shareClassSteps = {};
+            waterfallSteps.forEach(step => {
+                if (step.shareClass && !step.isStarting && !step.isFinal) {
+                    if (!shareClassSteps[step.shareClass]) {
+                        shareClassSteps[step.shareClass] = {
+                            'Liquidation Preference': 0,
+                            'Participation': 0,
+                            'Common Distribution': 0
+                        };
+                    }
+                    const match = step.name.match(/\((.*?)\)/);
+                    if (match) {
+                        const type = match[1];
+                        if (type === "Liquidation Preference") {
+                            shareClassSteps[step.shareClass]["Liquidation Preference"] += Math.abs(step.value);
+                        } else if (type.includes("Participation") || type === "Additional Participation") {
+                            shareClassSteps[step.shareClass]["Participation"] += Math.abs(step.value);
+                        } else if (type.includes("Common")) {
+                            shareClassSteps[step.shareClass]["Common Distribution"] += Math.abs(step.value);
+                        }
+                    }
+                }
+            });
+
+            // Create datasets for each distribution type
+            const distributionTypes = [
+                'Liquidation Preference',
+                'Participation',
+                'Common Distribution'
+            ];
+            const datasets = distributionTypes.map(type => ({
+                label: type,
+                data: summaryData.map(summary => {
+                    return shareClassSteps[summary.name]?.[type] || 0;
+                }),
+                backgroundColor: getDistributionTypeColor(type),
+                borderColor: getDistributionTypeColor(type, 0.8),
+                borderWidth: 1
+            })).filter(dataset => dataset.data.some(value => value > 0)); // Only include datasets with non-zero values
+
+            summaryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: summaryData.map(d => d.name),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const shareClass = context[0].label;
+                                    const sc = shareClasses.find(s => s.name === shareClass);
+                                    if (!sc) return shareClass;
+                                    
+                                    let title = shareClass;
+                                    if (sc.type === 'preferred') {
+                                        title += ` (${sc.prefType})`;
+                                        if (sc.prefType === 'participating' && sc.cap) {
+                                            title += ` - ${sc.cap}x cap`;
+                                        }
+                                    }
+                                    return title;
+                                },
+                                label: function(context) {
+                                    const value = context.raw;
+                                    if (value === 0) return null;
+                                    const percentage = ((value / exitAmount) * 100).toFixed(1);
+                                    return `${context.dataset.label}: $${value.toLocaleString()} (${percentage}%)`;
+                                },
+                                afterBody: function(context) {
+                                    const shareClass = context[0].label;
+                                    const total = datasets.reduce((sum, dataset) => 
+                                        sum + (dataset.data[context[0].dataIndex] || 0), 0
+                                    );
+                                    const percentage = ((total/exitAmount)*100).toFixed(1);
+                                    return [`Total Payout: $${total.toLocaleString()} (${percentage}%)`];
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Helper function to get colors for distribution types
+        function getDistributionTypeColor(type, alpha = 1) {
+            // Use consistent colors for each distribution type
+            const colors = {
+                'Liquidation Preference': `rgba(59, 130, 246, ${alpha})`, // Blue for liquidation preferences
+                'Participation': `rgba(16, 185, 129, ${alpha})`, // Green for participation
+                'Common Distribution': `rgba(107, 114, 128, ${alpha})` // Gray for common
+            };
+            return colors[type] || `rgba(107, 114, 128, ${alpha})`;
+        }
+        
+        // Render exit distribution chart
+        function renderExitDistributionChart() {
+            const ctx = document.getElementById('exitDistributionChart').getContext('2d');
+            
+            if (exitDistributionChart) {
+                exitDistributionChart.destroy();
+            }
+            
+            // Generate exit values from 0 to 2x current exit amount
+            const maxExit = exitAmount * 2;
+            const numPoints = 20;
+            const exitValues = Array.from({length: numPoints + 1}, (_, i) => (maxExit * i) / numPoints);
+            
+            // Get all unique share classes
+            const activeShareClasses = [...new Set(
+                shareClasses
+                    .filter(sc => transactions.some(tx => tx.shareClass === sc.name))
+                    .map(sc => sc.name)
+            )];
+            
+            // Calculate distributions for each exit value
+            const distributions = exitValues.map(exitValue => {
+                const dist = calculateDistributionAtExit(exitValue);
+                return activeShareClasses.map(className => {
+                    const shareData = dist.find(d => d.name === className);
+                    return shareData ? shareData.payout : 0;
+                });
+            });
+            
+            // Create datasets for each share class
+            const datasets = activeShareClasses.map((className, index) => ({
+                label: className,
+                data: distributions.map(dist => dist[index]),
+                fill: true,
+                borderColor: getShareClassColor(className, index),
+                backgroundColor: getShareClassColor(className, index, 0.1),
+                tension: 0.4
+            }));
+            
+            let verticalLineX = null;
+            
+            exitDistributionChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: exitValues.map(value => formatCurrency(value)),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Exit Value'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Distribution Amount'
+                            },
+                            ticks: {
+                                callback: value => formatCurrency(value)
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return `Exit Value: ${tooltipItems[0].label}`;
+                                },
+                                label: function(tooltipItem) {
+                                    const exitValue = parseFloat(tooltipItem.raw);
+                                    const shareClass = tooltipItem.dataset.label;
+                                    const distribution = calculateDistributionAtExit(exitValue);
+                                    const shareData = distribution.find(d => d.name === shareClass);
+                                    
+                                    if (!shareData) {
+                                        return `${shareClass}: ${formatCurrency(tooltipItem.raw)}`;
+                                    }
+                                    
+                                    const components = shareData.components;
+                                    const totalPercentage = ((shareData.payout / exitValue) * 100).toFixed(1);
+                                    
+                                    let lines = [`${shareClass}: ${formatCurrency(shareData.payout)} (${totalPercentage}%)`];
+                                    
+                                    if (components['Liquidation Preference'] > 0) {
+                                        const prefPercentage = ((components['Liquidation Preference'] / exitValue) * 100).toFixed(1);
+                                        lines.push(`  • Liquidation Preference: ${formatCurrency(components['Liquidation Preference'])} (${prefPercentage}%)`);
+                                    }
+                                    
+                                    if (components['Participation'] > 0) {
+                                        const partPercentage = ((components['Participation'] / exitValue) * 100).toFixed(1);
+                                        lines.push(`  • Participation: ${formatCurrency(components['Participation'])} (${partPercentage}%)`);
+                                    }
+                                    
+                                    if (components['Common Distribution'] > 0) {
+                                        const commonPercentage = ((components['Common Distribution'] / exitValue) * 100).toFixed(1);
+                                        lines.push(`  • Common Distribution: ${formatCurrency(components['Common Distribution'])} (${commonPercentage}%)`);
+                                    }
+                                    
+                                    return lines;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Add mousemove event listener to draw vertical line
+            ctx.canvas.addEventListener('mousemove', (event) => {
+                const rect = ctx.canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                verticalLineX = x;
+                
+                // Clear the canvas and redraw
+                exitDistributionChart.draw();
+                
+                // Draw vertical line
+                if (x >= 0 && x <= ctx.canvas.width) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.setLineDash([5, 5]);
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, ctx.canvas.height);
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = 'rgba(102, 102, 102, 0.8)';
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            });
+            
+            // Add mouseleave event listener to clear vertical line
+            ctx.canvas.addEventListener('mouseleave', () => {
+                verticalLineX = null;
+                exitDistributionChart.draw();
+            });
+            
+            // Override the chart's draw function to maintain the vertical line
+            const originalDraw = exitDistributionChart.draw;
+            exitDistributionChart.draw = function() {
+                originalDraw.apply(this, arguments);
+                if (verticalLineX !== null) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.setLineDash([5, 5]);
+                    ctx.moveTo(verticalLineX, 0);
+                    ctx.lineTo(verticalLineX, ctx.canvas.height);
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = 'rgba(102, 102, 102, 0.8)';
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            };
+        }
+        
+        // Helper function to format currency
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString();
+        }
+        
+        // Helper function to get consistent colors for share classes
+        function getShareClassColor(className, index, alpha = 1) {
+            const colors = {
+                'Common': `rgba(168, 85, 247, ${alpha})`, // Purple
+                'Series A': `rgba(59, 130, 246, ${alpha})`, // Blue
+                'Series B': `rgba(16, 185, 129, ${alpha})`, // Green
+                'Series C': `rgba(245, 158, 11, ${alpha})`, // Orange
+                'Series D': `rgba(239, 68, 68, ${alpha})`, // Red
+            };
+            
+            return colors[className] || `hsla(${index * 137.5}, 70%, 50%, ${alpha})`;
+        }
+        
+        // Add new share class row
+        function addNewShareClassRow() {
+            const row = document.createElement('tr');
+            row.className = 'editing-row';
+            
+            row.innerHTML = `
+                <td><input type="text" class="name" placeholder="Series A"></td>
+                <td>
+                    <select class="type">
+                        <option value="preferred">Preferred</option>
+                        <option value="common">Common</option>
+                    </select>
+                </td>
+                <td><input type="number" class="seniority" min="1" value="1"></td>
+                <td><input type="number" class="liquidationPref" min="1" step="0.1" value="1"></td>
+                <td>
+                    <select class="prefType">
+                        <option value="non-participating">Non-Participating</option>
+                        <option value="participating">Participating</option>
+                    </select>
+                </td>
+                <td><input type="number" class="cap" min="0" step="0.1" placeholder="No cap"></td>
+                <td class="action-buttons">
+                    <button class="save" onclick="saveShareClass(this)">Save</button>
+                    <button class="cancel" onclick="cancelShareClass(this)">Cancel</button>
+                </td>
+            `;
+
+            // Add type change handler
+            const typeSelect = row.querySelector('.type');
+            const prefFields = [row.querySelector('.liquidationPref'), row.querySelector('.prefType')];
+            const capField = row.querySelector('.cap');
+            
+            typeSelect.addEventListener('change', function() {
+                const isPreferred = this.value === 'preferred';
+                prefFields.forEach(field => {
+                    field.parentElement.style.display = isPreferred ? '' : 'none';
+                });
+                capField.parentElement.style.display = 
+                    (isPreferred && row.querySelector('.prefType').value === 'participating') ? '' : 'none';
+            });
+
+            // Add preference type change handler
+            row.querySelector('.prefType').addEventListener('change', function() {
+                if (typeSelect.value === 'preferred') {
+                    capField.parentElement.style.display = 
+                        this.value === 'participating' ? '' : 'none';
+                }
+            });
+            
+            shareClassesTableBody.appendChild(row);
+        }
+
+        // Save share class
+        function saveShareClass(button) {
+            const row = button.closest('tr');
+            const name = row.querySelector('.name').value.trim();
+            if (name === '') return;
+
+            const type = row.querySelector('.type').value;
+            const seniority = parseInt(row.querySelector('.seniority').value) || 1;
+            const liquidationPref = type === 'preferred' ? (parseFloat(row.querySelector('.liquidationPref').value) || 1) : 1;
+            const prefType = type === 'preferred' ? row.querySelector('.prefType').value : 'non-participating';
+            const capInput = row.querySelector('.cap').value;
+            const cap = (type === 'preferred' && capInput !== '') ? parseFloat(capInput) : null;
+
+            const newShareClass = {
+                id: shareClasses.length > 0 ? Math.max(...shareClasses.map(sc => sc.id)) + 1 : 1,
+                name,
+                type,
+                seniority,
+                liquidationPref,
+                prefType,
+                cap
+            };
+
+            shareClasses.push(newShareClass);
+            renderShareClasses();
+            updateWaterfallAnalysis();
+        }
+
+        // Cancel share class addition
+        function cancelShareClass(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        // Add new transaction row
+        function addNewTransactionRow() {
+            const row = document.createElement('tr');
+            row.className = 'editing-row';
+            
+            row.innerHTML = `
+                <td>
+                    <select class="shareClass">
+                        <option value="">Select Class</option>
+                        ${shareClasses.map(sc => `<option value="${sc.name}">${sc.name}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="number" class="shares" min="0" value="0"></td>
+                <td><input type="number" class="investment" min="0" value="0"></td>
+                <td class="action-buttons">
+                    <button class="save" onclick="saveTransaction(this)">Save</button>
+                    <button class="cancel" onclick="cancelTransaction(this)">Cancel</button>
+                </td>
+            `;
+            
+            transactionsTableBody.appendChild(row);
+        }
+
+        // Save transaction
+        function saveTransaction(button) {
+            const row = button.closest('tr');
+            const shareClass = row.querySelector('.shareClass').value;
+            if (shareClass === '') return;
+
+            const shares = parseFloat(row.querySelector('.shares').value) || 0;
+            const investment = parseFloat(row.querySelector('.investment').value) || 0;
+
+            const newTransaction = {
+                id: transactions.length > 0 ? Math.max(...transactions.map(tx => tx.id)) + 1 : 1,
+                shareClass,
+                shares,
+                investment
+            };
+
+            transactions.push(newTransaction);
+            renderTransactions();
+            updateWaterfallAnalysis();
+        }
+
+        // Cancel transaction addition
+        function cancelTransaction(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html> 

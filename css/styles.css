@@ -1,0 +1,359 @@
+/* Waterfall Analysis Tool - Styles */
+
+:root {
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --radius: 0.375rem;
+}
+
+/* General styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.5;
+    margin: 0;
+    padding: 20px;
+    color: var(--gray-800);
+    background-color: #f5f7fa;
+}
+
+h1, h2, h3 {
+    margin-top: 0;
+    color: var(--gray-900);
+}
+
+h1 { font-size: 1.75rem; margin-bottom: 1rem; }
+h2 { font-size: 1.25rem; margin-bottom: 0.75rem; }
+h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+
+/* Card styles */
+.card {
+    background-color: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Form elements */
+input, select, button {
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-300);
+    background-color: white;
+}
+
+input[type="number"] { width: 100px; }
+select { min-width: 150px; background-color: white; }
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    margin-top: 8px;
+}
+
+button:hover { background-color: var(--primary-hover); }
+
+button.delete {
+    background-color: var(--danger-color);
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+button.delete:hover { background-color: var(--danger-hover); }
+
+button.edit {
+    background-color: var(--gray-500);
+    padding: 4px 8px;
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+button.edit:hover { background-color: var(--gray-600); }
+
+/* Form layouts */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+
+.form-field {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 1rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 1rem;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+
+/* Grid layout */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 14px;
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+th { 
+    font-weight: 600; 
+    color: var(--gray-700);
+    background-color: var(--gray-100);
+}
+
+tr:hover {
+    background-color: var(--gray-100);
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1rem 0;
+}
+
+/* Summary section */
+.summary-info {
+    font-size: 14px;
+    color: var(--gray-500);
+    margin-top: 0.5rem;
+}
+
+.summary-info ul {
+    padding-left: 1.5rem;
+    margin-top: 0.25rem;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Helper classes */
+.text-right { text-align: right; }
+.space-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.overflow-auto { overflow: auto; }
+.font-bold { font-weight: 600; }
+.hidden { display: none; }
+
+/* Add to existing styles */
+.editing-row input, .editing-row select {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.editing-row {
+    background-color: var(--gray-100);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.action-buttons button {
+    margin: 0;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+button.primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+button.primary:hover {
+    background-color: var(--primary-hover);
+}
+
+button.save {
+    background-color: var(--success-color);
+}
+
+button.save:hover {
+    background-color: var(--success-hover);
+}
+
+button.cancel {
+    background-color: var(--danger-color);
+}
+
+button.cancel:hover {
+    background-color: var(--danger-hover);
+}
+
+/* Tooltip styles */
+.tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: help;
+    margin-left: 4px;
+}
+
+.tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--gray-400);
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 2px;
+    transition: background-color 0.2s;
+}
+
+.tooltip:hover .tooltip-icon {
+    background-color: var(--primary-color);
+}
+
+.tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1000;
+    bottom: 130%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    max-width: 90vw;
+    background-color: var(--gray-800);
+    color: white;
+    text-align: center;
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.4;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--gray-800) transparent transparent transparent;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* For table headers, position tooltips differently */
+th .tooltip .tooltip-text {
+    bottom: 140%;
+    left: -50px;
+    transform: none;
+    z-index: 2000;
+}
+
+th .tooltip .tooltip-text::after {
+    left: 60px;
+    margin-left: 0;
+}
+
+/* For mobile - adjust tooltip position */
+@media (max-width: 768px) {
+    .tooltip-text {
+        width: 220px;
+        left: auto;
+        right: 0;
+        transform: none;
+    }
+    
+    .tooltip-text::after {
+        left: auto;
+        right: 10px;
+    }
+} 
