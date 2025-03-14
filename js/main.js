@@ -267,7 +267,6 @@ function renderTransactions() {
                 data-field="investment" data-id="${tx.id}">
             </td>
             <td>
-                <button class="edit" data-action="edit" data-id="${tx.id}">Edit</button>
                 <button class="delete" data-action="delete" data-id="${tx.id}">Delete</button>
             </td>
         `;
@@ -993,7 +992,6 @@ window.editShareClass = editShareClass;
 window.updateShareClass = updateShareClass;
 window.deleteShareClass = deleteShareClass;
 window.addNewTransactionRow = addNewTransactionRow;
-window.editTransaction = editTransaction;
 window.updateTransaction = updateTransaction;
 window.deleteTransaction = deleteTransaction;
 window.closeModal = closeModal;
@@ -1195,8 +1193,6 @@ function addTransactionEventListeners() {
         if (action && id) {
             if (action === 'delete') {
                 deleteTransaction(id);
-            } else if (action === 'edit') {
-                editTransaction(id);
             }
         }
     });
