@@ -50,6 +50,17 @@
     margin-top: 0;
     color: var(--gray-600);
     font-size: 1rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.author-inline {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin-left: 5px;
 }
 
 /* Logo styles */
@@ -103,9 +114,10 @@
 .linkedin-icon {
     margin-left: 5px;
     transition: transform 0.2s;
+    vertical-align: middle;
 }
 
-.author-credit a:hover .linkedin-icon {
+.author-inline a:hover .linkedin-icon {
     transform: scale(1.1);
 }
 
@@ -140,8 +152,14 @@
         align-items: flex-start;
     }
     
-    .author-credit {
-        margin-top: 0.5rem;
+    .subtitle {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .author-inline {
+        margin-left: 0;
+        margin-top: 5px;
     }
 }
 
