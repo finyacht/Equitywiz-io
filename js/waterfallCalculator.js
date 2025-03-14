@@ -149,15 +149,54 @@ function calculateDetailedWaterfall(shareClasses, transactions, exitAmount) {
         }
     }
     
-    // If there are still remaining proceeds, they stay with the company
+    // If there are still remaining proceeds, distribute them to common shareholders
     if (remainingProceeds > 0.01) {
-        results.push({ 
-            name: `Retained by Company`, 
-            value: -remainingProceeds,
-            description: `$${remainingProceeds.toLocaleString()} remains with the company`,
-            remainingProceeds,
-            isRetained: true
-        });
+        // Check if there are any common shares
+        const commonClasses = activeShareClasses.filter(sc => sc.type === 'common');
+        
+        if (commonClasses.length > 0) {
+            // Calculate total common shares
+            let totalCommonShares = 0;
+            const commonSharesByClass = {};
+            
+            for (const sc of commonClasses) {
+                const classShares = transactions
+                    .filter(tx => tx.shareClass === sc.name)
+                    .reduce((sum, tx) => sum + parseFloat(tx.shares || 0), 0);
+                
+                totalCommonShares += classShares;
+                commonSharesByClass[sc.name] = classShares;
+            }
+            
+            // Distribute remaining proceeds to common shareholders based on their ownership
+            for (const sc of commonClasses) {
+                if (totalCommonShares > 0) {
+                    const commonShare = commonSharesByClass[sc.name] / totalCommonShares;
+                    const additionalAmount = commonShare * remainingProceeds;
+                    
+                    if (additionalAmount > 0) {
+                        results.push({ 
+                            name: `${sc.name} (Additional Distribution)`, 
+                            value: -additionalAmount,
+                            description: `${sc.name} receives additional distribution of $${additionalAmount.toLocaleString()}`,
+                            remainingProceeds,
+                            shareClass: sc.name
+                        });
+                        
+                        remainingProceeds -= additionalAmount;
+                    }
+                }
+            }
+        } else {
+            // If no common shares, then proceeds are retained by company
+            results.push({ 
+                name: `Retained by Company`, 
+                value: -remainingProceeds,
+                description: `$${remainingProceeds.toLocaleString()} remains with the company`,
+                remainingProceeds,
+                isRetained: true
+            });
+        }
     }
 
     return results;
@@ -192,7 +231,8 @@ function calculateSummaryWaterfall(shareClasses, transactions, exitAmount) {
                 components: {
                     'Liquidation Preference': 0,
                     'Participation': 0,
-                    'Common Distribution': 0
+                    'Common Distribution': 0,
+                    'Additional Distribution': 0
                 }
             };
         }
@@ -207,6 +247,8 @@ function calculateSummaryWaterfall(shareClasses, transactions, exitAmount) {
             summaryByClass[result.shareClass].components['Participation'] += amount;
         } else if (result.name.includes('Common Distribution')) {
             summaryByClass[result.shareClass].components['Common Distribution'] += amount;
+        } else if (result.name.includes('Additional Distribution')) {
+            summaryByClass[result.shareClass].components['Additional Distribution'] += amount;
         }
     });
     

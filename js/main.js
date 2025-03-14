@@ -644,6 +644,7 @@ function renderCombinedChart(summaryData) {
         'Liquidation Preference',
         'Participation',
         'Common Distribution',
+        'Additional Distribution',
         'Retained'
     ];
     
@@ -829,6 +830,7 @@ function getDistributionTypeColor(type, alpha = 1) {
         'Liquidation Preference': `rgba(59, 130, 246, ${alpha})`, // Blue for liquidation preferences
         'Participation': `rgba(16, 185, 129, ${alpha})`, // Green for participation
         'Common Distribution': `rgba(107, 114, 128, ${alpha})`, // Gray for common
+        'Additional Distribution': `rgba(168, 85, 247, ${alpha})`, // Purple for additional distributions
         'Retained': `rgba(245, 158, 11, ${alpha})` // Orange for retained distributions
     };
     return colors[type] || `rgba(107, 114, 128, ${alpha})`;
