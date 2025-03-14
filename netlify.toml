@@ -1,15 +1,11 @@
 [build]
-  command = "npm run build"
+  command = "bash netlify.sh"
   publish = "."
 
 [build.environment]
   NODE_VERSION = "18"
 
 # Handle the optional dependencies that might cause build failures
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# Ignore the optional dependencies during build
 [build.processing.css]
   bundle = true
   minify = true
@@ -26,4 +22,9 @@
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200 
+  status = 200
+
+# Configure functions for server-side rendering
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild" 

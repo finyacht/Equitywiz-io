@@ -1,0 +1,4 @@
+# Netlify redirects file
+# Redirect all requests to our serverless function
+/api/*  /.netlify/functions/server/:splat  200
+/*      /index.html                        200 
