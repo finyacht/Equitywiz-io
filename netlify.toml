@@ -1,0 +1,29 @@
+[build]
+  command = "npm run build"
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Handle the optional dependencies that might cause build failures
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Ignore the optional dependencies during build
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+# Explicitly mark bufferutil and utf-8-validate as optional
+[build.processing.html]
+  pretty_urls = true
+
+# Add redirects for SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 

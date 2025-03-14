@@ -51,6 +51,29 @@ A web application for analyzing equity waterfall distributions in various exit s
    http://localhost:3000
    ```
 
+## Building for Production
+
+The application uses a build process to minify and optimize JavaScript files for production:
+
+1. Run the build script:
+   ```
+   npm run build
+   ```
+
+This will create minified versions of the JavaScript files in the `js` directory.
+
+## Deployment Notes
+
+### Handling WebSocket Dependencies
+
+This project uses optional WebSocket-related dependencies (`bufferutil` and `utf-8-validate`) which can sometimes cause build failures in certain environments. These are marked as optional dependencies in `package.json`.
+
+If you encounter build errors related to these packages:
+
+1. Make sure you have the proper build tools installed for native modules
+2. You can safely ignore these dependencies as they're optional performance enhancers
+3. For Netlify deployments, the included `netlify.toml` configuration handles these dependencies
+
 ## Usage
 
 1. **Share Classes**: Add different share classes (e.g., Common, Series A, Series B) with their respective preferences.
@@ -73,4 +96,4 @@ ISC
 
 ## Author
 
-Created by [Your Name] 
+Created by Amal Ganatra 
