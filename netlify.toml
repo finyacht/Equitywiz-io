@@ -2,6 +2,10 @@
   publish = "dist"
   command = "npm run build"
 
+# Disable Next.js plugin
+[build.environment]
+  NETLIFY_USE_NEXTJS = "false"
+
 # Redirect all traffic to index.html for SPA routing
 [[redirects]]
   from = "/*"

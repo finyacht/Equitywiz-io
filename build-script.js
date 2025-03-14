@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+console.log('Starting build process...');
+
 // Create dist directory if it doesn't exist
 const distDir = path.join(__dirname, 'dist');
 if (!fs.existsSync(distDir)) {
@@ -30,11 +32,18 @@ htmlFiles.forEach(file => {
 });
 
 // Copy JS files from root
-const jsFiles = fs.readdirSync(__dirname).filter(file => file.endsWith('.js') && file !== 'build-script.js');
+const jsFiles = fs.readdirSync(__dirname).filter(file => 
+  file.endsWith('.js') && 
+  !['build-script.js', 'server.js'].includes(file)
+);
 jsFiles.forEach(file => {
   fs.copyFileSync(path.join(__dirname, file), path.join(distDir, file));
   console.log(`Copied ${file} to dist`);
 });
+
+// Copy server.js for Netlify functions
+fs.copyFileSync(path.join(__dirname, 'server.js'), path.join(distDir, 'server.js'));
+console.log('Copied server.js to dist');
 
 // Copy CSS files from css directory
 if (fs.existsSync(path.join(__dirname, 'css'))) {
@@ -57,5 +66,43 @@ if (fs.existsSync(path.join(__dirname, 'js'))) {
 // Create a Netlify _redirects file for SPA routing
 fs.writeFileSync(path.join(distDir, '_redirects'), '/* /index.html 200');
 console.log('Created _redirects file for SPA routing');
+
+// Create a netlify.toml file in the dist directory
+const netlifyConfig = `
+[build]
+  publish = "."
+  command = "echo 'Already built'"
+
+[build.environment]
+  NETLIFY_USE_NEXTJS = "false"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+`;
+
+fs.writeFileSync(path.join(distDir, 'netlify.toml'), netlifyConfig);
+console.log('Created netlify.toml in dist directory');
+
+// Create a package.json file in the dist directory
+const packageJson = {
+  "name": "waterfall-express-dist",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "path": "^0.12.7"
+  }
+};
+
+fs.writeFileSync(
+  path.join(distDir, 'package.json'), 
+  JSON.stringify(packageJson, null, 2)
+);
+console.log('Created package.json in dist directory');
 
 console.log('Build completed successfully!'); 
