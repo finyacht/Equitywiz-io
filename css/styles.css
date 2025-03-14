@@ -358,6 +358,38 @@ th .tooltip .tooltip-text::after {
     }
 }
 
+/* Disclaimer styles */
+.disclaimer-container {
+    margin: 2rem 0;
+    padding: 0 1rem;
+}
+
+.disclaimer {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-left: 4px solid #6c757d;
+    border-radius: 4px;
+    padding: 1.5rem;
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+.disclaimer h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #343a40;
+}
+
+.disclaimer p {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.disclaimer p:last-child {
+    margin-bottom: 0;
+}
+
 /* Footer styles */
 .footer {
     margin-top: 2rem;
