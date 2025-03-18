@@ -22,26 +22,26 @@
         font-size: 0.9rem;
     }
     
-    /* Header & logo adjustments */
+    /* Header & logo adjustments - RESTORED LEFT ALIGNMENT */
     .logo-container {
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        text-align: center;
+        text-align: left;
     }
     
     .logo {
-        margin-right: 0;
-        margin-bottom: 10px;
+        margin-right: 12px;
+        margin-bottom: 0;
     }
     
     .logo-text {
         margin-left: 0;
-        align-items: center;
+        align-items: flex-start;
     }
     
     .logo-title {
         font-size: 1.5rem;
-        text-align: center;
+        text-align: left;
     }
     
     .logo-subtitle {
