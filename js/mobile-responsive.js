@@ -186,18 +186,41 @@ function enhanceTooltipsForMobile() {
             
             // Reset position to default
             tooltipText.style.left = '50%';
-            tooltipText.style.marginLeft = '-110px';
+            tooltipText.style.marginLeft = '-100px';
             
             // Check if tooltip would go off the left edge
-            if (tooltipRect.left < 110) {
-                const adjustment = Math.min(110 - tooltipRect.left, 90);
-                tooltipText.style.marginLeft = `-${110 - adjustment}px`;
+            if (tooltipRect.left < 100) {
+                const adjustment = Math.min(100 - tooltipRect.left, 80);
+                tooltipText.style.marginLeft = `-${100 - adjustment}px`;
             }
             
             // Check if tooltip would go off the right edge
-            if (tooltipRect.right + 110 > viewportWidth) {
-                const adjustment = Math.min(tooltipRect.right + 110 - viewportWidth, 90);
-                tooltipText.style.marginLeft = `-${110 + adjustment}px`;
+            if (tooltipRect.right + 100 > viewportWidth) {
+                const adjustment = Math.min(tooltipRect.right + 100 - viewportWidth, 80);
+                tooltipText.style.marginLeft = `-${100 + adjustment}px`;
+            }
+            
+            // Special handling for table header tooltips
+            const isInTableHeader = tooltip.closest('th') !== null;
+            if (isInTableHeader) {
+                // Ensure tooltip is positioned above the header
+                tooltipText.style.bottom = 'auto';
+                tooltipText.style.top = '-5px';
+                tooltipText.style.transform = 'translateY(-100%)';
+                
+                // Position the tooltip higher if at the top of the viewport
+                const distanceFromTop = tooltipRect.top;
+                if (distanceFromTop < 100) {
+                    tooltipText.style.top = '20px';
+                    tooltipText.style.transform = 'none';
+                    
+                    // Move arrow to top instead of bottom
+                    const arrow = tooltipText.querySelector('::after');
+                    if (arrow) {
+                        arrow.style.top = '0';
+                        arrow.style.transform = 'rotate(180deg)';
+                    }
+                }
             }
         };
         

@@ -220,20 +220,21 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    height: 28px;
-    width: 28px;
+    height: 22px;
+    width: 22px;
+    margin: 0 4px;
 }
 
 .tooltip-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background-color: rgba(59, 130, 246, 0.08);
     color: var(--primary-color);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -249,22 +250,22 @@
 
 .tooltip-text {
     visibility: hidden;
-    width: 220px;
+    width: 200px;
     background-color: white;
     color: var(--gray-700);
     text-align: left;
-    border-radius: 10px;
-    padding: 12px 15px;
+    border-radius: 8px;
+    padding: 10px 12px;
     position: absolute;
     z-index: 99;
-    bottom: 130%;
+    bottom: 160%;
     left: 50%;
-    margin-left: -110px;
+    margin-left: -100px;
     opacity: 0;
     transition: opacity 0.3s, transform 0.3s;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--gray-200);
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.5;
     pointer-events: none;
     transform: translateY(10px);
@@ -272,13 +273,27 @@
     letter-spacing: 0.01em;
 }
 
+/* Make sure tooltip appears above sticky headers */
+th .tooltip .tooltip-text {
+    bottom: auto;
+    top: -5px;
+    transform: translateY(-100%);
+    z-index: 10;
+}
+
+th .tooltip .tooltip-text::after {
+    top: 100%;
+    bottom: auto;
+    border-color: white transparent transparent transparent;
+}
+
 .tooltip-text::after {
     content: "";
     position: absolute;
     top: 100%;
     left: 50%;
-    margin-left: -8px;
-    border-width: 8px;
+    margin-left: -6px;
+    border-width: 6px;
     border-style: solid;
     border-color: white transparent transparent transparent;
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05));
@@ -289,6 +304,15 @@
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
+}
+
+/* For table headers - ensure tooltips aren't cut off */
+th {
+    position: relative;
+}
+
+th .tooltip {
+    margin-left: 3px;
 }
 
 /* Chart responsiveness */
@@ -375,10 +399,15 @@
     
     /* Smaller tooltip for very small screens */
     .tooltip-text {
-        width: 200px;
-        margin-left: -100px;
-        font-size: 12px;
-        padding: 10px 12px;
+        width: 180px;
+        margin-left: -90px;
+        font-size: 11px;
+        padding: 8px 10px;
+    }
+    
+    /* Adjust positioning for table header tooltips */
+    th .tooltip .tooltip-text {
+        top: -2px;
     }
 }
 
