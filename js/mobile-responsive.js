@@ -20,6 +20,12 @@ function initMobileEnhancements() {
         } else {
             document.body.classList.remove('mobile-view');
         }
+        
+        // Recalculate table scroll indicators
+        initTableScrollIndicators();
+        
+        // Fix any overflow issues
+        fixOverflowIssues();
     });
     
     // Initialize table scroll indicators
@@ -31,7 +37,43 @@ function initMobileEnhancements() {
     // Add larger touch targets where needed
     addTouchTargets();
     
+    // Fix layout issues on mobile
+    fixOverflowIssues();
+    
     console.log('Mobile enhancements initialized');
+}
+
+/**
+ * Fix any overflow issues that might cause "wavery" appearance
+ */
+function fixOverflowIssues() {
+    if (window.innerWidth <= 768) {
+        // Fix horizontal overflow issues
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            // Ensure card content doesn't cause overflow
+            const overflowElements = card.querySelectorAll('table, img, div, .overflow-auto');
+            overflowElements.forEach(el => {
+                if (el.scrollWidth > card.clientWidth) {
+                    el.style.maxWidth = '100%';
+                    el.style.boxSizing = 'border-box';
+                }
+            });
+        });
+        
+        // Ensure the grid layout works correctly
+        const grid = document.querySelector('.grid');
+        if (grid) {
+            // Force single column for mobile
+            grid.style.gridTemplateColumns = '1fr';
+        }
+        
+        // Fix any space-between elements
+        const spaceBetweens = document.querySelectorAll('.space-between');
+        spaceBetweens.forEach(sb => {
+            sb.style.flexDirection = 'column';
+        });
+    }
 }
 
 /**
@@ -65,6 +107,21 @@ function initTableScrollIndicators() {
         } else {
             container.classList.add('not-scrollable');
         }
+        
+        // Add touch horizontal scroll for better mobile experience
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        container.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+        }, false);
+        
+        container.addEventListener('touchmove', function(e) {
+            touchEndX = e.touches[0].clientX;
+            const diffX = touchStartX - touchEndX;
+            container.scrollLeft += diffX * 0.5; // Smoother scrolling
+            touchStartX = touchEndX;
+        }, false);
     });
 }
 
@@ -95,6 +152,22 @@ function enhanceTooltipsForMobile() {
             // Toggle active class on current tooltip
             tooltipText.classList.toggle('tooltip-active');
         });
+        
+        // Better handling for touch events
+        tooltipIcon.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Remove active class from all tooltips
+            document.querySelectorAll('.tooltip-active').forEach(t => {
+                if (t !== tooltipText) {
+                    t.classList.remove('tooltip-active');
+                }
+            });
+            
+            // Toggle active class on current tooltip
+            tooltipText.classList.toggle('tooltip-active');
+        }, { passive: false });
     });
     
     // Close tooltips when clicking elsewhere
@@ -103,6 +176,12 @@ function enhanceTooltipsForMobile() {
             t.classList.remove('tooltip-active');
         });
     });
+    
+    document.addEventListener('touchstart', function() {
+        document.querySelectorAll('.tooltip-active').forEach(t => {
+            t.classList.remove('tooltip-active');
+        });
+    }, { passive: true });
 }
 
 /**
@@ -117,9 +196,22 @@ function addTouchTargets() {
             button.classList.add('touch-target');
         }
     });
+    
+    // Fix the tooltip icons for better touch
+    const tooltipIcons = document.querySelectorAll('.tooltip-icon');
+    tooltipIcons.forEach(icon => {
+        if (!icon.classList.contains('touch-target')) {
+            icon.classList.add('touch-target');
+        }
+    });
 }
+
+// Call on window load and resize events
+window.addEventListener('load', fixOverflowIssues);
+window.addEventListener('resize', fixOverflowIssues);
 
 // Export functions for global use
 window.initMobileEnhancements = initMobileEnhancements;
 window.initTableScrollIndicators = initTableScrollIndicators;
-window.enhanceTooltipsForMobile = enhanceTooltipsForMobile; 
+window.enhanceTooltipsForMobile = enhanceTooltipsForMobile;
+window.fixOverflowIssues = fixOverflowIssues; 
