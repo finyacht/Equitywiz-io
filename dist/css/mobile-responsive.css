@@ -1,0 +1,559 @@
+/* Mobile Responsive Enhancements */
+
+/* Base mobile adjustments */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+        font-size: 14px;
+        overflow-x: hidden; /* Prevent horizontal scrolling of entire page */
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    h2 {
+        font-size: 1.1rem;
+    }
+    
+    h3 {
+        font-size: 0.9rem;
+    }
+    
+    /* Header & logo adjustments - RESTORED LEFT ALIGNMENT */
+    .logo-container {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+    }
+    
+    .logo {
+        margin-right: 12px;
+        margin-bottom: 0;
+    }
+    
+    .logo-text {
+        margin-left: 0;
+        align-items: flex-start;
+    }
+    
+    .logo-title {
+        font-size: 1.5rem;
+        text-align: left;
+    }
+    
+    .logo-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    /* Card adjustments - fix wavery appearance */
+    .card {
+        padding: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        margin-left: 0;
+        margin-right: 0;
+        overflow: hidden; /* Prevent content from causing card expansion */
+        max-width: 100%;
+    }
+    
+    /* Grid adjustments */
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    
+    /* Button adjustments - IMPROVED STYLING */
+    button {
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+        border: none;
+    }
+    
+    button:hover { 
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+    }
+    
+    button:active {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transform: translateY(0);
+    }
+    
+    button.primary {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    button.primary:before {
+        content: "";
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        margin-right: 4px;
+        opacity: 0.9;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+    
+    /* Modern layout for buttons and headers */
+    .space-between {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .space-between h2 {
+        margin-bottom: 0;
+        margin-right: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Form elements */
+    input, select {
+        font-size: 13px;
+        padding: 6px 10px;
+        max-width: 100%;
+        box-sizing: border-box;
+        border-radius: 6px;
+        border: 1px solid var(--gray-300);
+        background-color: white;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+    }
+    
+    input[type="number"], input[type="text"] {
+        width: 80px;
+    }
+    
+    select {
+        min-width: 120px;
+        padding-right: 24px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        background-size: 14px;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    /* Fix any wavery elements by constraining widths */
+    div, section, header, footer {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+/* Table responsiveness */
+@media (max-width: 768px) {
+    /* Make tables scrollable horizontally */
+    .overflow-auto {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        border-radius: 8px;
+    }
+    
+    table {
+        font-size: 13px;
+        min-width: 600px; /* Ensure tables can be scrolled on small screens */
+        box-sizing: border-box;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    th, td {
+        padding: 0.5rem;
+        border-bottom: 1px solid var(--gray-200);
+    }
+    
+    th {
+        background-color: var(--gray-100);
+        font-weight: 600;
+        text-align: left;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+    
+    td {
+        vertical-align: middle;
+    }
+}
+
+/* REDESIGNED TOOLTIPS - Modern and proportional */
+.tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: 22px;
+    width: 22px;
+    margin: 0 4px;
+}
+
+.tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: rgba(59, 130, 246, 0.08);
+    color: var(--primary-color);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tooltip-icon:hover {
+    background-color: rgba(59, 130, 246, 0.12);
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: white;
+    color: var(--gray-700);
+    text-align: left;
+    border-radius: 8px;
+    padding: 10px 12px;
+    position: absolute;
+    z-index: 99;
+    bottom: 160%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--gray-200);
+    font-size: 12px;
+    line-height: 1.5;
+    pointer-events: none;
+    transform: translateY(10px);
+    font-weight: normal;
+    letter-spacing: 0.01em;
+}
+
+/* Make sure tooltip appears above sticky headers */
+th .tooltip .tooltip-text {
+    bottom: auto;
+    top: -5px;
+    transform: translateY(-100%);
+    z-index: 10;
+}
+
+th .tooltip .tooltip-text::after {
+    top: 100%;
+    bottom: auto;
+    border-color: white transparent transparent transparent;
+}
+
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -6px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05));
+}
+
+.tooltip-active {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+/* For table headers - ensure tooltips aren't cut off */
+th {
+    position: relative;
+}
+
+th .tooltip {
+    margin-left: 3px;
+}
+
+/* Chart responsiveness */
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px;
+        margin-bottom: 1.5rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+/* Very small screens (phone) */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .card {
+        padding: 0.8rem;
+        border-radius: 10px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    h2 {
+        font-size: 1rem;
+    }
+    
+    .logo {
+        width: 40px;
+        height: 40px;
+    }
+    
+    /* Adjust form layouts */
+    .form-row {
+        flex-direction: column;
+        margin-bottom: 0.8rem;
+        width: 100%;
+    }
+    
+    .form-column {
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+    
+    /* Waterfall results section - Modern layout */
+    #exitAmount {
+        width: 130px;
+        height: 36px;
+        font-size: 14px;
+        text-align: right;
+        padding-right: 10px;
+    }
+    
+    .card .space-between label {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+    
+    .card .space-between label .tooltip {
+        margin-left: 5px;
+    }
+    
+    /* Stacked labels and inputs */
+    .card label + input,
+    .card label + select {
+        margin-top: 0.25rem;
+        display: block;
+    }
+    
+    /* Fix for small device width constraints */
+    .tool-description {
+        padding: 0.75rem;
+    }
+    
+    /* Smaller tooltip for very small screens */
+    .tooltip-text {
+        width: 180px;
+        margin-left: -90px;
+        font-size: 11px;
+        padding: 8px 10px;
+    }
+    
+    /* Adjust positioning for table header tooltips */
+    th .tooltip .tooltip-text {
+        top: -2px;
+    }
+}
+
+/* Ensure action buttons are large enough for touch and positioned better */
+@media (max-width: 768px) {
+    /* Table action buttons - side by side layout */
+    td:last-child {
+        white-space: nowrap;
+        text-align: right;
+        padding-right: 10px;
+        min-width: 85px;
+    }
+    
+    button.delete, 
+    button.save, 
+    button.cancel {
+        padding: 6px 12px;
+        min-width: 64px;
+        min-height: 34px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    button.delete {
+        background-color: #fff;
+        color: var(--danger-color);
+        border: 1px solid var(--danger-color);
+    }
+    
+    button.delete:hover {
+        background-color: rgba(239, 68, 68, 0.1);
+    }
+    
+    button.save {
+        background-color: var(--success-color);
+        box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+    
+    button.cancel {
+        background-color: #fff;
+        color: var(--gray-600);
+        border: 1px solid var(--gray-300);
+    }
+    
+    /* Add some visual spacing between action buttons */
+    td button + button {
+        margin-left: 6px;
+    }
+    
+    /* Better spacing for table action column */
+    table th:last-child {
+        text-align: right;
+        padding-right: 10px;
+    }
+}
+
+/* Fix for modal dialogs on mobile */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        max-width: 350px;
+        padding: 15px;
+        box-sizing: border-box;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-header h3 {
+        font-size: 1.1rem;
+        margin-top: 0;
+        color: var(--gray-800);
+    }
+    
+    .modal-body {
+        padding: 0.75rem 0;
+        width: 100%;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem 0 0;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+}
+
+/* Helper for better touch targets */
+@media (max-width: 768px) {
+    .touch-target {
+        min-height: 44px;
+        min-width: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Footer adjustments */
+@media (max-width: 768px) {
+    .footer {
+        margin-top: 1rem;
+        text-align: center;
+        font-size: 0.8rem;
+        padding: 0.5rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+/* Scan indicator for horizontal scrollable tables */
+@media (max-width: 768px) {
+    .overflow-auto {
+        position: relative;
+    }
+    
+    .overflow-auto::after {
+        content: "→";
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(59, 130, 246, 0.7);
+        color: white;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        animation: fadeInOut 2s infinite;
+        pointer-events: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .overflow-auto.scrolled-to-end::after {
+        display: none;
+    }
+    
+    .overflow-auto.not-scrollable::after {
+        display: none;
+    }
+    
+    @keyframes fadeInOut {
+        0%, 100% { opacity: 0.2; }
+        50% { opacity: 0.8; }
+    }
+} 
