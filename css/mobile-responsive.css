@@ -113,15 +113,22 @@
         background-size: contain;
     }
     
-    /* Spacing adjustments */
+    /* Modern layout for buttons and headers */
     .space-between {
-        flex-direction: column;
-        gap: 0.5rem;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
         width: 100%;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
     
     .space-between h2 {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
+        margin-right: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     /* Form elements */
@@ -204,77 +211,84 @@
     td {
         vertical-align: middle;
     }
-    
-    /* IMPROVED TOOLTIPS */
-    .tooltip {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-    }
-    
-    .tooltip-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background-color: rgba(59, 130, 246, 0.1);
-        color: var(--primary-color);
-        font-size: 12px;
-        margin-left: 5px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: 1px solid rgba(59, 130, 246, 0.2);
-    }
-    
-    .tooltip-icon:hover {
-        background-color: rgba(59, 130, 246, 0.2);
-        transform: scale(1.1);
-    }
-    
-    .tooltip-text {
-        visibility: hidden;
-        width: 200px;
-        background-color: white;
-        color: var(--gray-700);
-        text-align: left;
-        border-radius: 8px;
-        padding: 10px 12px;
-        position: absolute;
-        z-index: 99;
-        bottom: 125%;
-        left: 50%;
-        transform: translateX(-50%);
-        opacity: 0;
-        transition: opacity 0.3s, transform 0.3s;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border: 1px solid var(--gray-200);
-        font-size: 12px;
-        line-height: 1.5;
-        pointer-events: none;
-        transform: translateY(10px);
-    }
-    
-    .tooltip-text::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        margin-left: -6px;
-        border-width: 6px;
-        border-style: solid;
-        border-color: white transparent transparent transparent;
-        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
-    }
-    
-    .tooltip-active {
-        visibility: visible;
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(0);
-    }
+}
+
+/* REDESIGNED TOOLTIPS - Modern and proportional */
+.tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: 28px;
+    width: 28px;
+}
+
+.tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: rgba(59, 130, 246, 0.08);
+    color: var(--primary-color);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tooltip-icon:hover {
+    background-color: rgba(59, 130, 246, 0.12);
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 220px;
+    background-color: white;
+    color: var(--gray-700);
+    text-align: left;
+    border-radius: 10px;
+    padding: 12px 15px;
+    position: absolute;
+    z-index: 99;
+    bottom: 130%;
+    left: 50%;
+    margin-left: -110px;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--gray-200);
+    font-size: 13px;
+    line-height: 1.5;
+    pointer-events: none;
+    transform: translateY(10px);
+    font-weight: normal;
+    letter-spacing: 0.01em;
+}
+
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -8px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05));
+}
+
+.tooltip-active {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
 }
 
 /* Chart responsiveness */
@@ -328,9 +342,23 @@
         width: 100%;
     }
     
-    /* Waterfall results section */
+    /* Waterfall results section - Modern layout */
     #exitAmount {
-        width: 100px;
+        width: 130px;
+        height: 36px;
+        font-size: 14px;
+        text-align: right;
+        padding-right: 10px;
+    }
+    
+    .card .space-between label {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+    
+    .card .space-between label .tooltip {
+        margin-left: 5px;
     }
     
     /* Stacked labels and inputs */
@@ -344,10 +372,26 @@
     .tool-description {
         padding: 0.75rem;
     }
+    
+    /* Smaller tooltip for very small screens */
+    .tooltip-text {
+        width: 200px;
+        margin-left: -100px;
+        font-size: 12px;
+        padding: 10px 12px;
+    }
 }
 
-/* Ensure action buttons are large enough for touch */
+/* Ensure action buttons are large enough for touch and positioned better */
 @media (max-width: 768px) {
+    /* Table action buttons - side by side layout */
+    td:last-child {
+        white-space: nowrap;
+        text-align: right;
+        padding-right: 10px;
+        min-width: 85px;
+    }
+    
     button.delete, 
     button.save, 
     button.cancel {
@@ -382,6 +426,12 @@
     /* Add some visual spacing between action buttons */
     td button + button {
         margin-left: 6px;
+    }
+    
+    /* Better spacing for table action column */
+    table th:last-child {
+        text-align: right;
+        padding-right: 10px;
     }
 }
 

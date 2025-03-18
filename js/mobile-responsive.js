@@ -26,6 +26,9 @@ function initMobileEnhancements() {
         
         // Fix any overflow issues
         fixOverflowIssues();
+        
+        // Update space-between layout
+        updateSpaceBetweenLayout();
     });
     
     // Initialize table scroll indicators
@@ -40,7 +43,52 @@ function initMobileEnhancements() {
     // Fix layout issues on mobile
     fixOverflowIssues();
     
+    // Update space-between layout
+    updateSpaceBetweenLayout();
+    
     console.log('Mobile enhancements initialized');
+}
+
+/**
+ * Update space-between layout based on screen size
+ */
+function updateSpaceBetweenLayout() {
+    const spaceBetweens = document.querySelectorAll('.space-between');
+    
+    spaceBetweens.forEach(sb => {
+        // Check if this is inside the Waterfall Results section
+        const isWaterfallResults = sb.closest('.card') && 
+                                  sb.closest('.card').querySelector('h2') && 
+                                  sb.closest('.card').querySelector('h2').textContent.includes('Waterfall Results');
+        
+        if (window.innerWidth <= 480 && isWaterfallResults) {
+            // Special handling for Waterfall Results section on very small screens
+            sb.style.flexDirection = 'column';
+            sb.style.alignItems = 'flex-start';
+            
+            // Move the exit amount input below the heading
+            const inputContainer = sb.querySelector('div');
+            if (inputContainer) {
+                inputContainer.style.width = '100%';
+                inputContainer.style.marginTop = '10px';
+            }
+        } else if (window.innerWidth <= 768) {
+            // Responsive layout for all other space-between sections
+            const hasButtons = sb.querySelector('button') !== null;
+            const hasInputs = sb.querySelector('input') !== null;
+            
+            if (hasButtons || hasInputs) {
+                // Keep side-by-side layout but allow wrapping
+                sb.style.flexDirection = 'row';
+                sb.style.flexWrap = 'wrap';
+                sb.style.alignItems = 'center';
+            }
+        } else {
+            // Reset for larger screens
+            sb.style.flexDirection = '';
+            sb.style.alignItems = '';
+        }
+    });
 }
 
 /**
@@ -67,12 +115,6 @@ function fixOverflowIssues() {
             // Force single column for mobile
             grid.style.gridTemplateColumns = '1fr';
         }
-        
-        // Fix any space-between elements
-        const spaceBetweens = document.querySelectorAll('.space-between');
-        spaceBetweens.forEach(sb => {
-            sb.style.flexDirection = 'column';
-        });
     }
 }
 
@@ -137,6 +179,28 @@ function enhanceTooltipsForMobile() {
         
         if (!tooltipIcon || !tooltipText) return;
         
+        // Position fix for tooltips that might go offscreen
+        const updateTooltipPosition = () => {
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            
+            // Reset position to default
+            tooltipText.style.left = '50%';
+            tooltipText.style.marginLeft = '-110px';
+            
+            // Check if tooltip would go off the left edge
+            if (tooltipRect.left < 110) {
+                const adjustment = Math.min(110 - tooltipRect.left, 90);
+                tooltipText.style.marginLeft = `-${110 - adjustment}px`;
+            }
+            
+            // Check if tooltip would go off the right edge
+            if (tooltipRect.right + 110 > viewportWidth) {
+                const adjustment = Math.min(tooltipRect.right + 110 - viewportWidth, 90);
+                tooltipText.style.marginLeft = `-${110 + adjustment}px`;
+            }
+        };
+        
         // Make tooltips tap-toggleable on mobile
         tooltipIcon.addEventListener('click', function(e) {
             e.preventDefault();
@@ -151,6 +215,11 @@ function enhanceTooltipsForMobile() {
             
             // Toggle active class on current tooltip
             tooltipText.classList.toggle('tooltip-active');
+            
+            // Update tooltip position when showing it
+            if (tooltipText.classList.contains('tooltip-active')) {
+                updateTooltipPosition();
+            }
         });
         
         // Better handling for touch events
@@ -167,7 +236,19 @@ function enhanceTooltipsForMobile() {
             
             // Toggle active class on current tooltip
             tooltipText.classList.toggle('tooltip-active');
+            
+            // Update tooltip position when showing it
+            if (tooltipText.classList.contains('tooltip-active')) {
+                updateTooltipPosition();
+            }
         }, { passive: false });
+        
+        // Update tooltip position on window resize
+        window.addEventListener('resize', function() {
+            if (tooltipText.classList.contains('tooltip-active')) {
+                updateTooltipPosition();
+            }
+        });
     });
     
     // Close tooltips when clicking elsewhere
@@ -214,4 +295,5 @@ window.addEventListener('resize', fixOverflowIssues);
 window.initMobileEnhancements = initMobileEnhancements;
 window.initTableScrollIndicators = initTableScrollIndicators;
 window.enhanceTooltipsForMobile = enhanceTooltipsForMobile;
-window.fixOverflowIssues = fixOverflowIssues; 
+window.fixOverflowIssues = fixOverflowIssues;
+window.updateSpaceBetweenLayout = updateSpaceBetweenLayout; 
