@@ -620,7 +620,7 @@
             
             <!-- Tax Settings Toggle -->
             <div class="tax-settings-toggle">
-                <button type="button" id="taxSettingsToggleBtn" class="toggle-btn" onclick="toggleTaxSettings()">+ Show Tax & Projection Settings</button>
+                <button type="button" id="taxSettingsToggleBtn" class="toggle-btn">+ Show Tax & Projection Settings</button>
             </div>
             
             <!-- Tax Settings Section (Hidden by Default) -->
@@ -784,18 +784,30 @@
             // Initialize charts
             let valueComparisonChart, returnComparisonChart, timeProjectionChart;
             
-            // Make sure the tax settings section is hidden by default
-            const taxSettingsSection = document.getElementById('taxSettingsSection');
-            if (taxSettingsSection) {
-                taxSettingsSection.style.display = 'none';
-            }
+            // Directly setup the tax toggle button to ensure it works
+            document.getElementById('taxSettingsToggleBtn').onclick = function() {
+                var taxSection = document.getElementById('taxSettingsSection');
+                
+                if (taxSection.style.display === 'block') {
+                    // Currently visible, hide it
+                    taxSection.style.display = 'none';
+                    this.classList.remove('active');
+                    this.textContent = '+ Show Tax & Projection Settings';
+                } else {
+                    // Currently hidden, show it
+                    taxSection.style.display = 'block';
+                    this.classList.add('active');
+                    this.textContent = '- Hide Tax & Projection Settings';
+                    
+                    // Check if tax settings are filled
+                    checkTaxSettings();
+                }
+                
+                return false; // Prevent any default action
+            };
             
-            // Initialize the button state
-            const taxSettingsToggleBtn = document.getElementById('taxSettingsToggleBtn');
-            if (taxSettingsToggleBtn) {
-                taxSettingsToggleBtn.classList.remove('active');
-                taxSettingsToggleBtn.textContent = '+ Show Tax & Projection Settings';
-            }
+            // Make sure the tax settings section is hidden by default
+            document.getElementById('taxSettingsSection').style.display = 'none';
             
             // Helper function to generate price range around a given price
             function generatePriceRange(basePrice) {
@@ -1435,35 +1447,11 @@
             initCharts();
             updateCalculations();
             
-            // Tax settings toggle functionality - completely rewritten
-            function toggleTaxSettings() {
-                const taxSettingsToggleBtn = document.getElementById('taxSettingsToggleBtn');
-                const taxSettingsSection = document.getElementById('taxSettingsSection');
-                
-                // Get current visibility state
-                const isVisible = taxSettingsSection.style.display === 'block';
-                
-                // Toggle the display state
-                taxSettingsSection.style.display = isVisible ? 'none' : 'block';
-                
-                // Update the button text and styling
-                if (isVisible) {
-                    taxSettingsToggleBtn.classList.remove('active');
-                    taxSettingsToggleBtn.textContent = '+ Show Tax & Projection Settings';
-                } else {
-                    taxSettingsToggleBtn.classList.add('active');
-                    taxSettingsToggleBtn.textContent = '- Hide Tax & Projection Settings';
-                }
-                
-                // Check if tax settings are filled to show projection chart
-                checkTaxSettings();
-            }
-            
             // Add event listeners for tax settings inputs
             annualGrowthRateInput.addEventListener('input', checkTaxSettings);
             yearsToProjectInput.addEventListener('input', checkTaxSettings);
             taxRateInput.addEventListener('input', checkTaxSettings);
-
+            
             // Make the calculation explanation update in real-time 
             function updateCalculationExamples() {
                 const initialInvestment = parseFloat(initialInvestmentInput.value) || 1000;
