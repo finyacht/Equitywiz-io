@@ -16,9 +16,9 @@ app.get('/waterfall', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Route for the Netflix Option Modeler
-app.get('/netflix-option', (req, res) => {
-  res.sendFile(path.join(__dirname, 'netflix-option.html'));
+// Route for the Netflix Option Modeler (placeholder)
+app.get('/netflix', (req, res) => {
+  res.sendFile(path.join(__dirname, 'netflix.html'));
 });
 
 // Start the server
