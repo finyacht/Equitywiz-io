@@ -106,7 +106,6 @@
             padding: 12px 15px;
             border-radius: 8px;
             z-index: 100;
-            max-width: 300px;
             font-size: 0.85rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             white-space: normal;
@@ -115,8 +114,9 @@
             right: 0;
             top: 45px;
             pointer-events: none;
-            width: max-content;
-            max-width: 300px;
+            min-width: 250px;
+            max-width: 350px;
+            width: auto;
         }
         
         .tooltip::before {
@@ -455,13 +455,15 @@
             top: 48px;
             z-index: 1001;
             width: auto;
-            min-width: 250px;
+            min-width: 280px;
+            max-width: 350px;
         }
         
         .result-card .tooltip {
             top: 30px;
             right: -20px;
-            min-width: 280px;
+            min-width: 300px;
+            max-width: 350px;
         }
         
         .discount-explainer-card {
