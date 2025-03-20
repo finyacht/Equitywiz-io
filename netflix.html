@@ -114,8 +114,8 @@
             right: 0;
             top: 45px;
             pointer-events: none;
-            min-width: 250px;
-            max-width: 350px;
+            min-width: 280px;
+            max-width: 400px;
             width: auto;
         }
         
@@ -455,15 +455,15 @@
             top: 48px;
             z-index: 1001;
             width: auto;
-            min-width: 280px;
-            max-width: 350px;
+            min-width: 300px;
+            max-width: 400px;
         }
         
         .result-card .tooltip {
             top: 30px;
             right: -20px;
             min-width: 300px;
-            max-width: 350px;
+            max-width: 400px;
         }
         
         .discount-explainer-card {
@@ -537,7 +537,7 @@
             <h2>Netflix Stock Option Plan Calculator</h2>
             <p>This calculator helps Netflix employees compare the value of purchasing Netflix stock versus stock options under the Supplemental Allocation plan. Enter your parameters below to visualize potential outcomes.</p>
             <div class="highlight-box">
-                <p><strong>How Netflix Options Work:</strong> Employees can choose to forego a portion of their salary to purchase stock options at 40% of the current stock price. These options have an exercise price equal to the stock price at the time of purchase and last for 10 years.</p>
+                <p><strong>How Netflix Options Work:</strong> Employees can choose to forego a portion of their salary to purchase stock options. These options have an exercise price equal to the stock price at the time of purchase and last for 10 years.</p>
             </div>
         </div>
 
@@ -562,7 +562,7 @@
                     <input type="number" id="optionCost" min="1" step="1" value="200">
                     <span class="info-icon">?</span>
                     <div class="tooltip">
-                        The cost to purchase each option. Netflix typically offers options at 40% of the current stock price, but you can adjust this value to model different scenarios.
+                        The cost to purchase each option. This is the direct amount you pay per option contract. You can adjust this value to model different scenarios and see how it affects your potential returns.
                     </div>
                 </div>
                 <div class="form-group">
@@ -602,13 +602,13 @@
                     <div class="result-label">Options You Can Buy</div>
                     <div id="optionCount" class="result-value">5</div>
                     <span class="info-icon">?</span>
-                    <div class="tooltip">Number of Netflix stock options you can buy with your initial investment at 40% of the current stock price.</div>
+                    <div class="tooltip">Number of Netflix stock options you can buy with your initial investment at the cost per option shown above.</div>
                 </div>
                 <div class="result-card">
                     <div class="result-label">Option Break-Even Price</div>
                     <div id="breakEvenPrice" class="result-value">$700</div>
                     <span class="info-icon">?</span>
-                    <div class="tooltip">The stock price at which your option investment value equals your initial investment (40% gain required to break even).</div>
+                    <div class="tooltip">The stock price at which your option investment value equals your initial investment. This is the current stock price plus the cost per option.</div>
                 </div>
                 <div class="result-card">
                     <div class="result-label">Options Outperform at</div>
@@ -674,15 +674,15 @@
                 <div class="accordion-item">
                     <div class="accordion-header">How do Netflix stock options work?</div>
                     <div class="accordion-content">
-                        <p>Netflix offers a unique Supplemental Allocation plan where employees can choose to forego a portion of their salary to purchase stock options at 40% of the current stock price. This allows you to buy 2.5 times more options than shares with the same amount of money.</p>
+                        <p>Netflix offers a unique Supplemental Allocation plan where employees can choose to forego a portion of their salary to purchase stock options. The cost per option is typically less than the current stock price, allowing you to control more shares with the same investment.</p>
                         <p>These options have an exercise price equal to the stock price at the time of purchase and last for 10 years, even if you leave Netflix.</p>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header">When do options become valuable?</div>
                     <div class="accordion-content">
-                        <p>Options only have value when the stock price rises above the exercise price. Because you're paying for the options, you need the stock to rise 40% just to break even on your investment.</p>
-                        <p>The stock price needs to rise approximately 67% before options outperform the alternative of buying stock directly.</p>
+                        <p>Options only have value when the stock price rises above the exercise price. Because you're paying for the options upfront, the stock price needs to rise enough to cover your cost per option to break even.</p>
+                        <p>The stock price needs to rise beyond the break-even point before options outperform the alternative of buying stock directly.</p>
                     </div>
                 </div>
                 <div class="accordion-item">
