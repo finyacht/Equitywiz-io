@@ -399,6 +399,72 @@
             color: var(--gray-800);
         }
         
+        .calculation-explanation {
+            margin: 20px 0;
+        }
+        
+        .calculation-explanation h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--gray-800);
+            font-size: 1.1rem;
+        }
+        
+        .calculation-explanation ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        .calculation-explanation li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .calculation-explanation em {
+            color: var(--gray-600);
+            font-style: italic;
+        }
+        
+        .tax-settings-toggle {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .toggle-btn {
+            background-color: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .toggle-btn:hover {
+            background-color: var(--gray-200);
+        }
+        
+        .toggle-btn.active {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-dark);
+        }
+        
+        .tax-settings-section {
+            border-top: 1px solid var(--gray-200);
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        
+        .tax-settings-section h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--gray-700);
+            font-size: 1rem;
+            text-align: center;
+        }
+
         .form-group {
             position: relative;
             transition: all 0.3s ease;
@@ -464,38 +530,6 @@
             right: -20px;
             min-width: 300px;
             max-width: 400px;
-        }
-        
-        .discount-explainer-card {
-            border-left: 5px solid #9c27b0;
-            background-color: #f9f0ff;
-        }
-        
-        .discount-explainer {
-            padding: 0 10px;
-        }
-        
-        .discount-explainer p {
-            margin: 15px 0;
-        }
-        
-        .discount-explainer ul {
-            margin: 15px 0;
-            padding-left: 25px;
-        }
-        
-        .discount-explainer li {
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-        
-        .discount-explainer strong {
-            color: #9c27b0;
-        }
-        
-        .discount-explainer span {
-            font-weight: 600;
-            color: var(--primary-color);
         }
     </style>
 </head>
@@ -571,23 +605,35 @@
                         The cost to purchase each option. This is the direct amount you pay per option contract.
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="annualGrowthRate">Projected Annual Growth Rate (%)</label>
-                    <input type="number" id="annualGrowthRate" min="0" max="100" step="1" value="10">
-                    <span class="info-icon">?</span>
-                    <div class="tooltip">Your estimate of how much Netflix stock will grow annually over the investment period.</div>
-                </div>
-                <div class="form-group">
-                    <label for="yearsToProject">Years to Project</label>
-                    <input type="number" id="yearsToProject" min="1" max="10" step="1" value="10">
-                    <span class="info-icon">?</span>
-                    <div class="tooltip">Number of years to project your investment growth (max 10 years, the lifetime of the options).</div>
-                </div>
-                <div class="form-group">
-                    <label for="taxRate">Capital Gains Tax Rate (%)</label>
-                    <input type="number" id="taxRate" min="0" max="100" step="1" value="33">
-                    <span class="info-icon">?</span>
-                    <div class="tooltip">Your estimated tax rate on capital gains.</div>
+            </div>
+            
+            <!-- Tax Settings Toggle -->
+            <div class="tax-settings-toggle">
+                <button id="taxSettingsToggleBtn" class="toggle-btn">+ Show Tax & Projection Settings</button>
+            </div>
+            
+            <!-- Tax Settings Section (Hidden by Default) -->
+            <div id="taxSettingsSection" class="tax-settings-section" style="display: none;">
+                <h3>Tax & Projection Settings</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="annualGrowthRate">Projected Annual Growth Rate (%)</label>
+                        <input type="number" id="annualGrowthRate" min="0" max="100" step="1" value="10">
+                        <span class="info-icon">?</span>
+                        <div class="tooltip">Your estimate of how much Netflix stock will grow annually over the investment period.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="yearsToProject">Years to Project</label>
+                        <input type="number" id="yearsToProject" min="1" max="10" step="1" value="10">
+                        <span class="info-icon">?</span>
+                        <div class="tooltip">Number of years to project your investment growth (max 10 years, the lifetime of the options).</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taxRate">Capital Gains Tax Rate (%)</label>
+                        <input type="number" id="taxRate" min="0" max="100" step="1" value="33">
+                        <span class="info-icon">?</span>
+                        <div class="tooltip">Your estimated tax rate on capital gains.</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -623,6 +669,21 @@
                     <div class="tooltip">The stock price at which investing in options becomes more profitable than investing in shares (approximately 67% gain required).</div>
                 </div>
             </div>
+            
+            <!-- Calculation Explanation -->
+            <div class="highlight-box calculation-explanation">
+                <h3>How These Results Are Calculated:</h3>
+                <ul>
+                    <li><strong>Shares You Can Buy</strong> = Initial Investment ÷ Current Stock Price<br>
+                        <em>Example: $1,000 ÷ $500 = 2 shares</em></li>
+                    <li><strong>Options You Can Buy</strong> = Initial Investment ÷ Cost Per Option<br>
+                        <em>Example: $1,000 ÷ $200 = 5 options</em></li>
+                    <li><strong>Option Break-Even Price</strong> = Exercise Price + Cost Per Option<br>
+                        <em>Example: $600 + $200 = $800</em></li>
+                    <li><strong>Options Outperform At</strong> = Exercise Price + [Initial Investment ÷ (Options Count - Shares Count)]<br>
+                        <em>Example: $600 + [$1,000 ÷ (5 - 2)] = $933.33</em></li>
+                </ul>
+            </div>
         </div>
         
         <!-- Chart Cards Section -->
@@ -644,8 +705,8 @@
             <p class="chart-description">This chart shows the percentage return on your investment for both stock and options at different Netflix stock prices. For options, returns are calculated based on the intrinsic value (stock price minus exercise price) multiplied by the number of options owned.</p>
         </div>
             
-        <!-- Time Projection Chart Card -->
-        <div class="card chart-card">
+        <!-- Time Projection Chart Card (Hidden by Default) -->
+        <div id="timeProjectionCard" class="card chart-card" style="display: none;">
             <h3>After-Tax Value Over Time</h3>
             <div class="chart-container">
                 <canvas id="timeProjectionChart"></canvas>
@@ -1127,13 +1188,16 @@
                     '$' + outperformPrice.toFixed(2) : 'N/A';
                 
                 // Update charts
-                updateCharts(initialInvestment, currentStockPrice, exercisePrice, optionCost, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount);
+                updateCharts(initialInvestment, currentStockPrice, exercisePrice, optionCost, shareCount, optionCount);
+                
+                // Check tax settings and update time projection if necessary
+                checkTaxSettings();
                 
                 // Show results section
                 resultsSection.style.display = 'block';
             }
             
-            function updateCharts(initialInvestment, currentStockPrice, exercisePrice, optionCost, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount) {
+            function updateCharts(initialInvestment, currentStockPrice, exercisePrice, optionCost, shareCount, optionCount) {
                 // Price range for comparison charts
                 const priceRange = generatePriceRange(currentStockPrice);
                 
@@ -1232,10 +1296,24 @@
                     }
                     return label;
                 };
-                
-                // Update Time Projection Chart
-                const timeData = [];
+            }
+            
+            // Function to update time projection chart
+            function updateTimeProjection() {
+                const initialInvestment = parseFloat(initialInvestmentInput.value) || 1000;
+                const currentStockPrice = parseFloat(currentStockPriceInput.value) || 500;
+                const exercisePrice = parseFloat(exercisePriceInput.value) || 500;
+                const optionCost = parseFloat(optionCostInput.value) || 200;
+                const annualGrowthRate = parseFloat(annualGrowthRateInput.value) || 10;
+                const yearsToProject = parseInt(yearsToProjectInput.value) || 10;
+                const taxRate = parseFloat(taxRateInput.value) || 33;
                 const taxRatePercent = taxRate / 100;
+                
+                const shareCount = Math.floor(initialInvestment / currentStockPrice);
+                const optionCount = Math.floor(initialInvestment / optionCost);
+                
+                // Generate time data
+                const timeData = [];
                 
                 for (let year = 0; year <= yearsToProject; year++) {
                     const growthFactor = Math.pow(1 + (annualGrowthRate / 100), year);
@@ -1262,6 +1340,7 @@
                     });
                 }
                 
+                // Update time projection chart
                 timeProjectionChart.data.labels = timeData.map(d => d.year);
                 timeProjectionChart.data.datasets[0].data = timeData.map(d => d.stockValue);
                 timeProjectionChart.data.datasets[1].data = timeData.map(d => d.optionValue);
@@ -1297,6 +1376,20 @@
                 };
             }
             
+            // Function to check if all tax settings are filled
+            function checkTaxSettings() {
+                const growthRate = annualGrowthRateInput.value.trim();
+                const years = yearsToProjectInput.value.trim();
+                const taxRate = taxRateInput.value.trim();
+                
+                if (growthRate && years && taxRate) {
+                    timeProjectionCard.style.display = 'block';
+                    updateTimeProjection();
+                } else {
+                    timeProjectionCard.style.display = 'none';
+                }
+            }
+            
             // Initialize accordion functionality
             const accordionHeaders = document.querySelectorAll('.accordion-header');
             accordionHeaders.forEach(header => {
@@ -1314,6 +1407,32 @@
             // Initialize charts and run initial calculation
             initCharts();
             updateCalculations();
+            
+            // Tax settings toggle functionality
+            const taxSettingsToggleBtn = document.getElementById('taxSettingsToggleBtn');
+            const taxSettingsSection = document.getElementById('taxSettingsSection');
+            const timeProjectionCard = document.getElementById('timeProjectionCard');
+            
+            taxSettingsToggleBtn.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const isVisible = taxSettingsSection.style.display === 'block';
+                taxSettingsSection.style.display = isVisible ? 'none' : 'block';
+                
+                // Update button text
+                if (isVisible) {
+                    this.textContent = '+ Show Tax & Projection Settings';
+                } else {
+                    this.textContent = '- Hide Tax & Projection Settings';
+                }
+                
+                // Check if all tax settings are filled to show time projection chart
+                checkTaxSettings();
+            });
+            
+            // Add event listeners for tax settings inputs
+            annualGrowthRateInput.addEventListener('input', checkTaxSettings);
+            yearsToProjectInput.addEventListener('input', checkTaxSettings);
+            taxRateInput.addEventListener('input', checkTaxSettings);
         });
     </script>
 </body>
