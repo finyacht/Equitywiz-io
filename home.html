@@ -105,15 +105,40 @@
             border-radius: 8px;
             font-weight: 600;
             text-decoration: none;
-            transition: background-color 0.2s ease;
+            transition: all 0.2s ease;
             border: none;
             cursor: pointer;
             font-size: 1rem;
             margin-top: auto;
+            position: relative;
+            overflow: hidden;
         }
         
         .tool-button:hover {
             background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tool-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tool-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .tool-button:hover::before {
+            transform: translateX(0);
         }
         
         .author-info {
