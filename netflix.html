@@ -177,11 +177,16 @@
         }
         
         .nav-bar {
-            background-color: var(--gray-800);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         
         .nav-bar a {
@@ -189,10 +194,31 @@
             text-decoration: none;
             display: flex;
             align-items: center;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-bar a:hover {
+            transform: translateY(-2px);
         }
         
         .nav-bar svg {
             margin-right: 8px;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+        }
+        
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
         }
     </style>
 </head>
@@ -200,12 +226,13 @@
     <!-- Navigation Bar -->
     <div class="nav-bar">
         <a href="/">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
             Home
         </a>
+        <span class="nav-title">NETFLIX OPTION MODELER</span>
     </div>
 
     <!-- Logo and Title -->
