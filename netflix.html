@@ -408,7 +408,37 @@
                                     display: true,
                                     text: 'Value ($)'
                                 },
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
+                                        }
+                                        return label;
+                                    },
+                                    title: function(context) {
+                                        return 'NFLX Stock Price: $' + parseFloat(context[0].label.replace('$', '')).toLocaleString('en-US', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                    }
+                                }
                             }
                         }
                     }
@@ -458,6 +488,36 @@
                                 title: {
                                     display: true,
                                     text: 'Rate of Return (%)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y.toLocaleString('en-US', {
+                                                minimumFractionDigits: 1,
+                                                maximumFractionDigits: 1
+                                            }) + '%';
+                                        }
+                                        return label;
+                                    },
+                                    title: function(context) {
+                                        return 'NFLX Stock Price: $' + parseFloat(context[0].label.replace('$', '')).toLocaleString('en-US', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                    }
                                 }
                             }
                         }
@@ -509,7 +569,34 @@
                                     display: true,
                                     text: 'After-Tax Value ($)'
                                 },
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
+                                        }
+                                        return label;
+                                    },
+                                    title: function(context) {
+                                        return 'Year: ' + context[0].label;
+                                    }
+                                }
                             }
                         }
                     }
