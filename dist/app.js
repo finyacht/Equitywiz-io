@@ -9,6 +9,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'home.html'));
 });
 
+// Also handle /index.html route to redirect to home
+app.get('/index.html', (req, res) => {
+  res.redirect('/');
+});
+
 // Route for the Waterfall Analysis Tool
 app.get('/waterfall', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
