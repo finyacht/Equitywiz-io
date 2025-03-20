@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Netflix Option Modeler</title>
+    <!-- Load Chart.js with all required modules -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Mobile Responsiveness Enhancements -->
+    <link rel="stylesheet" href="/css/mobile-responsive.css">
+    <style>
+        /* Netflix-specific styling overrides */
+        :root {
+            --primary-color: #e50914;
+            --primary-dark: #b20710;
+            --primary-light: #fde7e9;
+        }
+        
+        .logo {
+            background-color: var(--primary-color);
+        }
+        
+        .netflix-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .netflix-logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo and Title -->
+    <div class="logo-container">
+        <div class="logo">
+            <!-- Logo is created with CSS -->
+        </div>
+        <div class="logo-text">
+            <h1 class="logo-title">Netflix Option Modeler</h1>
+            <span class="logo-subtitle">Stock Option Value Calculator</span>
+            <div class="author-info">
+                <span>by Amal Ganatra</span>
+                <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="linkedin-icon" viewBox="0 0 16 16">
+                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tool-description">
+        <p>A comprehensive tool to model and value Netflix-style stock options under various market scenarios. This calculator helps employees and investors understand potential outcomes based on different stock price trajectories, vesting schedules, and exercise strategies.</p>
+        <div class="netflix-header">
+            <div class="netflix-logo"></div>
+            <a href="/" class="button secondary">← Back to Home</a>
+        </div>
+    </div>
+    
+    <div class="grid">
+        <!-- Option Grant Details -->
+        <div class="card">
+            <div class="space-between">
+                <h2>
+                    <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                    Option Grant Details
+                </h2>
+                <button id="saveOptionsBtn" class="primary">Save Options</button>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="grantDate">
+                        Grant Date
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">The date when the stock options were granted to you.</span>
+                        </span>
+                    </label>
+                    <input type="date" id="grantDate" name="grantDate">
+                </div>
+                
+                <div class="form-group">
+                    <label for="optionCount">
+                        Number of Options
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">The total number of stock options granted in this award.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="optionCount" name="optionCount" min="1" value="1000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="strikePrice">
+                        Strike Price ($)
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">The price at which you can purchase each share when exercising your options.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="strikePrice" name="strikePrice" min="0.01" step="0.01" value="100.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="vestingPeriod">
+                        Vesting Period (Years)
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">The number of years before all options are fully vested. Netflix typically uses a 4-year vesting schedule.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="vestingPeriod" name="vestingPeriod" min="1" max="10" value="4">
+                </div>
+                
+                <div class="form-group">
+                    <label for="vestingSchedule">
+                        Vesting Schedule
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">How your options vest over time. Netflix typically uses monthly vesting after a 1-year cliff.</span>
+                        </span>
+                    </label>
+                    <select id="vestingSchedule" name="vestingSchedule">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annually">Annually</option>
+                        <option value="cliff">Cliff (100% at end)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="currentPrice">
+                        Current Stock Price ($)
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">The current market price of the company's stock.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="currentPrice" name="currentPrice" min="0.01" step="0.01" value="500.00">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Market Scenario Settings -->
+        <div class="card">
+            <div class="space-between">
+                <h2>
+                    <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    Market Scenarios
+                </h2>
+                <button id="calculateBtn" class="primary">Calculate Value</button>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="growthRate">
+                        Annual Growth Rate (%)
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">The expected annual growth rate of the stock price in the baseline scenario.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="growthRate" name="growthRate" min="-50" max="100" value="15">
+                </div>
+                
+                <div class="form-group">
+                    <label for="volatility">
+                        Volatility (%)
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">The expected price volatility of the stock. Higher volatility leads to more extreme scenarios.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="volatility" name="volatility" min="1" max="100" value="30">
+                </div>
+                
+                <div class="form-group">
+                    <label for="taxRate">
+                        Tax Rate (%)
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">Your effective tax rate for calculating after-tax value of the options.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="taxRate" name="taxRate" min="0" max="100" value="35">
+                </div>
+                
+                <div class="form-group">
+                    <label for="discountRate">
+                        Discount Rate (%)
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">The rate used to discount future cash flows to present value.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="discountRate" name="discountRate" min="0" max="30" value="10">
+                </div>
+                
+                <div class="form-group">
+                    <label for="exerciseStrategy">
+                        Exercise Strategy
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">When you plan to exercise your options. Early exercise may reduce taxes but increases risk.</span>
+                        </span>
+                    </label>
+                    <select id="exerciseStrategy" name="exerciseStrategy">
+                        <option value="asap">As Soon As Vested</option>
+                        <option value="half">At 50% Appreciation</option>
+                        <option value="double">At 100% Appreciation</option>
+                        <option value="exit">At Exit/Liquidity Event</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="timePeriod">
+                        Projection Period (Years)
+                        <span class="tooltip">
+                            <span class="tooltip-icon">?</span>
+                            <span class="tooltip-text">How many years into the future to project option values.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="timePeriod" name="timePeriod" min="1" max="10" value="5">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Results Section -->
+    <div class="card">
+        <h2>
+            <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Option Value Results
+            <span class="tooltip">
+                <span class="tooltip-icon">?</span>
+                <span class="tooltip-text">Results showing the potential value of your options under different market scenarios.</span>
+            </span>
+        </h2>
+        
+        <div class="results-summary">
+            <div class="results-card">
+                <h3>Current Value</h3>
+                <div class="value" id="currentValue">$0</div>
+                <div class="description">Based on today's stock price</div>
+            </div>
+            
+            <div class="results-card highlight">
+                <h3>Expected Value</h3>
+                <div class="value" id="expectedValue">$0</div>
+                <div class="description">Probability-weighted average</div>
+            </div>
+            
+            <div class="results-card">
+                <h3>Optimistic Value</h3>
+                <div class="value" id="optimisticValue">$0</div>
+                <div class="description">Based on high growth scenario</div>
+            </div>
+            
+            <div class="results-card">
+                <h3>After-Tax Value</h3>
+                <div class="value" id="afterTaxValue">$0</div>
+                <div class="description">Expected value after taxes</div>
+            </div>
+        </div>
+        
+        <!-- Option Value Chart -->
+        <div>
+            <h3>
+                <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                    <line x1="3" y1="20" x2="21" y2="20"></line>
+                </svg>
+                Projected Option Value
+                <span class="tooltip">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">Chart showing how the value of your options may change over time under different market scenarios.</span>
+                </span>
+            </h3>
+            <div class="chart-container">
+                <canvas id="optionValueChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Stock Price Projection Chart -->
+        <div>
+            <h3>
+                <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+                Stock Price Projections
+                <span class="tooltip">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">Chart showing projected stock price trajectories under different market scenarios.</span>
+                </span>
+            </h3>
+            <div class="chart-container">
+                <canvas id="stockPriceChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Vesting Schedule Chart -->
+        <div>
+            <h3>
+                <svg class="section-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Vesting Schedule
+                <span class="tooltip">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">Chart showing when your options vest over time.</span>
+                </span>
+            </h3>
+            <div class="chart-container">
+                <canvas id="vestingChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to home link -->
+    <div class="centered-link">
+        <a href="/" class="button secondary">Return to Home Page</a>
+    </div>
+    
+    <!-- JavaScript for Chart Initialization (Placeholder for now) -->
+    <script>
+        // Placeholder for the Netflix Option Modeler JavaScript
+        // This would be replaced with the actual implementation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize empty charts
+            const optionValueCtx = document.getElementById('optionValueChart').getContext('2d');
+            const stockPriceCtx = document.getElementById('stockPriceChart').getContext('2d');
+            const vestingCtx = document.getElementById('vestingChart').getContext('2d');
+            
+            const optionValueChart = new Chart(optionValueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                    datasets: [{
+                        label: 'Pessimistic',
+                        data: [0, 0, 0, 0, 0],
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Expected',
+                        data: [0, 0, 0, 0, 0],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Optimistic',
+                        data: [0, 0, 0, 0, 0],
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Projected Option Value Over Time'
+                        }
+                    }
+                }
+            });
+            
+            const stockPriceChart = new Chart(stockPriceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Now', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                    datasets: [{
+                        label: 'Pessimistic',
+                        data: [500, 450, 405, 365, 328, 295],
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Expected',
+                        data: [500, 575, 661, 760, 874, 1006],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Optimistic',
+                        data: [500, 650, 845, 1099, 1428, 1856],
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Stock Price Projections'
+                        }
+                    }
+                }
+            });
+            
+            const vestingChart = new Chart(vestingCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4'],
+                    datasets: [{
+                        label: 'Options Vested',
+                        data: [250, 250, 250, 250],
+                        backgroundColor: 'rgba(13, 110, 253, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Vesting Schedule'
+                        }
+                    }
+                }
+            });
+            
+            // Update results with sample data
+            document.getElementById('currentValue').textContent = '$400,000';
+            document.getElementById('expectedValue').textContent = '$906,000';
+            document.getElementById('optimisticValue').textContent = '$1,756,000';
+            document.getElementById('afterTaxValue').textContent = '$588,900';
+            
+            // Add event listeners for form inputs
+            document.getElementById('calculateBtn').addEventListener('click', function() {
+                alert('Calculation functionality will be implemented in the future. Currently showing sample data.');
+            });
+            
+            document.getElementById('saveOptionsBtn').addEventListener('click', function() {
+                alert('Save functionality will be implemented in the future.');
+            });
+        });
+    </script>
+    
+    <!-- Mobile Responsiveness Scripts -->
+    <script src="/js/mobile-responsive.js"></script>
+</body>
+</html> 

@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Netflix Supplemental Stock Option Plan Modeler</title>
+    <!-- Load Chart.js with all required modules -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Mobile Responsiveness Enhancements -->
+    <link rel="stylesheet" href="/css/mobile-responsive.css">
+    <style>
+        /* Netflix-specific styling overrides */
+        :root {
+            --primary-color: #e50914;
+            --primary-dark: #b20710;
+            --primary-light: #fde7e9;
+            --gray-50: #f9f9f9;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+        
+        .logo {
+            background-color: var(--primary-color);
+        }
+        
+        .chart-container {
+            position: relative;
+            margin: 25px 0;
+            height: 300px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .result-card {
+            background-color: var(--gray-100);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+        
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--gray-400);
+            color: white;
+            font-size: 12px;
+            line-height: 1;
+            margin-left: 6px;
+            cursor: help;
+            transition: all 0.2s ease;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        
+        .info-icon:hover {
+            background-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+        
+        .info-icon:hover + .tooltip {
+            display: block;
+        }
+        
+        .tooltip {
+            display: none;
+            position: absolute;
+            background-color: var(--gray-900);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            z-index: 100;
+            font-size: 0.85rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            white-space: normal;
+            word-wrap: break-word;
+            line-height: 1.5;
+            right: 0;
+            top: 45px;
+            pointer-events: none;
+            min-width: 280px;
+            max-width: 400px;
+            width: auto;
+        }
+        
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 10px;
+            width: 12px;
+            height: 12px;
+            background: var(--gray-900);
+            transform: rotate(45deg);
+        }
+        
+        .accordion-item {
+            margin-bottom: 15px;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .accordion-header {
+            background-color: var(--gray-100);
+            padding: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            color: var(--gray-900);
+        }
+        
+        .accordion-header::after {
+            content: '+';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+        }
+        
+        .accordion-header.active {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        .accordion-header.active::after {
+            content: '−';
+        }
+        
+        .accordion-content {
+            display: none;
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        @media (max-width: 992px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .result-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .chart-card {
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chart-card {
+                margin-bottom: 15px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+        }
+        
+        .author-tag {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-top: 5px;
+        }
+        
+        .author-tag .linkedin-icon {
+            margin-left: 5px;
+        }
+        
+        .disclaimer {
+            background-color: var(--gray-100);
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        
+        .nav-bar {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-bar a:hover {
+            transform: translateY(-2px);
+        }
+        
+        .nav-bar svg {
+            margin-right: 8px;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+        }
+        
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
+        }
+        
+        .chart-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+        
+        .chart-card h3 {
+            color: var(--gray-800);
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .chart-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+        
+        .chart-description {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            padding: 10px 0;
+            border-top: 1px solid var(--gray-100);
+            margin-top: 15px;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .result-card {
+            background-color: var(--gray-100);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        
+        .result-card:hover::before {
+            opacity: 1;
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 15px 0 10px;
+        }
+        
+        .result-label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            padding: 25px;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .intro-card {
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .highlight-box {
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-top: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .highlight-box p {
+            margin: 0;
+            color: var(--gray-800);
+        }
+        
+        .calculation-explanation {
+            margin: 20px 0;
+        }
+        
+        .calculation-explanation h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--gray-800);
+            font-size: 1.1rem;
+        }
+        
+        .calculation-explanation ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        .calculation-explanation li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .calculation-explanation em {
+            color: var(--gray-600);
+            font-style: italic;
+        }
+        
+        .tax-settings-toggle {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .toggle-btn {
+            background-color: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            outline: none;
+        }
+        
+        .toggle-btn:hover {
+            background-color: var(--gray-200);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .toggle-btn:active {
+            transform: translateY(0);
+        }
+        
+        .toggle-btn.active {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        .tax-settings-section {
+            border-top: 1px solid var(--gray-200);
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        
+        .tax-settings-section h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--gray-700);
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .form-group {
+            position: relative;
+            transition: all 0.3s ease;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .form-group:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--gray-50);
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.1);
+            outline: none;
+            background-color: white;
+        }
+        
+        .form-group input:disabled {
+            background-color: var(--gray-100);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .form-group .info-icon {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+        
+        .form-group .tooltip {
+            position: absolute;
+            right: -10px;
+            top: 48px;
+            z-index: 1001;
+            width: auto;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .result-card .tooltip {
+            top: 30px;
+            right: -20px;
+            min-width: 300px;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <a href="/">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+        </a>
+        <span class="nav-title">NETFLIX SUPPLEMENTAL STOCK OPTION PLAN MODELER</span>
+    </div>
+
+    <!-- Logo and Title -->
+    <div class="logo-container">
+        <div class="logo">
+            <!-- Logo is created with CSS -->
+        </div>
+        <div class="logo-text">
+            <h1 class="logo-title">Netflix Supplemental Stock Option Plan Modeler</h1>
+            <span class="logo-subtitle">Stock Option Value Calculator</span>
+            <div class="author-tag">
+                by Amal Ganatra
+                <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="linkedin-icon" viewBox="0 0 16 16">
+                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Introduction Section -->
+        <div class="card intro-card">
+            <h2>Netflix Supplemental Stock Option Plan Calculator</h2>
+            <p>This calculator helps Netflix employees compare the value of purchasing Netflix stock versus stock options under the Supplemental Allocation plan. Enter your parameters below to visualize potential outcomes.</p>
+            <div class="highlight-box">
+                <p><strong>How Netflix Supplemental Stock Options Work:</strong> Employees can choose to forego a portion of their salary to purchase stock options. These options have an exercise price typically equal to the stock price at the time they are granted and last for 10 years.</p>
+            </div>
+        </div>
+
+        <!-- Input Parameters Section -->
+        <div class="card">
+            <h2>Input Parameters</h2>
+            <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="form-group">
+                    <label for="initialInvestment">Initial Investment ($)</label>
+                    <input type="number" id="initialInvestment" min="100" step="100" value="1000">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The amount of money you plan to invest, either in Netflix stock or options.</div>
+                </div>
+                <div class="form-group">
+                    <label for="currentStockPrice">Current NFLX Stock Price ($)</label>
+                    <input type="number" id="currentStockPrice" min="1" step="1" value="500">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The current market price of Netflix stock.</div>
+                </div>
+                <div class="form-group">
+                    <label for="exercisePrice">Option Exercise Price ($)</label>
+                    <input type="number" id="exercisePrice" min="1" step="1" value="500">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The price at which you can purchase actual shares using your options when exercised. This is typically the stock price when the options were granted.</div>
+                </div>
+                <div class="form-group">
+                    <label for="optionCost">Cost Per Option ($)</label>
+                    <input type="number" id="optionCost" min="1" step="1" value="200">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">
+                        The cost to purchase each option. This is the direct amount you pay per option contract.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tax Settings Toggle -->
+            <div class="tax-settings-toggle">
+                <button type="button" id="taxSettingsToggleBtn" class="toggle-btn">+ Show Tax & Projection Settings</button>
+            </div>
+            
+            <!-- Tax Settings Section (Hidden by Default) -->
+            <div id="taxSettingsSection" class="tax-settings-section" style="display: none;">
+                <h3>Tax & Projection Settings</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="annualGrowthRate">Projected Annual Growth Rate (%)</label>
+                        <input type="number" id="annualGrowthRate" min="0" max="100" step="1" value="">
+                        <span class="info-icon">?</span>
+                        <div class="tooltip">Your estimate of how much Netflix stock will grow annually over the investment period.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="yearsToProject">Years to Project</label>
+                        <input type="number" id="yearsToProject" min="1" max="10" step="1" value="">
+                        <span class="info-icon">?</span>
+                        <div class="tooltip">Number of years to project your investment growth (max 10 years, the lifetime of the options).</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taxRate">Capital Gains Tax Rate (%)</label>
+                        <input type="number" id="taxRate" min="0" max="100" step="1" value="">
+                        <span class="info-icon">?</span>
+                        <div class="tooltip">Your estimated tax rate on capital gains.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="card">
+            <h2>Analysis Results</h2>
+            
+            <div class="result-grid">
+                <!-- Key Metrics -->
+                <div class="result-card">
+                    <div class="result-label">Shares You Can Buy</div>
+                    <div id="shareCount" class="result-value">2</div>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">Number of Netflix shares you can buy with your initial investment at the current stock price.</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Options You Can Buy</div>
+                    <div id="optionCount" class="result-value">5</div>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">Number of Netflix stock options you can buy with your initial investment at the cost per option shown above.</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Option Break-Even Price</div>
+                    <div id="breakEvenPrice" class="result-value">$700</div>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The stock price at which your option investment value equals your initial investment. This is the exercise price plus the cost per option.</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Options Outperform at</div>
+                    <div id="outperformPrice" class="result-value">$833.33</div>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The stock price at which investing in options becomes more profitable than investing in shares (approximately 67% gain required).</div>
+                </div>
+            </div>
+            
+            <!-- Calculation Explanation -->
+            <div class="highlight-box calculation-explanation">
+                <h3>How These Results Are Calculated:</h3>
+                <ul>
+                    <li><strong>Shares You Can Buy</strong> = Initial Investment ÷ Current Stock Price<br>
+                        <em id="shares-example">Example: $1,000 ÷ $500 = 2 shares</em></li>
+                    <li><strong>Options You Can Buy</strong> = Initial Investment ÷ Cost Per Option<br>
+                        <em id="options-example">Example: $1,000 ÷ $200 = 5 options</em></li>
+                    <li><strong>Option Break-Even Price</strong> = Exercise Price + Cost Per Option<br>
+                        <em id="breakeven-example">Example: $500 + $200 = $700</em></li>
+                    <li><strong>Options Outperform At</strong> = Exercise Price + [Initial Investment ÷ (Options Count - Shares Count)]<br>
+                        <em id="outperform-example">Example: $500 + [$1,000 ÷ (5 - 2)] = $833.33</em></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Chart Cards Section -->
+        <!-- Value Comparison Chart Card -->
+        <div class="card chart-card">
+            <h3>Value Comparison: Stock vs Options</h3>
+            <div class="chart-container">
+                <canvas id="valueComparisonChart"></canvas>
+            </div>
+            <p class="chart-description">This chart shows how the value of your stock and option investments change at different Netflix stock prices.</p>
+        </div>
+            
+        <!-- Return Comparison Chart Card -->
+        <div class="card chart-card">
+            <h3>Rate of Return: Stock vs Options</h3>
+            <div class="chart-container">
+                <canvas id="returnComparisonChart"></canvas>
+            </div>
+            <p class="chart-description">This chart shows the percentage return on your investment for both stock and options at different Netflix stock prices. For options, returns are calculated based on the intrinsic value (stock price minus exercise price) multiplied by the number of options owned.</p>
+        </div>
+            
+        <!-- Time Projection Chart Card (Hidden by Default) -->
+        <div id="timeProjectionCard" class="card chart-card" style="display: none;">
+            <h3>After-Tax Value Over Time</h3>
+            <div class="chart-container">
+                <canvas id="timeProjectionChart"></canvas>
+            </div>
+            <p class="chart-description">This chart projects the after-tax value of your stock and option investments over time, assuming the specified annual growth rate.</p>
+        </div>
+        
+        <!-- Explanation Section -->
+        <div class="card">
+            <h2>Understanding Netflix Supplemental Stock Options</h2>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">How do Netflix supplemental stock options work?</div>
+                    <div class="accordion-content">
+                        <p>Netflix offers a unique Supplemental Allocation plan where employees can choose to forego a portion of their salary to purchase stock options. The cost per option is typically less than the current stock price, allowing you to control more shares with the same investment.</p>
+                        <p>These options have an exercise price typically equal to the stock price at the time they are granted and last for 10 years, even if you leave Netflix.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">When do options become valuable?</div>
+                    <div class="accordion-content">
+                        <p>Options only have value when the stock price rises above the exercise price. Because you're paying for the options upfront, the stock price needs to rise enough to cover your cost per option to break even.</p>
+                        <p>The stock price needs to rise beyond the break-even point before options outperform the alternative of buying stock directly.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">What are the risks?</div>
+                    <div class="accordion-content">
+                        <p>Options are riskier than stock. If the stock price doesn't rise above the exercise price, your options will have zero value, and you'll lose your entire investment.</p>
+                        <p>With stock, even if the price decreases, you still own something of value. Options require significant stock price appreciation to be worthwhile.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">Tax considerations</div>
+                    <div class="accordion-content">
+                        <p>When you exercise options and sell the resulting shares, you'll generally pay capital gains tax on the profit. The tax treatment can be complex and may depend on your holding period and other factors.</p>
+                        <p>This calculator provides a simplified after-tax analysis, but you should consult a tax professional for specific advice.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> This Netflix Supplemental Stock Option Plan Modeler is provided solely for educational and informational purposes. The calculations, projections, and analyses generated by this tool are intended to serve as general illustrations of potential investment outcomes and should not be relied upon for making investment decisions.</p>
+            <p>The information provided herein does not constitute legal, financial, tax, or investment advice. Prior to finalizing any investment or transaction, users should consult with qualified legal counsel, financial advisors, and other professional advisors to ensure compliance with applicable laws and regulations and to address specific circumstances.</p>
+            <p>The creators of this tool make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability, or availability of the tool or the information generated. Any reliance you place on such information is strictly at your own risk.</p>
+            <p>© 2024 All Rights Reserved</p>
+        </div>
+    </div>
+    
+    <div class="author-info">
+        <span>Developed by Amal Ganatra</span>
+        <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="linkedin-icon" viewBox="0 0 16 16">
+                <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+            </svg>
+        </a>
+    </div>
+    
+    <script src="/js/netflixOptionCalculator.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize charts
+            let valueComparisonChart, returnComparisonChart, timeProjectionChart;
+            
+            // Directly setup the tax toggle button to ensure it works
+            document.getElementById('taxSettingsToggleBtn').onclick = function() {
+                var taxSection = document.getElementById('taxSettingsSection');
+                
+                if (taxSection.style.display === 'block') {
+                    // Currently visible, hide it
+                    taxSection.style.display = 'none';
+                    this.classList.remove('active');
+                    this.textContent = '+ Show Tax & Projection Settings';
+                } else {
+                    // Currently hidden, show it
+                    taxSection.style.display = 'block';
+                    this.classList.add('active');
+                    this.textContent = '- Hide Tax & Projection Settings';
+                    
+                    // Check if tax settings are filled
+                    checkTaxSettings();
+                }
+                
+                return false; // Prevent any default action
+            };
+            
+            // Make sure the tax settings section is hidden by default
+            document.getElementById('taxSettingsSection').style.display = 'none';
+            
+            // Helper function to generate price range around a given price
+            function generatePriceRange(basePrice) {
+                const min = basePrice * 0.4;  // 40% of base price
+                const max = basePrice * 2.4;  // 240% of base price
+                const step = (max - min) / 15;
+                const range = [];
+                
+                // Make sure basePrice and exercisePrice are included in the range
+                let includedBasePrice = false;
+                let includedExercisePrice = false;
+                const exercisePrice = parseFloat(document.getElementById('exercisePrice').value);
+                
+                for (let price = min; price <= max; price += step) {
+                    // If we're about to pass the basePrice, include it exactly
+                    if (!includedBasePrice && price > basePrice) {
+                        range.push(basePrice);
+                        includedBasePrice = true;
+                    }
+                    // If we're about to pass the exercisePrice, include it exactly
+                    if (!includedExercisePrice && price > exercisePrice) {
+                        range.push(exercisePrice);
+                        includedExercisePrice = true;
+                    }
+                    range.push(price);
+                }
+                
+                // If we didn't add the base price yet, add it now
+                if (!includedBasePrice) {
+                    range.push(basePrice);
+                }
+                // If we didn't add the exercise price yet, add it now
+                if (!includedExercisePrice) {
+                    range.push(exercisePrice);
+                }
+                
+                // Sort the range to ensure values are in ascending order
+                return range.sort((a, b) => a - b);
+            }
+            
+            // Helper function to format currency
+            function formatCurrency(value) {
+                return '$' + parseFloat(value).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+            
+            // Get input elements
+            const initialInvestmentInput = document.getElementById('initialInvestment');
+            const currentStockPriceInput = document.getElementById('currentStockPrice');
+            const exercisePriceInput = document.getElementById('exercisePrice');
+            const optionCostInput = document.getElementById('optionCost');
+            const annualGrowthRateInput = document.getElementById('annualGrowthRate');
+            const yearsToProjectInput = document.getElementById('yearsToProject');
+            const taxRateInput = document.getElementById('taxRate');
+            
+            // Get result elements
+            const shareCountElement = document.getElementById('shareCount');
+            const optionCountElement = document.getElementById('optionCount');
+            const breakEvenPriceElement = document.getElementById('breakEvenPrice');
+            const outperformPriceElement = document.getElementById('outperformPrice');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            // Initialize charts
+            function initCharts() {
+                // Value Comparison Chart
+                const valueCtx = document.getElementById('valueComparisonChart').getContext('2d');
+                valueComparisonChart = new Chart(valueCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Stock Value',
+                                borderColor: '#3e95cd',
+                                backgroundColor: '#3e95cd',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Option Value',
+                                borderColor: '#e8462e',
+                                backgroundColor: '#e8462e',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Initial Investment',
+                                borderColor: '#000000',
+                                backgroundColor: '#000000',
+                                fill: false,
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'NFLX Stock Price'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Value ($)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value;
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                                bodyFont: {
+                                    size: 13
+                                },
+                                padding: 15,
+                                displayColors: true,
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                boxPadding: 5,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            if (label.includes('Stock')) {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' (' + shareCount + ' shares)';
+                                            } else if (label.includes('Option')) {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' (' + optionCount + ' options)';
+                                            } else {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                            }
+                                        }
+                                        return label;
+                                    },
+                                    title: function(context) {
+                                        return 'NFLX Stock Price: $' + parseFloat(context[0].label.replace('$', '')).toLocaleString('en-US', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Return Comparison Chart
+                const returnCtx = document.getElementById('returnComparisonChart').getContext('2d');
+                returnComparisonChart = new Chart(returnCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Stock Rate of Return',
+                                borderColor: '#3e95cd',
+                                backgroundColor: '#3e95cd',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Options Rate of Return',
+                                borderColor: '#e8462e',
+                                backgroundColor: '#e8462e',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Break-even (0%)',
+                                borderColor: '#000000',
+                                backgroundColor: '#000000',
+                                fill: false,
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'NFLX Stock Price'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Rate of Return (%)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                                bodyFont: {
+                                    size: 13
+                                },
+                                padding: 15,
+                                displayColors: true,
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                boxPadding: 5,
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            const stockPrice = parseFloat(context.chart.data.labels[context.dataIndex].replace('$', ''));
+                                            
+                                            if (label.includes('Stock')) {
+                                                const totalValue = stockPrice * shareCount;
+                                                label += context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 1,
+                                                    maximumFractionDigits: 1
+                                                }) + '% (' + shareCount + ' shares, $' + totalValue.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' total)';
+                                            } else if (label.includes('Option')) {
+                                                const optionValue = Math.max(0, stockPrice - exercisePrice) * optionCount;
+                                                label += context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 1,
+                                                    maximumFractionDigits: 1
+                                                }) + '% (' + optionCount + ' options, $' + optionValue.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' total)';
+                                            } else {
+                                                label += context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 1,
+                                                    maximumFractionDigits: 1
+                                                }) + '%';
+                                            }
+                                        }
+                                        return label;
+                                    },
+                                    title: function(context) {
+                                        return 'NFLX Stock Price: $' + parseFloat(context[0].label.replace('$', '')).toLocaleString('en-US', {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Time Projection Chart
+                const timeCtx = document.getElementById('timeProjectionChart').getContext('2d');
+                timeProjectionChart = new Chart(timeCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Stock After-Tax Value',
+                                borderColor: '#3e95cd',
+                                backgroundColor: '#3e95cd',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Options After-Tax Value',
+                                borderColor: '#e8462e',
+                                backgroundColor: '#e8462e',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Initial Investment',
+                                borderColor: '#000000',
+                                backgroundColor: '#000000',
+                                fill: false,
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'After-Tax Value ($)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value;
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            if (label.includes('Stock')) {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' (' + shareCount + ' shares)';
+                                            } else if (label.includes('Option')) {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' (' + optionCount + ' options)';
+                                            } else {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Set up event listeners for input changes
+            initialInvestmentInput.addEventListener('input', updateCalculations);
+            currentStockPriceInput.addEventListener('input', updateCalculations);
+            exercisePriceInput.addEventListener('input', updateCalculations);
+            optionCostInput.addEventListener('input', updateCalculations); 
+            annualGrowthRateInput.addEventListener('input', updateCalculations);
+            yearsToProjectInput.addEventListener('input', updateCalculations);
+            taxRateInput.addEventListener('input', updateCalculations);
+            
+            // Function to update all calculations
+            function updateCalculations() {
+                // Get input values
+                const initialInvestment = parseFloat(initialInvestmentInput.value) || 1000;
+                const currentStockPrice = parseFloat(currentStockPriceInput.value) || 500;
+                const exercisePrice = parseFloat(exercisePriceInput.value) || 500;
+                const optionCost = parseFloat(optionCostInput.value) || 200;
+                const annualGrowthRate = parseFloat(annualGrowthRateInput.value) || 10;
+                const yearsToProject = parseInt(yearsToProjectInput.value) || 10;
+                const taxRate = parseFloat(taxRateInput.value) || 33;
+                
+                // Calculate shares and options
+                const shareCount = Math.floor(initialInvestment / currentStockPrice);
+                const optionCount = Math.floor(initialInvestment / optionCost);
+                
+                // Break-even price is the option exercise price plus the option cost
+                const breakEvenPrice = exercisePrice + optionCost;
+                
+                // Calculate outperform price
+                let outperformPrice;
+                if (optionCount <= shareCount) {
+                    outperformPrice = Infinity; // Options never outperform
+                } else {
+                    outperformPrice = exercisePrice + (initialInvestment / (optionCount - shareCount));
+                }
+                
+                // Update display
+                shareCountElement.textContent = shareCount.toFixed(0);
+                optionCountElement.textContent = optionCount.toFixed(0);
+                breakEvenPriceElement.textContent = '$' + breakEvenPrice.toFixed(2);
+                outperformPriceElement.textContent = isFinite(outperformPrice) ? 
+                    '$' + outperformPrice.toFixed(2) : 'N/A';
+                
+                // Update charts
+                updateCharts(initialInvestment, currentStockPrice, exercisePrice, optionCost, shareCount, optionCount);
+                
+                // Update calculation examples
+                updateCalculationExamples();
+                
+                // Check tax settings and update time projection if necessary
+                checkTaxSettings();
+                
+                // Show results section
+                resultsSection.style.display = 'block';
+            }
+            
+            function updateCharts(initialInvestment, currentStockPrice, exercisePrice, optionCost, shareCount, optionCount) {
+                // Price range for comparison charts
+                const priceRange = generatePriceRange(currentStockPrice);
+                
+                // Update Value Comparison Chart
+                const stockValues = priceRange.map(price => (price * shareCount).toFixed(2));
+                const optionValues = priceRange.map(price => {
+                    const optionValue = Math.max(0, price - exercisePrice) * optionCount;
+                    return optionValue.toFixed(2);
+                });
+                
+                valueComparisonChart.data.labels = priceRange.map(price => '$' + price.toFixed(2));
+                valueComparisonChart.data.datasets[0].data = stockValues;
+                valueComparisonChart.data.datasets[1].data = optionValues;
+                valueComparisonChart.data.datasets[2].data = Array(priceRange.length).fill(initialInvestment);
+                valueComparisonChart.update();
+
+                // Fix for tooltip object HTMLDivElement issue in chart tooltips
+                let tooltipCallbacks = valueComparisonChart.options.plugins.tooltip.callbacks;
+                tooltipCallbacks.label = function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                        if (label.includes('Stock')) {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' (' + shareCount + ' shares)';
+                        } else if (label.includes('Option')) {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' (' + optionCount + ' options)';
+                        } else {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                    }
+                    return label;
+                };
+                
+                // Update Return Comparison Chart
+                const stockReturns = priceRange.map(price => {
+                    const stockValue = price * shareCount;
+                    return ((stockValue / initialInvestment - 1) * 100).toFixed(1);
+                });
+                
+                const optionReturns = priceRange.map(price => {
+                    const optionValue = Math.max(0, price - exercisePrice) * optionCount;
+                    return ((optionValue / initialInvestment - 1) * 100).toFixed(1);
+                });
+                
+                returnComparisonChart.data.labels = priceRange.map(price => '$' + price.toFixed(2));
+                returnComparisonChart.data.datasets[0].data = stockReturns;
+                returnComparisonChart.data.datasets[1].data = optionReturns;
+                returnComparisonChart.data.datasets[2].data = Array(priceRange.length).fill(0);
+                returnComparisonChart.update();
+
+                // Fix for tooltip object HTMLDivElement issue in return chart tooltips
+                let returnTooltipCallbacks = returnComparisonChart.options.plugins.tooltip.callbacks;
+                returnTooltipCallbacks.label = function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                        const stockPrice = parseFloat(context.chart.data.labels[context.dataIndex].replace('$', ''));
+                        
+                        if (label.includes('Stock')) {
+                            const totalValue = stockPrice * shareCount;
+                            label += context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1
+                            }) + '% (' + shareCount + ' shares, $' + totalValue.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' total)';
+                        } else if (label.includes('Option')) {
+                            const optionValue = Math.max(0, stockPrice - exercisePrice) * optionCount;
+                            label += context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1
+                            }) + '% (' + optionCount + ' options, $' + optionValue.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' total)';
+                        } else {
+                            label += context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1
+                            }) + '%';
+                        }
+                    }
+                    return label;
+                };
+            }
+            
+            // Function to update time projection chart
+            function updateTimeProjection() {
+                const initialInvestment = parseFloat(initialInvestmentInput.value) || 1000;
+                const currentStockPrice = parseFloat(currentStockPriceInput.value) || 500;
+                const exercisePrice = parseFloat(exercisePriceInput.value) || 500;
+                const optionCost = parseFloat(optionCostInput.value) || 200;
+                const annualGrowthRate = parseFloat(annualGrowthRateInput.value) || 10;
+                const yearsToProject = parseInt(yearsToProjectInput.value) || 10;
+                const taxRate = parseFloat(taxRateInput.value) || 33;
+                const taxRatePercent = taxRate / 100;
+                
+                const shareCount = Math.floor(initialInvestment / currentStockPrice);
+                const optionCount = Math.floor(initialInvestment / optionCost);
+                
+                // Generate time data
+                const timeData = [];
+                
+                for (let year = 0; year <= yearsToProject; year++) {
+                    const growthFactor = Math.pow(1 + (annualGrowthRate / 100), year);
+                    const futureStockPrice = currentStockPrice * growthFactor;
+                    
+                    // Calculate stock value
+                    const stockFutureValue = futureStockPrice * shareCount;
+                    const stockCostBasis = currentStockPrice * shareCount;
+                    const stockGain = stockFutureValue - stockCostBasis;
+                    const stockTax = Math.max(0, stockGain) * taxRatePercent;
+                    const stockAfterTaxValue = stockFutureValue - stockTax;
+                    
+                    // Calculate option value (if exercised)
+                    const optionIntrinsicValue = Math.max(0, futureStockPrice - exercisePrice) * optionCount;
+                    const optionCostBasis = optionCost * optionCount;
+                    const optionGain = optionIntrinsicValue - optionCostBasis;
+                    const optionTax = Math.max(0, optionGain) * taxRatePercent;
+                    const optionAfterTaxValue = optionIntrinsicValue - optionTax;
+                    
+                    timeData.push({
+                        year: year,
+                        stockValue: stockAfterTaxValue,
+                        optionValue: optionAfterTaxValue
+                    });
+                }
+                
+                // Update time projection chart
+                timeProjectionChart.data.labels = timeData.map(d => d.year);
+                timeProjectionChart.data.datasets[0].data = timeData.map(d => d.stockValue);
+                timeProjectionChart.data.datasets[1].data = timeData.map(d => d.optionValue);
+                timeProjectionChart.data.datasets[2].data = Array(timeData.length).fill(initialInvestment);
+                timeProjectionChart.update();
+
+                // Fix for tooltip object HTMLDivElement issue in time projection chart tooltips  
+                let timeTooltipCallbacks = timeProjectionChart.options.plugins.tooltip.callbacks;
+                timeTooltipCallbacks.label = function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                        if (label.includes('Stock')) {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' (' + shareCount + ' shares)';
+                        } else if (label.includes('Option')) {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' (' + optionCount + ' options)';
+                        } else {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                    }
+                    return label;
+                };
+            }
+            
+            // Function to check if all tax settings are filled
+            function checkTaxSettings() {
+                const growthRate = annualGrowthRateInput.value.trim();
+                const years = yearsToProjectInput.value.trim();
+                const taxRate = taxRateInput.value.trim();
+                
+                if (growthRate && years && taxRate) {
+                    timeProjectionCard.style.display = 'block';
+                    updateTimeProjection();
+                } else {
+                    timeProjectionCard.style.display = 'none';
+                }
+            }
+            
+            // Initialize accordion functionality
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.display === 'block') {
+                        content.style.display = 'none';
+                    } else {
+                        content.style.display = 'block';
+                    }
+                });
+            });
+            
+            // Initialize charts and run initial calculation
+            initCharts();
+            updateCalculations();
+            
+            // Add event listeners for tax settings inputs
+            annualGrowthRateInput.addEventListener('input', checkTaxSettings);
+            yearsToProjectInput.addEventListener('input', checkTaxSettings);
+            taxRateInput.addEventListener('input', checkTaxSettings);
+            
+            // Make the calculation explanation update in real-time 
+            function updateCalculationExamples() {
+                const initialInvestment = parseFloat(initialInvestmentInput.value) || 1000;
+                const currentStockPrice = parseFloat(currentStockPriceInput.value) || 500;
+                const exercisePrice = parseFloat(exercisePriceInput.value) || 500;  
+                const optionCost = parseFloat(optionCostInput.value) || 200;
+                
+                const shareCount = Math.floor(initialInvestment / currentStockPrice);
+                const optionCount = Math.floor(initialInvestment / optionCost);
+                const breakEvenPrice = exercisePrice + optionCost;
+                
+                let outperformPrice;
+                if (optionCount <= shareCount) {
+                    outperformPrice = "N/A";
+                } else {
+                    outperformPrice = (exercisePrice + (initialInvestment / (optionCount - shareCount))).toFixed(2);
+                }
+                
+                // Update the calculation examples with IDs for more reliable targeting
+                document.getElementById('shares-example').textContent = 
+                    `Example: $${initialInvestment.toFixed(0)} ÷ $${currentStockPrice.toFixed(0)} = ${shareCount} shares`;
+                
+                document.getElementById('options-example').textContent = 
+                    `Example: $${initialInvestment.toFixed(0)} ÷ $${optionCost.toFixed(0)} = ${optionCount} options`;
+                
+                document.getElementById('breakeven-example').textContent = 
+                    `Example: $${exercisePrice.toFixed(0)} + $${optionCost.toFixed(0)} = $${breakEvenPrice.toFixed(2)}`;
+                
+                if (outperformPrice === "N/A") {
+                    document.getElementById('outperform-example').textContent = 
+                        `Example: Options never outperform at these settings`;
+                } else {
+                    document.getElementById('outperform-example').textContent = 
+                        `Example: $${exercisePrice.toFixed(0)} + [$${initialInvestment.toFixed(0)} ÷ (${optionCount} - ${shareCount})] = $${outperformPrice}`;
+                }
+            }
+        });
+    </script>
+</body>
+</html> 
