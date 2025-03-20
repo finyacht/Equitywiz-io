@@ -463,6 +463,38 @@
             right: -20px;
             min-width: 280px;
         }
+        
+        .discount-explainer-card {
+            border-left: 5px solid #9c27b0;
+            background-color: #f9f0ff;
+        }
+        
+        .discount-explainer {
+            padding: 0 10px;
+        }
+        
+        .discount-explainer p {
+            margin: 15px 0;
+        }
+        
+        .discount-explainer ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        .discount-explainer li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .discount-explainer strong {
+            color: #9c27b0;
+        }
+        
+        .discount-explainer span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -527,7 +559,9 @@
                     <label for="optionDiscount">Option Price Discount (%)</label>
                     <input type="number" id="optionDiscount" min="1" max="100" step="1" value="40">
                     <span class="info-icon">?</span>
-                    <div class="tooltip">Netflix options cost 40% of the current stock price by default, but you can adjust this value to model different scenarios.</div>
+                    <div class="tooltip">
+                        Netflix options cost 40% of the current stock price by default. Changing this value affects how many options you can buy with the initial investment. A higher discount (e.g., 50%) means options cost less and you can buy more of them.
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="annualGrowthRate">Projected Annual Growth Rate (%)</label>
@@ -580,6 +614,26 @@
                     <span class="info-icon">?</span>
                     <div class="tooltip">The stock price at which investing in options becomes more profitable than investing in shares (approximately 67% gain required).</div>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Discount Explainer Card -->
+        <div class="card discount-explainer-card">
+            <h3>How Option Discount Affects Your Investment</h3>
+            <div class="discount-explainer">
+                <p>The Option Price Discount (currently <span id="discountValue">40</span>%) determines:</p>
+                <ul>
+                    <li><strong>Cost of each option</strong> = Current Stock Price × (<span id="discountValue2">40</span>% ÷ 100)</li>
+                    <li><strong>Number of options you can buy</strong> = Initial Investment ÷ Option Cost</li>
+                    <li><strong>Break-even price</strong> = Current Stock Price + Option Cost</li>
+                </ul>
+                <p>With your current settings:</p>
+                <ul>
+                    <li>Stock Price: $<span id="currentPriceDisplay">500</span></li>
+                    <li>Option Cost: $<span id="optionCostDisplay">200</span> per option</li>
+                    <li>You can buy <span id="optionCountDisplay">5</span> options instead of <span id="shareCountDisplay">2</span> shares</li>
+                </ul>
+                <p>Try changing the discount percentage to see how it affects your investment.</p>
             </div>
         </div>
         
@@ -674,11 +728,25 @@
                 const step = (max - min) / 15;
                 const range = [];
                 
+                // Make sure basePrice is included in the range
+                let includedBasePrice = false;
+                
                 for (let price = min; price <= max; price += step) {
+                    // If we're about to pass the basePrice, include it exactly
+                    if (!includedBasePrice && price > basePrice) {
+                        range.push(basePrice);
+                        includedBasePrice = true;
+                    }
                     range.push(price);
                 }
                 
-                return range;
+                // If we didn't add the base price yet, add it now
+                if (!includedBasePrice) {
+                    range.push(basePrice);
+                }
+                
+                // Sort the range to ensure values are in ascending order
+                return range.sort((a, b) => a - b);
             }
             
             // Helper function to format currency
@@ -1009,6 +1077,14 @@
                 breakEvenPriceElement.textContent = '$' + breakEvenPrice.toFixed(2);
                 outperformPriceElement.textContent = isFinite(outperformPrice) ? 
                     '$' + outperformPrice.toFixed(2) : 'N/A';
+                
+                // Update discount explainer values
+                document.getElementById('discountValue').textContent = optionDiscount;
+                document.getElementById('discountValue2').textContent = optionDiscount;
+                document.getElementById('currentPriceDisplay').textContent = currentStockPrice.toFixed(2);
+                document.getElementById('optionCostDisplay').textContent = optionPrice.toFixed(2);
+                document.getElementById('optionCountDisplay').textContent = optionCount;
+                document.getElementById('shareCountDisplay').textContent = shareCount;
                 
                 // Update charts
                 updateCharts(initialInvestment, currentStockPrice, optionDiscount, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount);
