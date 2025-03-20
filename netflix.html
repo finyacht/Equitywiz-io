@@ -1148,6 +1148,34 @@
                 valueComparisonChart.data.datasets[1].data = optionValues;
                 valueComparisonChart.data.datasets[2].data = Array(priceRange.length).fill(initialInvestment);
                 valueComparisonChart.update();
+
+                // Fix for tooltip object HTMLDivElement issue in chart tooltips
+                let tooltipCallbacks = valueComparisonChart.options.plugins.tooltip.callbacks;
+                tooltipCallbacks.label = function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                        if (label.includes('Stock')) {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' (' + shareCount + ' shares)';
+                        } else if (label.includes('Option')) {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' (' + optionCount + ' options)';
+                        } else {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                    }
+                    return label;
+                };
                 
                 // Update Return Comparison Chart
                 const stockReturns = priceRange.map(price => {
@@ -1165,6 +1193,34 @@
                 returnComparisonChart.data.datasets[1].data = optionReturns;
                 returnComparisonChart.data.datasets[2].data = Array(priceRange.length).fill(0);
                 returnComparisonChart.update();
+
+                // Fix for tooltip object HTMLDivElement issue in return chart tooltips
+                let returnTooltipCallbacks = returnComparisonChart.options.plugins.tooltip.callbacks;
+                returnTooltipCallbacks.label = function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                        if (label.includes('Stock')) {
+                            label += context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1
+                            }) + '% (' + shareCount + ' shares)';
+                        } else if (label.includes('Option')) {
+                            label += context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1
+                            }) + '% (' + optionCount + ' options)';
+                        } else {
+                            label += context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 1,
+                                maximumFractionDigits: 1
+                            }) + '%';
+                        }
+                    }
+                    return label;
+                };
                 
                 // Update Time Projection Chart
                 const timeData = [];
@@ -1204,6 +1260,34 @@
                 timeProjectionChart.data.datasets[1].data = timeData.map(d => d.optionValue);
                 timeProjectionChart.data.datasets[2].data = Array(timeData.length).fill(initialInvestment);
                 timeProjectionChart.update();
+
+                // Fix for tooltip object HTMLDivElement issue in time projection chart tooltips  
+                let timeTooltipCallbacks = timeProjectionChart.options.plugins.tooltip.callbacks;
+                timeTooltipCallbacks.label = function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                        label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                        if (label.includes('Stock')) {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' (' + shareCount + ' shares)';
+                        } else if (label.includes('Option')) {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' (' + optionCount + ' options)';
+                        } else {
+                            label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        }
+                    }
+                    return label;
+                };
             }
             
             // Initialize accordion functionality
