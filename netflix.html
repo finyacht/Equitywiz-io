@@ -850,10 +850,22 @@
                                             label += ': ';
                                         }
                                         if (context.parsed.y !== null) {
-                                            label += '$' + context.parsed.y.toLocaleString('en-US', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            });
+                                            if (label.includes('Stock')) {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' (' + shareCount + ' shares)';
+                                            } else if (label.includes('Option')) {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' (' + optionCount + ' options)';
+                                            } else {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                            }
                                         }
                                         return label;
                                     },
@@ -943,10 +955,22 @@
                                             label += ': ';
                                         }
                                         if (context.parsed.y !== null) {
-                                            label += context.parsed.y.toLocaleString('en-US', {
-                                                minimumFractionDigits: 1,
-                                                maximumFractionDigits: 1
-                                            }) + '%';
+                                            if (label.includes('Stock')) {
+                                                label += context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 1,
+                                                    maximumFractionDigits: 1
+                                                }) + '% (' + shareCount + ' shares)';
+                                            } else if (label.includes('Option')) {
+                                                label += context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 1,
+                                                    maximumFractionDigits: 1
+                                                }) + '% (' + optionCount + ' options)';
+                                            } else {
+                                                label += context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 1,
+                                                    maximumFractionDigits: 1
+                                                }) + '%';
+                                            }
                                         }
                                         return label;
                                     },
@@ -1023,10 +1047,22 @@
                                             label += ': ';
                                         }
                                         if (context.parsed.y !== null) {
-                                            label += '$' + context.parsed.y.toLocaleString('en-US', {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            });
+                                            if (label.includes('Stock')) {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' (' + shareCount + ' shares)';
+                                            } else if (label.includes('Option')) {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' (' + optionCount + ' options)';
+                                            } else {
+                                                label += '$' + context.parsed.y.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                });
+                                            }
                                         }
                                         return label;
                                     }
