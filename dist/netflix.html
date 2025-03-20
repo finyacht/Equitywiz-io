@@ -115,6 +115,8 @@
             right: 0;
             top: 45px;
             pointer-events: none;
+            width: max-content;
+            max-width: 300px;
         }
         
         .tooltip::before {
@@ -452,7 +454,14 @@
             right: -10px;
             top: 48px;
             z-index: 1001;
-            width: 250px;
+            width: auto;
+            min-width: 250px;
+        }
+        
+        .result-card .tooltip {
+            top: 30px;
+            right: -20px;
+            min-width: 280px;
         }
     </style>
 </head>
@@ -516,9 +525,9 @@
                 </div>
                 <div class="form-group">
                     <label for="optionDiscount">Option Price Discount (%)</label>
-                    <input type="number" id="optionDiscount" min="1" max="100" step="1" value="40" disabled>
+                    <input type="number" id="optionDiscount" min="1" max="100" step="1" value="40">
                     <span class="info-icon">?</span>
-                    <div class="tooltip">Netflix options cost 40% of the current stock price (fixed by the plan).</div>
+                    <div class="tooltip">Netflix options cost 40% of the current stock price by default, but you can adjust this value to model different scenarios.</div>
                 </div>
                 <div class="form-group">
                     <label for="annualGrowthRate">Projected Annual Growth Rate (%)</label>
@@ -655,25 +664,48 @@
     <script src="/js/netflixOptionCalculator.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize the calculator
-            const calculator = new NetflixOptionCalculator();
+            // Initialize charts
+            let valueComparisonChart, returnComparisonChart, timeProjectionChart;
             
-            // Get DOM elements
+            // Helper function to generate price range around a given price
+            function generatePriceRange(basePrice) {
+                const min = basePrice * 0.4;  // 40% of base price
+                const max = basePrice * 2.4;  // 240% of base price
+                const step = (max - min) / 15;
+                const range = [];
+                
+                for (let price = min; price <= max; price += step) {
+                    range.push(price);
+                }
+                
+                return range;
+            }
+            
+            // Helper function to format currency
+            function formatCurrency(value) {
+                return '$' + parseFloat(value).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+            
+            // Get input elements
             const initialInvestmentInput = document.getElementById('initialInvestment');
             const currentStockPriceInput = document.getElementById('currentStockPrice');
             const optionDiscountInput = document.getElementById('optionDiscount');
             const annualGrowthRateInput = document.getElementById('annualGrowthRate');
             const yearsToProjectInput = document.getElementById('yearsToProject');
             const taxRateInput = document.getElementById('taxRate');
+            
+            // Get result elements
+            const shareCountElement = document.getElementById('shareCount');
+            const optionCountElement = document.getElementById('optionCount');
+            const breakEvenPriceElement = document.getElementById('breakEvenPrice');
+            const outperformPriceElement = document.getElementById('outperformPrice');
             const resultsSection = document.getElementById('resultsSection');
             
-            // Chart objects
-            let valueComparisonChart;
-            let returnComparisonChart;
-            let timeProjectionChart;
-            
-            // Initialize charts with empty data
-            function initializeCharts() {
+            // Initialize charts
+            function initCharts() {
                 // Value Comparison Chart
                 const valueCtx = document.getElementById('valueComparisonChart').getContext('2d');
                 valueComparisonChart = new Chart(valueCtx, {
@@ -688,7 +720,7 @@
                                 tension: 0.1
                             },
                             {
-                                label: 'Options Value',
+                                label: 'Option Value',
                                 borderColor: '#e8462e',
                                 backgroundColor: '#e8462e',
                                 fill: false,
@@ -719,16 +751,28 @@
                                     display: true,
                                     text: 'Value ($)'
                                 },
-                                beginAtZero: true,
                                 ticks: {
                                     callback: function(value) {
-                                        return '$' + value.toLocaleString();
+                                        return '$' + value;
                                     }
                                 }
                             }
                         },
                         plugins: {
                             tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleFont: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                                bodyFont: {
+                                    size: 13
+                                },
+                                padding: 15,
+                                displayColors: true,
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                boxPadding: 5,
                                 callbacks: {
                                     label: function(context) {
                                         let label = context.dataset.label || '';
@@ -855,14 +899,14 @@
                     data: {
                         datasets: [
                             {
-                                label: 'After-Tax Stock Value',
+                                label: 'Stock After-Tax Value',
                                 borderColor: '#3e95cd',
                                 backgroundColor: '#3e95cd',
                                 fill: false,
                                 tension: 0.1
                             },
                             {
-                                label: 'After-Tax Option Value',
+                                label: 'Options After-Tax Value',
                                 borderColor: '#e8462e',
                                 backgroundColor: '#e8462e',
                                 fill: false,
@@ -893,10 +937,9 @@
                                     display: true,
                                     text: 'After-Tax Value ($)'
                                 },
-                                beginAtZero: true,
                                 ticks: {
                                     callback: function(value) {
-                                        return '$' + value.toLocaleString();
+                                        return '$' + value;
                                     }
                                 }
                             }
@@ -916,9 +959,6 @@
                                             });
                                         }
                                         return label;
-                                    },
-                                    title: function(context) {
-                                        return 'Year: ' + context[0].label;
                                     }
                                 }
                             }
@@ -927,91 +967,147 @@
                 });
             }
             
-            // Format currency with commas and 2 decimal places
-            function formatCurrency(value) {
-                return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            }
+            // Set up event listeners for input changes
+            initialInvestmentInput.addEventListener('input', updateCalculations);
+            currentStockPriceInput.addEventListener('input', updateCalculations);
+            optionDiscountInput.addEventListener('input', updateCalculations); 
+            annualGrowthRateInput.addEventListener('input', updateCalculations);
+            yearsToProjectInput.addEventListener('input', updateCalculations);
+            taxRateInput.addEventListener('input', updateCalculations);
             
-            // Format number with commas and 2 decimal places
-            function formatNumber(value) {
-                return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            }
-            
-            // Update charts with new data
-            function updateCharts() {
-                // Get parameter values
-                const initialInvestment = parseFloat(initialInvestmentInput.value);
-                const currentStockPrice = parseFloat(currentStockPriceInput.value);
-                const optionDiscount = parseFloat(optionDiscountInput.value) / 100;
-                const annualGrowthRate = parseFloat(annualGrowthRateInput.value) / 100;
-                const yearsToProject = parseInt(yearsToProjectInput.value);
-                const taxRate = parseFloat(taxRateInput.value) / 100;
+            // Function to update all calculations
+            function updateCalculations() {
+                // Get input values
+                const initialInvestment = parseFloat(initialInvestmentInput.value) || 1000;
+                const currentStockPrice = parseFloat(currentStockPriceInput.value) || 500;
+                const optionDiscount = parseFloat(optionDiscountInput.value) || 40;
+                const annualGrowthRate = parseFloat(annualGrowthRateInput.value) || 10;
+                const yearsToProject = parseInt(yearsToProjectInput.value) || 10;
+                const taxRate = parseFloat(taxRateInput.value) || 33;
                 
-                // Set calculator parameters
-                calculator.setParameters(initialInvestment, currentStockPrice, optionDiscount, yearsToProject, annualGrowthRate, taxRate);
+                // Option price is a percentage of the stock price
+                const optionPrice = currentStockPrice * (optionDiscount / 100);
                 
-                // Update result metrics
-                document.getElementById('shareCount').textContent = formatNumber(calculator.getShareCount());
-                document.getElementById('optionCount').textContent = formatNumber(calculator.getOptionCount());
-                document.getElementById('breakEvenPrice').textContent = formatCurrency(calculator.calculateBreakEvenPrice());
-                document.getElementById('outperformPrice').textContent = formatCurrency(calculator.calculateOutperformPrice());
+                // Calculate shares and options
+                const shareCount = Math.floor(initialInvestment / currentStockPrice);
+                const optionCount = Math.floor(initialInvestment / optionPrice);
                 
-                // Value Comparison Chart
-                const valueData = calculator.generatePriceComparisonData();
-                valueComparisonChart.data.labels = valueData.map(d => formatCurrency(d.stockPrice));
-                valueComparisonChart.data.datasets[0].data = valueData.map(d => d.stockValue);
-                valueComparisonChart.data.datasets[1].data = valueData.map(d => d.optionValue);
-                valueComparisonChart.data.datasets[2].data = valueData.map(() => initialInvestment);
-                valueComparisonChart.update();
+                // Break-even price is the option exercise price plus the option cost
+                const breakEvenPrice = currentStockPrice + optionPrice;
                 
-                // Return Comparison Chart
-                const returnData = calculator.generateReturnComparisonData();
-                returnComparisonChart.data.labels = returnData.map(d => formatCurrency(d.stockPrice));
-                returnComparisonChart.data.datasets[0].data = returnData.map(d => d.stockReturn);
-                returnComparisonChart.data.datasets[1].data = returnData.map(d => d.optionReturn);
-                returnComparisonChart.data.datasets[2].data = returnData.map(() => 0);
-                returnComparisonChart.update();
+                // Calculate outperform price
+                let outperformPrice;
+                if (optionCount <= shareCount) {
+                    outperformPrice = Infinity; // Options never outperform
+                } else {
+                    outperformPrice = currentStockPrice + (initialInvestment / (optionCount - shareCount));
+                }
                 
-                // Time Projection Chart
-                const timeData = calculator.generateAfterTaxTimeProjection();
-                timeProjectionChart.data.labels = timeData.map(d => d.year);
-                timeProjectionChart.data.datasets[0].data = timeData.map(d => d.afterTaxStockValue);
-                timeProjectionChart.data.datasets[1].data = timeData.map(d => d.afterTaxOptionValue);
-                timeProjectionChart.data.datasets[2].data = timeData.map(() => initialInvestment);
-                timeProjectionChart.update();
+                // Update display
+                shareCountElement.textContent = shareCount.toFixed(0);
+                optionCountElement.textContent = optionCount.toFixed(0);
+                breakEvenPriceElement.textContent = '$' + breakEvenPrice.toFixed(2);
+                outperformPriceElement.textContent = isFinite(outperformPrice) ? 
+                    '$' + outperformPrice.toFixed(2) : 'N/A';
+                
+                // Update charts
+                updateCharts(initialInvestment, currentStockPrice, optionDiscount, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount);
                 
                 // Show results section
                 resultsSection.style.display = 'block';
             }
             
-            // Initialize accordion functionality
-            const accordionItems = document.querySelectorAll('.accordion-item');
-            accordionItems.forEach(item => {
-                const header = item.querySelector('.accordion-header');
-                const content = item.querySelector('.accordion-content');
+            function updateCharts(initialInvestment, currentStockPrice, optionDiscount, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount) {
+                // Price range for comparison charts
+                const priceRange = generatePriceRange(currentStockPrice);
                 
-                header.addEventListener('click', () => {
-                    content.style.display = content.style.display === 'block' ? 'none' : 'block';
-                    header.classList.toggle('active');
+                // Update Value Comparison Chart
+                const stockValues = priceRange.map(price => (price * shareCount).toFixed(2));
+                const optionValues = priceRange.map(price => {
+                    const optionValue = Math.max(0, price - currentStockPrice) * optionCount;
+                    return optionValue.toFixed(2);
+                });
+                
+                valueComparisonChart.data.labels = priceRange.map(price => '$' + price.toFixed(2));
+                valueComparisonChart.data.datasets[0].data = stockValues;
+                valueComparisonChart.data.datasets[1].data = optionValues;
+                valueComparisonChart.data.datasets[2].data = Array(priceRange.length).fill(initialInvestment);
+                valueComparisonChart.update();
+                
+                // Update Return Comparison Chart
+                const stockReturns = priceRange.map(price => {
+                    const stockValue = price * shareCount;
+                    return ((stockValue / initialInvestment - 1) * 100).toFixed(1);
+                });
+                
+                const optionReturns = priceRange.map(price => {
+                    const optionValue = Math.max(0, price - currentStockPrice) * optionCount;
+                    return ((optionValue / initialInvestment - 1) * 100).toFixed(1);
+                });
+                
+                returnComparisonChart.data.labels = priceRange.map(price => '$' + price.toFixed(2));
+                returnComparisonChart.data.datasets[0].data = stockReturns;
+                returnComparisonChart.data.datasets[1].data = optionReturns;
+                returnComparisonChart.data.datasets[2].data = Array(priceRange.length).fill(0);
+                returnComparisonChart.update();
+                
+                // Update Time Projection Chart
+                const timeData = [];
+                const taxRatePercent = taxRate / 100;
+                
+                for (let year = 0; year <= yearsToProject; year++) {
+                    // Future stock price based on growth rate
+                    const growthFactor = Math.pow(1 + (annualGrowthRate / 100), year);
+                    const futureStockPrice = currentStockPrice * growthFactor;
+                    
+                    // Calculate values before taxes
+                    const stockValue = shareCount * futureStockPrice;
+                    
+                    // Option payoff is max(0, future price - exercise price)
+                    const optionPayoff = Math.max(0, futureStockPrice - currentStockPrice);
+                    const optionValue = optionCount * optionPayoff;
+                    
+                    // Calculate tax implications
+                    // For stock: tax on capital gains (future value - initial investment)
+                    const stockCapitalGain = stockValue - initialInvestment;
+                    const stockTax = stockCapitalGain > 0 ? stockCapitalGain * taxRatePercent : 0;
+                    const stockAfterTax = stockValue - stockTax;
+                    
+                    // For options: tax on full option value (treated as ordinary income)
+                    const optionTax = optionValue > 0 ? optionValue * taxRatePercent : 0;
+                    const optionAfterTax = optionValue - optionTax;
+                    
+                    timeData.push({
+                        year,
+                        stockValue: stockAfterTax,
+                        optionValue: optionAfterTax
+                    });
+                }
+                
+                timeProjectionChart.data.labels = timeData.map(d => d.year);
+                timeProjectionChart.data.datasets[0].data = timeData.map(d => d.stockValue);
+                timeProjectionChart.data.datasets[1].data = timeData.map(d => d.optionValue);
+                timeProjectionChart.data.datasets[2].data = Array(timeData.length).fill(initialInvestment);
+                timeProjectionChart.update();
+            }
+            
+            // Initialize accordion functionality
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    const content = this.nextElementSibling;
+                    if (content.style.display === 'block') {
+                        content.style.display = 'none';
+                    } else {
+                        content.style.display = 'block';
+                    }
                 });
             });
             
-            // Setup event listeners for live updates
-            const inputElements = [
-                initialInvestmentInput,
-                currentStockPriceInput,
-                annualGrowthRateInput,
-                yearsToProjectInput,
-                taxRateInput
-            ];
-            
-            inputElements.forEach(input => {
-                input.addEventListener('input', updateCharts);
-            });
-            
-            // Initialize charts and run calculations immediately
-            initializeCharts();
-            updateCharts();
+            // Initialize charts and run initial calculation
+            initCharts();
+            updateCalculations();
         });
     </script>
 </body>

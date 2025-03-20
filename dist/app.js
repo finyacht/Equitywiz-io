@@ -24,6 +24,12 @@ app.get('/netflix', (req, res) => {
 app.use(express.static(__dirname));
 
 // Start the server
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Financial Modeling Tools running at http://localhost:${port}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`Port ${port} is already in use. Please close the application using this port or try a different port.`);
+  } else {
+    console.error('Error starting server:', err);
+  }
 }); 
