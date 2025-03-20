@@ -2,41 +2,516 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <title>Netflix Option Modeler</title>
+    <!-- Load Chart.js with all required modules -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
+    <!-- Mobile Responsiveness Enhancements -->
     <link rel="stylesheet" href="/css/mobile-responsive.css">
     <style>
-        .placeholder-container {
-            padding: 40px;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
+        /* Netflix-specific styling overrides */
+        :root {
+            --primary-color: #e50914;
+            --primary-dark: #b20710;
+            --primary-light: #fde7e9;
         }
-        .home-link {
-            margin-top: 30px;
+        
+        .logo {
+            background-color: var(--primary-color);
+        }
+        
+        .chart-container {
+            position: relative;
+            margin: 25px 0;
+            height: 300px;
+        }
+        
+        .result-card {
+            background-color: var(--gray-100);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .result-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+        
+        .info-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: var(--gray-500);
+            color: white;
+            text-align: center;
+            font-size: 12px;
+            line-height: 18px;
+            margin-left: 6px;
+            cursor: help;
+        }
+        
+        .tooltip {
+            display: none;
+            position: absolute;
+            background-color: var(--gray-900);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 100;
+            max-width: 300px;
+            font-size: 0.8rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info-icon:hover + .tooltip {
+            display: block;
         }
     </style>
 </head>
 <body>
+    <!-- Logo and Title -->
     <div class="logo-container">
-        <div class="logo"></div>
+        <div class="logo">
+            <!-- Logo is created with CSS -->
+        </div>
         <div class="logo-text">
             <h1 class="logo-title">Netflix Option Modeler</h1>
-            <span class="logo-subtitle">Coming Soon</span>
+            <span class="logo-subtitle">Stock Option Value Calculator</span>
         </div>
     </div>
 
-    <div class="placeholder-container">
+    <div class="container">
+        <!-- Introduction Section -->
+        <div class="card intro-card">
+            <h2>Netflix Stock Option Plan Calculator</h2>
+            <p>This calculator helps Netflix employees compare the value of purchasing Netflix stock versus stock options under the Supplemental Allocation plan. Enter your parameters below to visualize potential outcomes.</p>
+            <div class="highlight-box">
+                <p><strong>How Netflix Options Work:</strong> Employees can choose to forego a portion of their salary to purchase stock options at 40% of the current stock price. These options have an exercise price equal to the stock price at the time of purchase and last for 10 years.</p>
+            </div>
+        </div>
+
+        <!-- Input Parameters Section -->
         <div class="card">
-            <h2>Netflix Option Modeler</h2>
-            <p>This page is a placeholder for the upcoming Netflix Option Modeler tool.</p>
-            <p>The detailed implementation will be added in the future.</p>
+            <h2>Input Parameters</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="initialInvestment">Initial Investment ($)</label>
+                    <input type="number" id="initialInvestment" min="100" step="100" value="1000">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The amount of money you plan to invest, either in Netflix stock or options.</div>
+                </div>
+                <div class="form-group">
+                    <label for="currentStockPrice">Current NFLX Stock Price ($)</label>
+                    <input type="number" id="currentStockPrice" min="1" step="1" value="500">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The current market price of Netflix stock.</div>
+                </div>
+                <div class="form-group">
+                    <label for="optionDiscount">Option Price Discount (%)</label>
+                    <input type="number" id="optionDiscount" min="1" max="100" step="1" value="40" disabled>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">Netflix options cost 40% of the current stock price (fixed by the plan).</div>
+                </div>
+                <div class="form-group">
+                    <label for="annualGrowthRate">Projected Annual Growth Rate (%)</label>
+                    <input type="number" id="annualGrowthRate" min="0" max="100" step="1" value="10">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">Your estimate of how much Netflix stock will grow annually over the investment period.</div>
+                </div>
+                <div class="form-group">
+                    <label for="yearsToProject">Years to Project</label>
+                    <input type="number" id="yearsToProject" min="1" max="10" step="1" value="10">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">Number of years to project your investment growth (max 10 years, the lifetime of the options).</div>
+                </div>
+                <div class="form-group">
+                    <label for="taxRate">Capital Gains Tax Rate (%)</label>
+                    <input type="number" id="taxRate" min="0" max="100" step="1" value="33">
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">Your estimated tax rate on capital gains.</div>
+                </div>
+            </div>
+            <div class="button-container">
+                <button id="calculateButton" class="button primary">Calculate</button>
+                <button id="resetButton" class="button secondary">Reset</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="card" style="display: none;">
+            <h2>Analysis Results</h2>
             
-            <div class="home-link">
-                <a href="/" class="button secondary">Return to Home</a>
+            <div class="result-grid">
+                <!-- Key Metrics -->
+                <div class="result-card">
+                    <div class="result-label">Shares You Can Buy</div>
+                    <div id="shareCount" class="result-value">2</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Options You Can Buy</div>
+                    <div id="optionCount" class="result-value">5</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Option Break-Even Price</div>
+                    <div id="breakEvenPrice" class="result-value">$700</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Options Outperform at</div>
+                    <div id="outperformPrice" class="result-value">$833.33</div>
+                </div>
+            </div>
+            
+            <!-- Chart 1: Value Comparison -->
+            <h3>Value Comparison: Stock vs Options</h3>
+            <div class="chart-container">
+                <canvas id="valueComparisonChart"></canvas>
+            </div>
+            <p class="chart-description">This chart shows how the value of your stock and option investments change at different Netflix stock prices.</p>
+            
+            <!-- Chart 2: Return Comparison -->
+            <h3>Rate of Return: Stock vs Options</h3>
+            <div class="chart-container">
+                <canvas id="returnComparisonChart"></canvas>
+            </div>
+            <p class="chart-description">This chart shows the percentage return on your investment for both stock and options at different Netflix stock prices.</p>
+            
+            <!-- Chart 3: Time Projection -->
+            <h3>After-Tax Value Over Time</h3>
+            <div class="chart-container">
+                <canvas id="timeProjectionChart"></canvas>
+            </div>
+            <p class="chart-description">This chart projects the after-tax value of your stock and option investments over time, assuming the specified annual growth rate.</p>
+        </div>
+        
+        <!-- Explanation Section -->
+        <div class="card">
+            <h2>Understanding Netflix Stock Options</h2>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">How do Netflix stock options work?</div>
+                    <div class="accordion-content">
+                        <p>Netflix offers a unique Supplemental Allocation plan where employees can choose to forego a portion of their salary to purchase stock options at 40% of the current stock price. This allows you to buy 2.5 times more options than shares with the same amount of money.</p>
+                        <p>These options have an exercise price equal to the stock price at the time of purchase and last for 10 years, even if you leave Netflix.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">When do options become valuable?</div>
+                    <div class="accordion-content">
+                        <p>Options only have value when the stock price rises above the exercise price. Because you're paying for the options, you need the stock to rise 40% just to break even on your investment.</p>
+                        <p>The stock price needs to rise approximately 67% before options outperform the alternative of buying stock directly.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">What are the risks?</div>
+                    <div class="accordion-content">
+                        <p>Options are riskier than stock. If the stock price doesn't rise above the exercise price, your options will have zero value, and you'll lose your entire investment.</p>
+                        <p>With stock, even if the price decreases, you still own something of value. Options require significant stock price appreciation to be worthwhile.</p>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">Tax considerations</div>
+                    <div class="accordion-content">
+                        <p>When you exercise options and sell the resulting shares, you'll generally pay capital gains tax on the profit. The tax treatment can be complex and may depend on your holding period and other factors.</p>
+                        <p>This calculator provides a simplified after-tax analysis, but you should consult a tax professional for specific advice.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    
+    <div class="author-info">
+        <span>Developed by Amal Ganatra</span>
+        <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="linkedin-icon" viewBox="0 0 16 16">
+                <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+            </svg>
+        </a>
+    </div>
+    
+    <a href="/" class="home-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+    </a>
+    
+    <script src="/js/netflixOptionCalculator.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the calculator
+            const calculator = new NetflixOptionCalculator();
+            
+            // Get DOM elements
+            const initialInvestmentInput = document.getElementById('initialInvestment');
+            const currentStockPriceInput = document.getElementById('currentStockPrice');
+            const optionDiscountInput = document.getElementById('optionDiscount');
+            const annualGrowthRateInput = document.getElementById('annualGrowthRate');
+            const yearsToProjectInput = document.getElementById('yearsToProject');
+            const taxRateInput = document.getElementById('taxRate');
+            const calculateButton = document.getElementById('calculateButton');
+            const resetButton = document.getElementById('resetButton');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            // Chart objects
+            let valueComparisonChart;
+            let returnComparisonChart;
+            let timeProjectionChart;
+            
+            // Initialize charts with empty data
+            function initializeCharts() {
+                // Value Comparison Chart
+                const valueCtx = document.getElementById('valueComparisonChart').getContext('2d');
+                valueComparisonChart = new Chart(valueCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Stock Value',
+                                borderColor: '#3e95cd',
+                                backgroundColor: '#3e95cd',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Options Value',
+                                borderColor: '#e8462e',
+                                backgroundColor: '#e8462e',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Initial Investment',
+                                borderColor: '#000000',
+                                backgroundColor: '#000000',
+                                fill: false,
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'NFLX Stock Price'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Value ($)'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                
+                // Return Comparison Chart
+                const returnCtx = document.getElementById('returnComparisonChart').getContext('2d');
+                returnComparisonChart = new Chart(returnCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Stock Rate of Return',
+                                borderColor: '#3e95cd',
+                                backgroundColor: '#3e95cd',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Options Rate of Return',
+                                borderColor: '#e8462e',
+                                backgroundColor: '#e8462e',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Break-even (0%)',
+                                borderColor: '#000000',
+                                backgroundColor: '#000000',
+                                fill: false,
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'NFLX Stock Price'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Rate of Return (%)'
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Time Projection Chart
+                const timeCtx = document.getElementById('timeProjectionChart').getContext('2d');
+                timeProjectionChart = new Chart(timeCtx, {
+                    type: 'line',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'After-Tax Stock Value',
+                                borderColor: '#3e95cd',
+                                backgroundColor: '#3e95cd',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'After-Tax Option Value',
+                                borderColor: '#e8462e',
+                                backgroundColor: '#e8462e',
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Initial Investment',
+                                borderColor: '#000000',
+                                backgroundColor: '#000000',
+                                fill: false,
+                                borderWidth: 2,
+                                borderDash: [5, 5]
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Years'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'After-Tax Value ($)'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Format currency with commas and 2 decimal places
+            function formatCurrency(value) {
+                return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            
+            // Format number with commas and 2 decimal places
+            function formatNumber(value) {
+                return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+            
+            // Update charts with new data
+            function updateCharts() {
+                // Get parameter values
+                const initialInvestment = parseFloat(initialInvestmentInput.value);
+                const currentStockPrice = parseFloat(currentStockPriceInput.value);
+                const optionDiscount = parseFloat(optionDiscountInput.value) / 100;
+                const annualGrowthRate = parseFloat(annualGrowthRateInput.value) / 100;
+                const yearsToProject = parseInt(yearsToProjectInput.value);
+                const taxRate = parseFloat(taxRateInput.value) / 100;
+                
+                // Set calculator parameters
+                calculator.setParameters(initialInvestment, currentStockPrice, optionDiscount, yearsToProject, annualGrowthRate, taxRate);
+                
+                // Update result metrics
+                document.getElementById('shareCount').textContent = formatNumber(calculator.getShareCount());
+                document.getElementById('optionCount').textContent = formatNumber(calculator.getOptionCount());
+                document.getElementById('breakEvenPrice').textContent = formatCurrency(calculator.calculateBreakEvenPrice());
+                document.getElementById('outperformPrice').textContent = formatCurrency(calculator.calculateOutperformPrice());
+                
+                // Value Comparison Chart
+                const valueData = calculator.generatePriceComparisonData();
+                valueComparisonChart.data.labels = valueData.map(d => formatCurrency(d.stockPrice));
+                valueComparisonChart.data.datasets[0].data = valueData.map(d => d.stockValue);
+                valueComparisonChart.data.datasets[1].data = valueData.map(d => d.optionValue);
+                valueComparisonChart.data.datasets[2].data = valueData.map(() => initialInvestment);
+                valueComparisonChart.update();
+                
+                // Return Comparison Chart
+                const returnData = calculator.generateReturnComparisonData();
+                returnComparisonChart.data.labels = returnData.map(d => formatCurrency(d.stockPrice));
+                returnComparisonChart.data.datasets[0].data = returnData.map(d => d.stockReturn);
+                returnComparisonChart.data.datasets[1].data = returnData.map(d => d.optionReturn);
+                returnComparisonChart.data.datasets[2].data = returnData.map(() => 0);
+                returnComparisonChart.update();
+                
+                // Time Projection Chart
+                const timeData = calculator.generateAfterTaxTimeProjection();
+                timeProjectionChart.data.labels = timeData.map(d => d.year);
+                timeProjectionChart.data.datasets[0].data = timeData.map(d => d.afterTaxStockValue);
+                timeProjectionChart.data.datasets[1].data = timeData.map(d => d.afterTaxOptionValue);
+                timeProjectionChart.data.datasets[2].data = timeData.map(() => initialInvestment);
+                timeProjectionChart.update();
+                
+                // Show results section
+                resultsSection.style.display = 'block';
+            }
+            
+            // Reset to default values
+            function resetCalculator() {
+                initialInvestmentInput.value = 1000;
+                currentStockPriceInput.value = 500;
+                optionDiscountInput.value = 40;
+                annualGrowthRateInput.value = 10;
+                yearsToProjectInput.value = 10;
+                taxRateInput.value = 33;
+                
+                // Hide results
+                resultsSection.style.display = 'none';
+            }
+            
+            // Initialize accordion functionality
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            accordionItems.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                
+                header.addEventListener('click', () => {
+                    content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                    header.classList.toggle('active');
+                });
+            });
+            
+            // Setup event listeners
+            calculateButton.addEventListener('click', updateCharts);
+            resetButton.addEventListener('click', resetCalculator);
+            
+            // Initialize charts on load
+            initializeCharts();
+        });
+    </script>
 </body>
 </html> 
