@@ -84,6 +84,9 @@
             max-width: 300px;
             font-size: 0.8rem;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            white-space: normal;
+            word-wrap: break-word;
+            line-height: 1.4;
         }
         
         .info-icon:hover + .tooltip {
@@ -152,19 +155,59 @@
         }
         
         .author-tag {
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            margin-left: 10px;
             font-size: 0.9rem;
             color: var(--gray-600);
+            margin-top: 5px;
         }
         
         .author-tag .linkedin-icon {
             margin-left: 5px;
         }
+        
+        .disclaimer {
+            background-color: var(--gray-100);
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        
+        .nav-bar {
+            background-color: var(--gray-800);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-bar svg {
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <a href="/">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+        </a>
+    </div>
+
     <!-- Logo and Title -->
     <div class="logo-container">
         <div class="logo">
@@ -172,16 +215,14 @@
         </div>
         <div class="logo-text">
             <h1 class="logo-title">Netflix Option Modeler</h1>
-            <div style="display: flex; align-items: center;">
-                <span class="logo-subtitle">Stock Option Value Calculator</span>
-                <span class="author-tag">
-                    by Amal Ganatra
-                    <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="linkedin-icon" viewBox="0 0 16 16">
-                            <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
-                        </svg>
-                    </a>
-                </span>
+            <span class="logo-subtitle">Stock Option Value Calculator</span>
+            <div class="author-tag">
+                by Amal Ganatra
+                <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="linkedin-icon" viewBox="0 0 16 16">
+                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </div>
@@ -237,9 +278,6 @@
                     <div class="tooltip">Your estimated tax rate on capital gains.</div>
                 </div>
             </div>
-            <div class="button-container">
-                <button id="resetButton" class="button secondary">Reset</button>
-            </div>
         </div>
 
         <!-- Results Section -->
@@ -251,18 +289,26 @@
                 <div class="result-card">
                     <div class="result-label">Shares You Can Buy</div>
                     <div id="shareCount" class="result-value">2</div>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">Number of Netflix shares you can buy with your initial investment at the current stock price.</div>
                 </div>
                 <div class="result-card">
                     <div class="result-label">Options You Can Buy</div>
                     <div id="optionCount" class="result-value">5</div>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">Number of Netflix stock options you can buy with your initial investment at 40% of the current stock price.</div>
                 </div>
                 <div class="result-card">
                     <div class="result-label">Option Break-Even Price</div>
                     <div id="breakEvenPrice" class="result-value">$700</div>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The stock price at which your option investment value equals your initial investment (40% gain required to break even).</div>
                 </div>
                 <div class="result-card">
                     <div class="result-label">Options Outperform at</div>
                     <div id="outperformPrice" class="result-value">$833.33</div>
+                    <span class="info-icon">?</span>
+                    <div class="tooltip">The stock price at which investing in options becomes more profitable than investing in shares (approximately 67% gain required).</div>
                 </div>
             </div>
             
@@ -322,6 +368,11 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+            <p><strong>Disclaimer:</strong> This tool is for educational purposes only and should not be considered financial advice. The calculations are based on simplified models and assumptions. Actual investment outcomes may vary significantly due to market conditions, tax implications, and other factors. Always consult with a financial advisor before making investment decisions. The tool does not guarantee investment returns or account for all possible scenarios.</p>
+        </div>
     </div>
     
     <div class="author-info">
@@ -332,13 +383,6 @@
             </svg>
         </a>
     </div>
-    
-    <a href="/" class="home-button">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-    </a>
     
     <script src="/js/netflixOptionCalculator.js"></script>
     <script>
@@ -353,7 +397,6 @@
             const annualGrowthRateInput = document.getElementById('annualGrowthRate');
             const yearsToProjectInput = document.getElementById('yearsToProject');
             const taxRateInput = document.getElementById('taxRate');
-            const resetButton = document.getElementById('resetButton');
             const resultsSection = document.getElementById('resultsSection');
             
             // Chart objects
@@ -660,19 +703,6 @@
                 resultsSection.style.display = 'block';
             }
             
-            // Reset to default values
-            function resetCalculator() {
-                initialInvestmentInput.value = 1000;
-                currentStockPriceInput.value = 500;
-                optionDiscountInput.value = 40;
-                annualGrowthRateInput.value = 10;
-                yearsToProjectInput.value = 10;
-                taxRateInput.value = 33;
-                
-                // Hide results
-                resultsSection.style.display = 'none';
-            }
-            
             // Initialize accordion functionality
             const accordionItems = document.querySelectorAll('.accordion-item');
             accordionItems.forEach(item => {
@@ -697,8 +727,6 @@
             inputElements.forEach(input => {
                 input.addEventListener('input', updateCharts);
             });
-            
-            resetButton.addEventListener('click', resetCalculator);
             
             // Initialize charts and run calculations immediately
             initializeCharts();
