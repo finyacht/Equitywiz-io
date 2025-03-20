@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 3003;
 
 // First handle specific routes before serving static files
 // Route for the root path (Home page)
@@ -23,8 +23,8 @@ app.get('/netflix', (req, res) => {
 // This comes AFTER route definitions to prevent conflicts
 app.use(express.static(__dirname));
 
-// Start the server
-app.listen(port, '0.0.0.0', () => {
+// Start the server - removed host binding to use default binding to all interfaces
+app.listen(port, () => {
   console.log(`Financial Modeling Tools running at http://localhost:${port}`);
 }).on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
