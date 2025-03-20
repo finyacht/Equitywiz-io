@@ -556,11 +556,11 @@
                     <div class="tooltip">The current market price of Netflix stock.</div>
                 </div>
                 <div class="form-group">
-                    <label for="optionDiscount">Option Price Discount (%)</label>
-                    <input type="number" id="optionDiscount" min="1" max="100" step="1" value="40">
+                    <label for="optionCost">Cost Per Option ($)</label>
+                    <input type="number" id="optionCost" min="1" step="1" value="200">
                     <span class="info-icon">?</span>
                     <div class="tooltip">
-                        Netflix options cost 40% of the current stock price by default. Changing this value affects how many options you can buy with the initial investment. A higher discount (e.g., 50%) means options cost less and you can buy more of them.
+                        The cost to purchase each option. Netflix typically offers options at 40% of the current stock price, but you can adjust this value to model different scenarios.
                     </div>
                 </div>
                 <div class="form-group">
@@ -619,21 +619,21 @@
         
         <!-- Discount Explainer Card -->
         <div class="card discount-explainer-card">
-            <h3>How Option Discount Affects Your Investment</h3>
+            <h3>How Option Cost Affects Your Investment</h3>
             <div class="discount-explainer">
-                <p>The Option Price Discount (currently <span id="discountValue">40</span>%) determines:</p>
+                <p>The Cost Per Option (currently <span id="optionCostDisplay">200</span>$) determines:</p>
                 <ul>
-                    <li><strong>Cost of each option</strong> = Current Stock Price × (<span id="discountValue2">40</span>% ÷ 100)</li>
-                    <li><strong>Number of options you can buy</strong> = Initial Investment ÷ Option Cost</li>
-                    <li><strong>Break-even price</strong> = Current Stock Price + Option Cost</li>
+                    <li><strong>Number of options you can buy</strong> = Initial Investment ÷ Cost Per Option</li>
+                    <li><strong>Break-even price</strong> = Current Stock Price + Cost Per Option</li>
+                    <li><strong>Implied discount</strong> = Cost Per Option ÷ Current Stock Price × 100 = <span id="discountValue">40</span>%</li>
                 </ul>
                 <p>With your current settings:</p>
                 <ul>
                     <li>Stock Price: $<span id="currentPriceDisplay">500</span></li>
-                    <li>Option Cost: $<span id="optionCostDisplay">200</span> per option</li>
                     <li>You can buy <span id="optionCountDisplay">5</span> options instead of <span id="shareCountDisplay">2</span> shares</li>
+                    <li>Each option costs $<span id="optionCostDisplay2">200</span>, which is <span id="discountValue2">40</span>% of the stock price</li>
                 </ul>
-                <p>Try changing the discount percentage to see how it affects your investment.</p>
+                <p>Try adjusting the Cost Per Option to see how it affects your investment strategy.</p>
             </div>
         </div>
         
@@ -760,7 +760,7 @@
             // Get input elements
             const initialInvestmentInput = document.getElementById('initialInvestment');
             const currentStockPriceInput = document.getElementById('currentStockPrice');
-            const optionDiscountInput = document.getElementById('optionDiscount');
+            const optionCostInput = document.getElementById('optionCost');
             const annualGrowthRateInput = document.getElementById('annualGrowthRate');
             const yearsToProjectInput = document.getElementById('yearsToProject');
             const taxRateInput = document.getElementById('taxRate');
@@ -1038,7 +1038,7 @@
             // Set up event listeners for input changes
             initialInvestmentInput.addEventListener('input', updateCalculations);
             currentStockPriceInput.addEventListener('input', updateCalculations);
-            optionDiscountInput.addEventListener('input', updateCalculations); 
+            optionCostInput.addEventListener('input', updateCalculations); 
             annualGrowthRateInput.addEventListener('input', updateCalculations);
             yearsToProjectInput.addEventListener('input', updateCalculations);
             taxRateInput.addEventListener('input', updateCalculations);
@@ -1048,20 +1048,20 @@
                 // Get input values
                 const initialInvestment = parseFloat(initialInvestmentInput.value) || 1000;
                 const currentStockPrice = parseFloat(currentStockPriceInput.value) || 500;
-                const optionDiscount = parseFloat(optionDiscountInput.value) || 40;
+                const optionCost = parseFloat(optionCostInput.value) || 200;
                 const annualGrowthRate = parseFloat(annualGrowthRateInput.value) || 10;
                 const yearsToProject = parseInt(yearsToProjectInput.value) || 10;
                 const taxRate = parseFloat(taxRateInput.value) || 33;
                 
-                // Option price is a percentage of the stock price
-                const optionPrice = currentStockPrice * (optionDiscount / 100);
+                // Calculate the implied discount percentage (for informational purposes)
+                const optionDiscount = (optionCost / currentStockPrice * 100).toFixed(1);
                 
                 // Calculate shares and options
                 const shareCount = Math.floor(initialInvestment / currentStockPrice);
-                const optionCount = Math.floor(initialInvestment / optionPrice);
+                const optionCount = Math.floor(initialInvestment / optionCost);
                 
                 // Break-even price is the option exercise price plus the option cost
-                const breakEvenPrice = currentStockPrice + optionPrice;
+                const breakEvenPrice = currentStockPrice + optionCost;
                 
                 // Calculate outperform price
                 let outperformPrice;
@@ -1078,22 +1078,23 @@
                 outperformPriceElement.textContent = isFinite(outperformPrice) ? 
                     '$' + outperformPrice.toFixed(2) : 'N/A';
                 
-                // Update discount explainer values
+                // Update explainer values
                 document.getElementById('discountValue').textContent = optionDiscount;
                 document.getElementById('discountValue2').textContent = optionDiscount;
                 document.getElementById('currentPriceDisplay').textContent = currentStockPrice.toFixed(2);
-                document.getElementById('optionCostDisplay').textContent = optionPrice.toFixed(2);
+                document.getElementById('optionCostDisplay').textContent = optionCost.toFixed(2);
+                document.getElementById('optionCostDisplay2').textContent = optionCost.toFixed(2);
                 document.getElementById('optionCountDisplay').textContent = optionCount;
                 document.getElementById('shareCountDisplay').textContent = shareCount;
                 
                 // Update charts
-                updateCharts(initialInvestment, currentStockPrice, optionDiscount, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount);
+                updateCharts(initialInvestment, currentStockPrice, optionCost, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount);
                 
                 // Show results section
                 resultsSection.style.display = 'block';
             }
             
-            function updateCharts(initialInvestment, currentStockPrice, optionDiscount, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount) {
+            function updateCharts(initialInvestment, currentStockPrice, optionCost, annualGrowthRate, yearsToProject, taxRate, shareCount, optionCount) {
                 // Price range for comparison charts
                 const priceRange = generatePriceRange(currentStockPrice);
                 
