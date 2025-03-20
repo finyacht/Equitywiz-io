@@ -578,7 +578,7 @@
         <!-- Input Parameters Section -->
         <div class="card">
             <h2>Input Parameters</h2>
-            <div class="form-grid">
+            <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <div class="form-group">
                     <label for="initialInvestment">Initial Investment ($)</label>
                     <input type="number" id="initialInvestment" min="100" step="100" value="1000">
@@ -1190,6 +1190,9 @@
                 // Update charts
                 updateCharts(initialInvestment, currentStockPrice, exercisePrice, optionCost, shareCount, optionCount);
                 
+                // Update calculation examples
+                updateCalculationExamples();
+                
                 // Check tax settings and update time projection if necessary
                 checkTaxSettings();
                 
@@ -1416,12 +1419,12 @@
             taxSettingsToggleBtn.addEventListener('click', function() {
                 this.classList.toggle('active');
                 const isVisible = taxSettingsSection.style.display === 'block';
-                taxSettingsSection.style.display = isVisible ? 'none' : 'block';
                 
-                // Update button text
                 if (isVisible) {
+                    taxSettingsSection.style.display = 'none';
                     this.textContent = '+ Show Tax & Projection Settings';
                 } else {
+                    taxSettingsSection.style.display = 'block';
                     this.textContent = '- Hide Tax & Projection Settings';
                 }
                 
@@ -1433,6 +1436,42 @@
             annualGrowthRateInput.addEventListener('input', checkTaxSettings);
             yearsToProjectInput.addEventListener('input', checkTaxSettings);
             taxRateInput.addEventListener('input', checkTaxSettings);
+
+            // Make the calculation explanation update in real-time 
+            function updateCalculationExamples() {
+                const initialInvestment = parseFloat(initialInvestmentInput.value) || 1000;
+                const currentStockPrice = parseFloat(currentStockPriceInput.value) || 500;
+                const exercisePrice = parseFloat(exercisePriceInput.value) || 500;  
+                const optionCost = parseFloat(optionCostInput.value) || 200;
+                
+                const shareCount = Math.floor(initialInvestment / currentStockPrice);
+                const optionCount = Math.floor(initialInvestment / optionCost);
+                const breakEvenPrice = exercisePrice + optionCost;
+                
+                let outperformPrice;
+                if (optionCount <= shareCount) {
+                    outperformPrice = "N/A";
+                } else {
+                    outperformPrice = (exercisePrice + (initialInvestment / (optionCount - shareCount))).toFixed(2);
+                }
+                
+                // Update the calculation examples
+                document.querySelectorAll('.calculation-explanation em').forEach(example => {
+                    if (example.textContent.includes('$1,000 ÷ $500 = 2 shares')) {
+                        example.textContent = `Example: $${initialInvestment.toFixed(0)} ÷ $${currentStockPrice.toFixed(0)} = ${shareCount} shares`;
+                    } else if (example.textContent.includes('$1,000 ÷ $200 = 5 options')) {
+                        example.textContent = `Example: $${initialInvestment.toFixed(0)} ÷ $${optionCost.toFixed(0)} = ${optionCount} options`;
+                    } else if (example.textContent.includes('$600 + $200 = $800')) {
+                        example.textContent = `Example: $${exercisePrice.toFixed(0)} + $${optionCost.toFixed(0)} = $${breakEvenPrice.toFixed(2)}`;
+                    } else if (example.textContent.includes('$600 + [$1,000 ÷ (5 - 2)] = $933.33')) {
+                        if (outperformPrice === "N/A") {
+                            example.textContent = `Example: Options never outperform at these settings`;
+                        } else {
+                            example.textContent = `Example: $${exercisePrice.toFixed(0)} + [$${initialInvestment.toFixed(0)} ÷ (${optionCount} - ${shareCount})] = $${outperformPrice}`;
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>
