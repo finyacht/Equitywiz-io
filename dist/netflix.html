@@ -958,16 +958,26 @@
                                             label += ': ';
                                         }
                                         if (context.parsed.y !== null) {
+                                            const stockPrice = parseFloat(context.chart.data.labels[context.dataIndex].replace('$', ''));
+                                            
                                             if (label.includes('Stock')) {
+                                                const totalValue = stockPrice * shareCount;
                                                 label += context.parsed.y.toLocaleString('en-US', {
                                                     minimumFractionDigits: 1,
                                                     maximumFractionDigits: 1
-                                                }) + '% (' + shareCount + ' shares)';
+                                                }) + '% (' + shareCount + ' shares, $' + totalValue.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' total)';
                                             } else if (label.includes('Option')) {
+                                                const optionValue = Math.max(0, stockPrice - currentStockPrice) * optionCount;
                                                 label += context.parsed.y.toLocaleString('en-US', {
                                                     minimumFractionDigits: 1,
                                                     maximumFractionDigits: 1
-                                                }) + '% (' + optionCount + ' options)';
+                                                }) + '% (' + optionCount + ' options, $' + optionValue.toLocaleString('en-US', {
+                                                    minimumFractionDigits: 2,
+                                                    maximumFractionDigits: 2
+                                                }) + ' total)';
                                             } else {
                                                 label += context.parsed.y.toLocaleString('en-US', {
                                                     minimumFractionDigits: 1,
@@ -1205,16 +1215,26 @@
                         label += ': ';
                     }
                     if (context.parsed.y !== null) {
+                        const stockPrice = parseFloat(context.chart.data.labels[context.dataIndex].replace('$', ''));
+                        
                         if (label.includes('Stock')) {
+                            const totalValue = stockPrice * shareCount;
                             label += context.parsed.y.toLocaleString('en-US', {
                                 minimumFractionDigits: 1,
                                 maximumFractionDigits: 1
-                            }) + '% (' + shareCount + ' shares)';
+                            }) + '% (' + shareCount + ' shares, $' + totalValue.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' total)';
                         } else if (label.includes('Option')) {
+                            const optionValue = Math.max(0, stockPrice - currentStockPrice) * optionCount;
                             label += context.parsed.y.toLocaleString('en-US', {
                                 minimumFractionDigits: 1,
                                 maximumFractionDigits: 1
-                            }) + '% (' + optionCount + ' options)';
+                            }) + '% (' + optionCount + ' options, $' + optionValue.toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            }) + ' total)';
                         } else {
                             label += context.parsed.y.toLocaleString('en-US', {
                                 minimumFractionDigits: 1,
