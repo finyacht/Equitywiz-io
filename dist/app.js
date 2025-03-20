@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const port = process.env.PORT || 3003;
+const port = process.env.PORT || 3000;
 
 // First handle specific routes before serving static files
 // Route for the root path (Home page)
