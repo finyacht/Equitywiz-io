@@ -48,9 +48,44 @@
             margin-left: auto;
         }
         
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .action-button svg {
+            margin-right: 6px;
+        }
+        
+        .action-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .action-button:active {
+            transform: translateY(0);
+        }
+        
         @media (max-width: 768px) {
             .nav-title {
                 display: none;
+            }
+            
+            .action-button {
+                padding: 4px 8px;
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -330,6 +365,15 @@
                     <line x1="3" y1="18" x2="3.01" y2="18"></line>
                 </svg>
                 Distribution Summary
+                <button id="exportExcelBtn" class="action-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <polyline points="8 16 12 12 16 16"></polyline>
+                        <line x1="12" y1="12" x2="12" y2="21"></line>
+                    </svg>
+                    Export to Excel
+                </button>
             </h3>
             <div class="overflow-auto">
                 <table id="summaryTable">
@@ -400,5 +444,9 @@
     <script src="/js/main.js"></script>
     <!-- Mobile Responsiveness Enhancements -->
     <script src="/js/mobile-responsive.js"></script>
+    <!-- Excel Export Library -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Excel Export Script -->
+    <script src="/js/excelExport.js"></script>
 </body>
 </html> 
