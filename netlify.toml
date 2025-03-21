@@ -2,16 +2,18 @@
   publish = "dist"
   command = "npm run netlify-build"
 
-# Redirect rules for specific pages
+# Redirect rules for specific pages - ensure root domain always shows home page
 [[redirects]]
   from = "/"
   to = "/home.html"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/home"
   to = "/home.html"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/waterfall"

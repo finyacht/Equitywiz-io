@@ -4,7 +4,7 @@ const app = express();
 const port = 4000; // Try a completely different port
 
 // First handle specific routes before serving static files
-// Route for the root path (Home page)
+// Route for the root path (Home page) - always serve home.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'home.html'));
 });
@@ -19,8 +19,16 @@ app.get('/waterfall.html', (req, res) => {
 });
 
 // The index.html file is the Waterfall Analysis Tool when accessed directly
+// But ensure we redirect to home if it's accessed at the root
 app.get('/index.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  // Check if referrer exists and contains 'waterfall'
+  const referrer = req.get('Referrer') || '';
+  if (referrer.includes('waterfall')) {
+    res.sendFile(path.join(__dirname, 'index.html'));
+  } else {
+    // If accessed directly, redirect to home
+    res.redirect('/');
+  }
 });
 
 // Route for the Netflix Option Modeler - both with and without .html extension
