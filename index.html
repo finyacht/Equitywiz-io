@@ -55,27 +55,29 @@
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
             margin-left: 15px;
-            transition: background-color 0.2s, transform 0.2s;
-            box-shadow: var(--shadow-sm);
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         
         .action-button svg {
-            margin-right: 6px;
+            margin-right: 8px;
         }
         
         .action-button:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-1px);
+            background-color: #4570e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .action-button:active {
             transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         @media (max-width: 768px) {

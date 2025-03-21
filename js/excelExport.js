@@ -29,6 +29,10 @@ function exportToExcel() {
         const shareClasses = window.shareClasses || [];
         const transactions = window.transactions || [];
         
+        console.log("Exporting Excel file...");
+        console.log("Share Classes:", shareClasses);
+        console.log("Transactions:", transactions);
+        
         // Create workbook with multiple sheets
         const wb = XLSX.utils.book_new();
         
@@ -126,8 +130,8 @@ function addSummarySheet(wb, exitAmount, shareClasses, transactions) {
                      'Participation ($)', 'Common Distribution ($)', 'Additional Distribution ($)'];
     
     // Create data rows
-    const data = Object.values(summaryData).map(entry => {
-        const percentage = (entry.payout / exitAmount * 100).toFixed(2) + '%';
+    const data = summaryData.map(entry => {
+        const percentage = (entry.percentage).toFixed(2) + '%';
         return [
             entry.name,
             entry.payout,
@@ -140,15 +144,15 @@ function addSummarySheet(wb, exitAmount, shareClasses, transactions) {
     });
     
     // Add total row
-    const totalPayout = Object.values(summaryData).reduce((sum, entry) => sum + entry.payout, 0);
+    const totalPayout = summaryData.reduce((sum, entry) => sum + entry.payout, 0);
     const totalRow = [
         'TOTAL',
         totalPayout,
         '100.00%',
-        Object.values(summaryData).reduce((sum, entry) => sum + (entry.components['Liquidation Preference'] || 0), 0),
-        Object.values(summaryData).reduce((sum, entry) => sum + (entry.components['Participation'] || 0), 0),
-        Object.values(summaryData).reduce((sum, entry) => sum + (entry.components['Common Distribution'] || 0), 0),
-        Object.values(summaryData).reduce((sum, entry) => sum + (entry.components['Additional Distribution'] || 0), 0)
+        summaryData.reduce((sum, entry) => sum + (entry.components['Liquidation Preference'] || 0), 0),
+        summaryData.reduce((sum, entry) => sum + (entry.components['Participation'] || 0), 0),
+        summaryData.reduce((sum, entry) => sum + (entry.components['Common Distribution'] || 0), 0),
+        summaryData.reduce((sum, entry) => sum + (entry.components['Additional Distribution'] || 0), 0)
     ];
     
     // Combine headers, data, and total
@@ -212,29 +216,44 @@ function addDetailedWaterfallSheet(wb, exitAmount, shareClasses, transactions) {
 function addExitDistributionSheet(wb, shareClasses, transactions) {
     // Calculate exit distribution across different exit values
     const maxExitAmount = parseNumberWithCommas(document.getElementById('exitAmount').value) * 2;
-    const distributionData = waterfallCalculator.calculateExitDistribution(shareClasses, transactions, maxExitAmount);
     
-    // Create header row
-    const headers = ['Exit Value ($)'];
-    const shareClassNames = [...new Set(distributionData.map(d => d.shareClass))];
-    headers.push(...shareClassNames);
+    // Use waterfallCalculator's exit distribution function
+    const distributionResult = waterfallCalculator.calculateExitDistribution(shareClasses, transactions, maxExitAmount);
     
-    // Group data by exit value
-    const exitValues = [...new Set(distributionData.map(d => d.exitValue))];
-    const data = exitValues.map(exitValue => {
-        const row = [exitValue];
-        for (const className of shareClassNames) {
-            const entry = distributionData.find(d => d.exitValue === exitValue && d.shareClass === className);
-            row.push(entry ? entry.amount : 0);
-        }
-        return row;
+    // Format the data for Excel
+    const shareClassNames = [];
+    const formattedData = [];
+    
+    // First determine all possible class names across all distributions
+    distributionResult.distributions.forEach(distribution => {
+        distribution.forEach(entry => {
+            if (!shareClassNames.includes(entry.name)) {
+                shareClassNames.push(entry.name);
+            }
+        });
     });
     
-    // Sort by exit value
-    data.sort((a, b) => a[0] - b[0]);
+    // Create data rows
+    for (let i = 0; i < distributionResult.exitValues.length; i++) {
+        const exitValue = distributionResult.exitValues[i];
+        const distribution = distributionResult.distributions[i];
+        
+        const row = [exitValue];
+        
+        // Add amount for each share class
+        for (const className of shareClassNames) {
+            const entry = distribution.find(d => d.name === className);
+            row.push(entry ? entry.payout : 0);
+        }
+        
+        formattedData.push(row);
+    }
+    
+    // Create header row
+    const headers = ['Exit Value ($)', ...shareClassNames];
     
     // Combine headers and data
-    const wsData = [headers, ...data];
+    const wsData = [headers, ...formattedData];
     
     // Create worksheet and add to workbook
     const ws = XLSX.utils.aoa_to_sheet(wsData);
