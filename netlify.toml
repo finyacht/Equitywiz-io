@@ -15,9 +15,15 @@
   status = 200
   force = true
 
-# Make sure the Waterfall redirect has higher priority with force = true
+# Make sure the Waterfall redirect is at the top and has absolute priority
 [[redirects]]
   from = "/waterfall"
+  to = "/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/waterfall/*"
   to = "/index.html"
   status = 200
   force = true
@@ -26,15 +32,14 @@
   from = "/netflix"
   to = "/netflix.html"
   status = 200
+  force = true
 
-# Prevent the fallback redirect from affecting tool pages
+# Keep wildcards at the bottom with lower priority
 [[redirects]]
   from = "/*"
   to = "/home.html"
   status = 404
   force = false
-  # Add condition to exclude tool paths
-  conditions = {Path = {exclude = ["/waterfall", "/waterfall.html", "/index.html", "/netflix", "/netflix.html"]}}
 
 # Environment-specific settings
 [context.production]
