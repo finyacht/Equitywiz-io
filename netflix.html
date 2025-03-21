@@ -39,9 +39,8 @@
         
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            margin-top: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
         
         .result-grid {
@@ -171,36 +170,125 @@
             border-top: 1px solid var(--gray-200);
         }
         
-        @media (max-width: 992px) {
-            .form-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .result-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .chart-card {
-                margin-bottom: 20px;
-            }
-        }
-        
-        @media (max-width: 576px) {
+        @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .result-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .chart-card {
-                margin-bottom: 15px;
+                gap: 15px;
             }
             
             .chart-container {
                 height: 250px;
+                margin: 15px 0;
             }
+            
+            .result-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .result-value {
+                font-size: 1.4rem;
+                margin: 8px 0 5px;
+            }
+            
+            .calculation-explanation {
+                font-size: 13px;
+            }
+            
+            .calculation-explanation ul {
+                padding-left: 20px;
+            }
+            
+            .calculation-explanation em {
+                font-size: 12px;
+                display: block;
+                margin-top: 2px;
+                white-space: normal;
+                word-break: break-word;
+            }
+            
+            .accordion-header {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+            
+            .accordion-content {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+            
+            .disclaimer {
+                font-size: 11px;
+                padding: 10px;
+            }
+            
+            .nav-bar {
+                padding: 8px 15px;
+                margin-bottom: 15px;
+            }
+            
+            .tax-settings-toggle .toggle-btn {
+                width: 100%;
+                margin: 10px 0;
+                padding: 8px;
+                text-align: center;
+            }
+            
+            /* Adjust the logo and title for mobile */
+            .logo-container {
+                margin-bottom: 15px;
+            }
+            
+            .logo-title {
+                font-size: 1.4rem;
+                line-height: 1.2;
+            }
+            
+            .logo-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            /* Make form inputs full width on mobile */
+            .form-group {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .form-group input {
+                width: 100%;
+            }
+            
+            .tool-button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+        
+        /* Even smaller screens */
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-card {
+                padding: 12px;
+            }
+            
+            .chart-card h3 {
+                font-size: 16px;
+                padding-bottom: 10px;
+            }
+            
+            .chart-description {
+                font-size: 12px;
+            }
+        }
+        
+        /* Fix for chart tooltip container to ensure it remains visible on mobile */
+        #chartjs-tooltip {
+            max-width: 80vw;
+            overflow: hidden;
+            word-break: break-word;
         }
         
         .author-tag {
@@ -543,18 +631,38 @@
             max-width: 400px;
         }
     </style>
+    <!-- Security measures to make copying harder -->
+    <script>
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            // Prevent Ctrl+S, Ctrl+P, Ctrl+U
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'p' || e.key === 'u')) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Prevent F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- Navigation Bar -->
     <div class="nav-bar">
         <a href="/home.html">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
-            Home
+            <span style="margin-left: 8px;">Home</span>
         </a>
-        <span class="nav-title">NETFLIX SUPPLEMENTAL STOCK OPTION PLAN MODELER</span>
     </div>
 
     <!-- Logo and Title -->
