@@ -23,6 +23,12 @@
   to = "/netflix.html"
   status = 200
 
+# Fallback redirect for any unknown routes
+[[redirects]]
+  from = "/*"
+  to = "/home.html"
+  status = 404
+
 # Environment-specific settings
 [context.production]
   environment = { NODE_ENV = "production" }
