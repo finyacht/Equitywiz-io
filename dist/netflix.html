@@ -814,38 +814,22 @@
                 const min = basePrice * 0.4;  // 40% of base price
                 const max = basePrice * 2.4;  // 240% of base price
                 const step = (max - min) / 15;
-                const range = [];
+                let range = [];
                 
-                // Make sure basePrice and exercisePrice are included in the range
-                let includedBasePrice = false;
-                let includedExercisePrice = false;
-                const exercisePrice = parseFloat(document.getElementById('exercisePrice').value);
-                
+                // Generate initial range of prices
                 for (let price = min; price <= max; price += step) {
-                    // If we're about to pass the basePrice, include it exactly
-                    if (!includedBasePrice && price > basePrice) {
-                        range.push(basePrice);
-                        includedBasePrice = true;
-                    }
-                    // If we're about to pass the exercisePrice, include it exactly
-                    if (!includedExercisePrice && price > exercisePrice) {
-                        range.push(exercisePrice);
-                        includedExercisePrice = true;
-                    }
-                    range.push(price);
+                    range.push(parseFloat(price.toFixed(2)));
                 }
                 
-                // If we didn't add the base price yet, add it now
-                if (!includedBasePrice) {
-                    range.push(basePrice);
-                }
-                // If we didn't add the exercise price yet, add it now
-                if (!includedExercisePrice) {
-                    range.push(exercisePrice);
-                }
+                // Add specific prices we want to ensure are included
+                const exercisePrice = parseFloat(document.getElementById('exercisePrice').value);
+                range.push(parseFloat(basePrice.toFixed(2)));
+                range.push(parseFloat(exercisePrice.toFixed(2)));
                 
-                // Sort the range to ensure values are in ascending order
-                return range.sort((a, b) => a - b);
+                // Sort and remove duplicates
+                range = [...new Set(range)].sort((a, b) => a - b);
+                
+                return range;
             }
             
             // Helper function to format currency
