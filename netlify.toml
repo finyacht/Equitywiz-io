@@ -15,21 +15,26 @@
   status = 200
   force = true
 
+# Make sure the Waterfall redirect has higher priority with force = true
 [[redirects]]
   from = "/waterfall"
   to = "/index.html"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/netflix"
   to = "/netflix.html"
   status = 200
 
-# Fallback redirect for any unknown routes
+# Prevent the fallback redirect from affecting tool pages
 [[redirects]]
   from = "/*"
   to = "/home.html"
   status = 404
+  force = false
+  # Add condition to exclude tool paths
+  conditions = {Path = {exclude = ["/waterfall", "/waterfall.html", "/index.html", "/netflix", "/netflix.html"]}}
 
 # Environment-specific settings
 [context.production]

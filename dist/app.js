@@ -18,17 +18,9 @@ app.get('/waterfall.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// The index.html file is the Waterfall Analysis Tool when accessed directly
-// But ensure we redirect to home if it's accessed at the root
+// The index.html file is the Waterfall Analysis Tool
 app.get('/index.html', (req, res) => {
-  // Check if referrer exists and contains 'waterfall'
-  const referrer = req.get('Referrer') || '';
-  if (referrer.includes('waterfall')) {
-    res.sendFile(path.join(__dirname, 'index.html'));
-  } else {
-    // If accessed directly, redirect to home
-    res.redirect('/');
-  }
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Route for the Netflix Option Modeler - both with and without .html extension
@@ -53,8 +45,14 @@ app.get('/home.html', (req, res) => {
 // This comes AFTER route definitions to prevent conflicts
 app.use(express.static(__dirname));
 
-// Custom 404 handler - redirect to home.html for any unknown routes
-app.use((req, res) => {
+// Custom 404 handler - redirect to home.html ONLY for unknown routes
+// Don't redirect for the tools themselves
+app.use((req, res, next) => {
+  // Don't redirect if the path is already for Waterfall or Netflix tools
+  if (req.path.includes('/waterfall') || req.path === '/index.html' || 
+      req.path.includes('/netflix')) {
+    return next();
+  }
   res.status(302).redirect('/');
 });
 
