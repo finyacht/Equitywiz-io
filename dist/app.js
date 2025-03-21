@@ -18,7 +18,7 @@ app.get('/waterfall.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// The index.html file is the Waterfall Analysis Tool
+// The index.html file is the Waterfall Analysis Tool when accessed directly
 app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -44,6 +44,11 @@ app.get('/home.html', (req, res) => {
 // Serve static files from the current directory
 // This comes AFTER route definitions to prevent conflicts
 app.use(express.static(__dirname));
+
+// Custom 404 handler - redirect to home.html for any unknown routes
+app.use((req, res) => {
+  res.status(302).redirect('/');
+});
 
 // Start the server with explicit localhost binding
 app.listen(port, 'localhost', () => {
