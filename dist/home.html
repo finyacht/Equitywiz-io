@@ -45,6 +45,7 @@
             max-width: 1100px;
             margin: 0 auto;
             padding: 20px;
+            width: 100%;
         }
         
         .tool-card {
@@ -67,7 +68,8 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            height: 100%;
+            flex: 1;
+            justify-content: space-between;
         }
         
         .tool-title {
@@ -83,6 +85,7 @@
             line-height: 1.6;
             margin-bottom: 25px;
             flex-grow: 1;
+            min-height: 80px;
         }
         
         .tool-button {
@@ -96,6 +99,9 @@
             font-weight: 500;
             transition: background-color 0.2s;
             align-self: center;
+            margin-top: auto;
+            position: relative;
+            z-index: 10;
         }
         
         .tool-button:hover {
@@ -127,15 +133,44 @@
             padding: 25px;
             margin-bottom: 30px;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: auto;
         }
 
         /* Tool-specific card colors */
         .waterfall-card {
             border-top: 4px solid #4a6cf7; /* Waterfall tool blue color */
         }
+        
+        .waterfall-card .tool-button {
+            background-color: #4a6cf7;
+        }
+        
+        .waterfall-card .tool-button:hover {
+            background-color: #3a5ce4;
+        }
 
         .netflix-card {
             border-top: 4px solid #e50914; /* Netflix tool red color */
+        }
+        
+        .netflix-card .tool-button {
+            background-color: #e50914;
+        }
+        
+        .netflix-card .tool-button:hover {
+            background-color: #c70812;
+        }
+
+        /* Footer styling */
+        .footer {
+            margin-top: 40px;
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            background-color: #f5f7fa;
+            border-top: 1px solid #eaeaea;
         }
     </style>
 </head>
