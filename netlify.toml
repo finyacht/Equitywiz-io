@@ -15,19 +15,13 @@
 
 [[redirects]]
   from = "/waterfall"
-  to = "/waterfall.html"
+  to = "/index.html"
   status = 200
 
 [[redirects]]
   from = "/netflix"
   to = "/netflix.html"
   status = 200
-
-# Fallback redirect for SPA routing
-[[redirects]]
-  from = "/*"
-  to = "/home.html"
-  status = 404
 
 # Environment-specific settings
 [context.production]

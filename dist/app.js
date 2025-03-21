@@ -9,17 +9,17 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'home.html'));
 });
 
-// Also handle /index.html route to redirect to home
-app.get('/index.html', (req, res) => {
-  res.redirect('/');
-});
-
 // Route for the Waterfall Analysis Tool - both with and without .html extension
 app.get('/waterfall', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('/waterfall.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// The index.html file is the Waterfall Analysis Tool
+app.get('/index.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -34,11 +34,11 @@ app.get('/netflix.html', (req, res) => {
 
 // Route for accessing the home page directly
 app.get('/home', (req, res) => {
-  res.redirect('/');
+  res.sendFile(path.join(__dirname, 'home.html'));
 });
 
 app.get('/home.html', (req, res) => {
-  res.redirect('/');
+  res.sendFile(path.join(__dirname, 'home.html'));
 });
 
 // Serve static files from the current directory
