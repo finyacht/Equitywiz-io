@@ -14,14 +14,31 @@ app.get('/index.html', (req, res) => {
   res.redirect('/');
 });
 
-// Route for the Waterfall Analysis Tool
+// Route for the Waterfall Analysis Tool - both with and without .html extension
 app.get('/waterfall', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Route for the Netflix Option Modeler (placeholder)
+app.get('/waterfall.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Route for the Netflix Option Modeler - both with and without .html extension
 app.get('/netflix', (req, res) => {
   res.sendFile(path.join(__dirname, 'netflix.html'));
+});
+
+app.get('/netflix.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'netflix.html'));
+});
+
+// Route for accessing the home page directly
+app.get('/home', (req, res) => {
+  res.redirect('/');
+});
+
+app.get('/home.html', (req, res) => {
+  res.redirect('/');
 });
 
 // Serve static files from the current directory
