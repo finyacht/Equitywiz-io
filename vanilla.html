@@ -984,6 +984,11 @@
                                 family: "'Segoe UI', system-ui, -apple-system, sans-serif"
                             },
                             callbacks: {
+                                title: function(context) {
+                                    // Get the actual market price from the pricePoints array
+                                    const marketPrice = pricePoints[context[0].dataIndex];
+                                    return `$${marketPrice.toFixed(2)}`;
+                                },
                                 label: function(context) {
                                     const numOptions = parseInt(document.getElementById('numOptions').value);
                                     const label = context.dataset.label;
