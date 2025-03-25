@@ -14,9 +14,14 @@ try {
         const data = fs.readFileSync(counterFilePath, 'utf8');
         const counterData = JSON.parse(data);
         visitCounter = counterData.count || 0;
+        console.log(`Loaded visit counter: ${visitCounter}`);
+    } else {
+        // Create the file if it doesn't exist
+        fs.writeFileSync(counterFilePath, JSON.stringify({ count: 0 }), 'utf8');
+        console.log('Created new visit counter file');
     }
 } catch (err) {
-    console.error('Error reading counter file:', err);
+    console.error('Error with counter file:', err);
     // If there's an error, just start with 0
 }
 
@@ -31,9 +36,15 @@ const saveCounter = () => {
 
 // API endpoint to get and increment the visit counter
 app.get('/api/visit-count', (req, res) => {
-    visitCounter++;
-    saveCounter();
-    res.json({ count: visitCounter });
+    try {
+        visitCounter++;
+        saveCounter();
+        console.log(`Visit counter incremented to: ${visitCounter}`);
+        res.json({ count: visitCounter });
+    } catch (error) {
+        console.error('Error in visit counter API:', error);
+        res.status(500).json({ error: 'Server error', count: 0 });
+    }
 });
 
 // First handle specific routes before serving static files
