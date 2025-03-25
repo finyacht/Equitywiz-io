@@ -6,24 +6,24 @@ const port = 4000; // Try a completely different port
 
 // Create a simple counter repository
 let visitCounter = 0;
-// Track visited IPs to prevent duplicate counting
-let visitedIPs = new Set();
 
-// Try to load visit count and tracked IPs from a file
+// Try to load visit count from a file
 const counterFilePath = path.join(__dirname, 'visit-counter.json');
 try {
     if (fs.existsSync(counterFilePath)) {
         const data = fs.readFileSync(counterFilePath, 'utf8');
-        const counterData = JSON.parse(data);
-        visitCounter = counterData.count || 0;
-        // Convert the array back to a Set if it exists
-        if (counterData.ips && Array.isArray(counterData.ips)) {
-            visitedIPs = new Set(counterData.ips);
+        try {
+            const counterData = JSON.parse(data);
+            visitCounter = counterData.count || 0;
+            console.log(`Loaded visit counter: ${visitCounter}`);
+        } catch (parseErr) {
+            console.error('Error parsing counter file:', parseErr);
+            // Try to recover by writing a new file with the current counter
+            fs.writeFileSync(counterFilePath, JSON.stringify({ count: visitCounter }), 'utf8');
         }
-        console.log(`Loaded visit counter: ${visitCounter} (${visitedIPs.size} unique IPs tracked)`);
     } else {
         // Create the file if it doesn't exist
-        fs.writeFileSync(counterFilePath, JSON.stringify({ count: 0, ips: [] }), 'utf8');
+        fs.writeFileSync(counterFilePath, JSON.stringify({ count: 0 }), 'utf8');
         console.log('Created new visit counter file');
     }
 } catch (err) {
@@ -34,41 +34,35 @@ try {
 // Save counter to file
 const saveCounter = () => {
     try {
-        // Convert the Set to an array for storage
-        const ipsArray = Array.from(visitedIPs);
-        fs.writeFileSync(counterFilePath, JSON.stringify({ 
-            count: visitCounter,
-            ips: ipsArray
-        }), 'utf8');
+        fs.writeFileSync(counterFilePath, JSON.stringify({ count: visitCounter }), 'utf8');
     } catch (err) {
         console.error('Error saving counter:', err);
     }
 };
 
-// Track unique visitors
-app.use((req, res, next) => {
-    // Get client IP address
-    const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    
-    // Increment counter only if this IP hasn't been seen and it's accessing the home page
-    if (!visitedIPs.has(clientIP) && (req.path === '/' || req.path === '/home' || req.path === '/home.html')) {
-        visitedIPs.add(clientIP);
-        visitCounter++;
-        saveCounter();
-        console.log(`New visitor (${clientIP}). Visit counter incremented to: ${visitCounter}`);
-    }
-    
-    next();
-});
-
-// API endpoint to get the visit counter (without incrementing)
+// API endpoint to increment and get the visit counter
 app.get('/api/visit-count', (req, res) => {
     try {
+        // Increment the counter on each API call
+        visitCounter++;
+        saveCounter();
+        console.log(`Visit counter incremented to: ${visitCounter}`);
         res.json({ count: visitCounter });
     } catch (error) {
         console.error('Error in visit counter API:', error);
         res.status(500).json({ error: 'Server error', count: visitCounter });
     }
+});
+
+// Middleware to handle direct home page visits and custom headers
+app.use((req, res, next) => {
+    // Set headers to prevent caching of the counter API
+    if (req.path === '/api/visit-count') {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
+    next();
 });
 
 // First handle specific routes before serving static files
