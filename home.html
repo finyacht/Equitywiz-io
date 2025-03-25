@@ -464,11 +464,11 @@
         }
     </style>
     <script>
-        // Visit counter functionality using fallback approach
+        // Visit counter functionality with improved reliability
         document.addEventListener('DOMContentLoaded', function() {
             let countElement = document.getElementById('visit-count');
             
-            // Try to get the count from the server API
+            // Get the count from the server API
             fetch('/api/visit-count')
                 .then(response => {
                     if (!response.ok) {
@@ -480,19 +480,9 @@
                     countElement.textContent = data.count;
                 })
                 .catch(error => {
-                    console.warn('Could not fetch visit count from server, using localStorage fallback', error);
-                    
-                    // Fallback to localStorage if server API fails
-                    let visitCount = localStorage.getItem('visitCount');
-                    
-                    if (!visitCount) {
-                        visitCount = 1;
-                    } else {
-                        visitCount = parseInt(visitCount) + 1;
-                    }
-                    
-                    localStorage.setItem('visitCount', visitCount);
-                    countElement.textContent = visitCount;
+                    console.warn('Could not fetch visit count from server', error);
+                    // In case of error, just show a static value
+                    countElement.textContent = "many";
                 });
         });
     </script>
