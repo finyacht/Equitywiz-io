@@ -25,7 +25,7 @@ app.get('/index.html', (req, res) => {
 
 // Route for the Netflix Option Modeler - both with and without .html extension
 app.get('/netflix', (req, res) => {
-  res.sendFile(path.join(__dirname, 'netflix.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'netflix.html'));
 });
 
 app.get('/netflix.html', (req, res) => {
@@ -39,6 +39,11 @@ app.get('/home', (req, res) => {
 
 app.get('/home.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'home.html'));
+});
+
+// Route for the Vanilla Option Modeler
+app.get('/vanilla', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'vanilla.html'));
 });
 
 // Serve static files from the current directory
