@@ -34,6 +34,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/vanilla"
+  to = "/vanilla.html"
+  status = 200
+  force = true
+
 # Keep wildcards at the bottom with lower priority
 [[redirects]]
   from = "/*"
