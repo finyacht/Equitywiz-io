@@ -987,14 +987,13 @@
                                 label: function(context) {
                                     const numOptions = parseInt(document.getElementById('numOptions').value);
                                     const label = context.dataset.label;
-                                    const value = context.parsed.y.toFixed(2);
                                     const strikePrice = parseFloat(document.getElementById('strikePrice').value);
                                     const optionPrice = parseFloat(document.getElementById('optionPrice').value);
                                     const optionType = document.getElementById('optionType').value;
                                     
                                     if (label === 'Market Price') {
-                                        const marketPrice = parseFloat(value);
-                                        const totalValue = (value * numOptions).toFixed(2);
+                                        // Get the actual price directly from the pricePoints array
+                                        const marketPrice = pricePoints[context.dataIndex];
                                         
                                         // Calculate intrinsic value based on option type
                                         let intrinsicValue = 0;
