@@ -408,24 +408,36 @@
         }
     </style>
     <script>
-        // Visit counter functionality
+        // Visit counter functionality using fallback approach
         document.addEventListener('DOMContentLoaded', function() {
-            // Try to get the current count from localStorage
-            let visitCount = localStorage.getItem('visitCount');
+            let countElement = document.getElementById('visit-count');
             
-            if (!visitCount) {
-                // If no count exists yet, initialize to 1
-                visitCount = 1;
-            } else {
-                // Otherwise, increment the count
-                visitCount = parseInt(visitCount) + 1;
-            }
-            
-            // Store the updated count
-            localStorage.setItem('visitCount', visitCount);
-            
-            // Update the counter on the page
-            document.getElementById('visit-count').textContent = visitCount;
+            // Try to get the count from the server API
+            fetch('/api/visit-count')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    countElement.textContent = data.count;
+                })
+                .catch(error => {
+                    console.warn('Could not fetch visit count from server, using localStorage fallback', error);
+                    
+                    // Fallback to localStorage if server API fails
+                    let visitCount = localStorage.getItem('visitCount');
+                    
+                    if (!visitCount) {
+                        visitCount = 1;
+                    } else {
+                        visitCount = parseInt(visitCount) + 1;
+                    }
+                    
+                    localStorage.setItem('visitCount', visitCount);
+                    countElement.textContent = visitCount;
+                });
         });
     </script>
 </head>
