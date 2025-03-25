@@ -47,8 +47,9 @@
             width: 100%;
             max-width: 100%;
             margin: 0 auto;
-            padding: 0;
+            padding: 0 20px;
             position: relative;
+            overflow-x: hidden;
         }
         
         .header {
@@ -162,8 +163,8 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 25px;
             width: 100%;
-            padding: 0 40px 40px;
-            max-width: 100%;
+            padding: 0 20px 40px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -257,7 +258,7 @@
         }
         
         .tool-title {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #1e293b;
             margin-bottom: 5px;
@@ -356,14 +357,24 @@
             font-size: 0.875rem;
         }
         
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
             .tools-grid {
                 grid-template-columns: repeat(2, 1fr);
-                padding: 0 30px 30px;
+                padding: 0 20px 30px;
             }
             
             .title {
                 font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .tool-title {
+                font-size: 1.4rem;
+            }
+            
+            .netflix-card .tool-title {
+                font-size: 1.3rem;
             }
         }
         
@@ -512,7 +523,7 @@
                     </svg>
                 </div>
                 <div class="tool-content">
-                    <h2 class="tool-title">Netflix Supplemental Stock Option Plan Modeler</h2>
+                    <h2 class="tool-title">Netflix Stock Option Plan</h2>
                     <h3 class="tool-subtitle">Stock Option Value Calculator</h3>
                     <p class="tool-description">Model and compare Netflix's Supplemental Stock Option Plan to direct stock purchases. Analyze break-even points, potential returns, and visualize how options can outperform stock at different prices.</p>
                     <a href="/netflix" class="tool-button">Open Tool</a>
