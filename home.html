@@ -185,6 +185,7 @@
             border: 1px solid rgba(226, 232, 240, 0.7);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
+            min-width: 0;
         }
         
         .tool-card:hover {
@@ -255,10 +256,11 @@
         }
         
         .tool-content {
-            padding: 25px 30px 30px;
+            padding: 25px 25px 30px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            min-width: 0;
         }
         
         .tool-title {
@@ -267,6 +269,8 @@
             color: #1e293b;
             margin-bottom: 5px;
             line-height: 1.3;
+            word-wrap: break-word;
+            hyphens: auto;
         }
         
         .tool-subtitle {
@@ -361,6 +365,27 @@
             font-size: 0.875rem;
         }
         
+        @media (max-width: 1600px) {
+            .tools-grid {
+                grid-template-columns: repeat(3, 1fr);
+                padding: 0 20px 30px;
+                max-width: 100%;
+                gap: 20px;
+            }
+            
+            .tool-description {
+                font-size: 0.9rem;
+            }
+            
+            .tool-title {
+                font-size: 1.4rem;
+            }
+            
+            .netflix-card .tool-title {
+                font-size: 1.3rem;
+            }
+        }
+        
         @media (max-width: 1400px) {
             .tools-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -370,15 +395,23 @@
             .title {
                 font-size: 2.2rem;
             }
+            
+            .tool-title {
+                font-size: 1.4rem;
+            }
         }
         
         @media (max-width: 1200px) {
             .tool-title {
-                font-size: 1.4rem;
+                font-size: 1.35rem;
             }
             
             .netflix-card .tool-title {
-                font-size: 1.3rem;
+                font-size: 1.25rem;
+            }
+            
+            .tool-content {
+                padding: 20px 25px 25px;
             }
         }
         
@@ -527,7 +560,7 @@
                     </svg>
                 </div>
                 <div class="tool-content">
-                    <h2 class="tool-title">Netflix Stock Option Plan</h2>
+                    <h2 class="tool-title">Netflix Options</h2>
                     <h3 class="tool-subtitle">Stock Option Value Calculator</h3>
                     <p class="tool-description">Model and compare Netflix's Supplemental Stock Option Plan to direct stock purchases. Analyze break-even points, potential returns, and visualize how options can outperform stock at different prices.</p>
                     <a href="/netflix" class="tool-button">Open Tool</a>
