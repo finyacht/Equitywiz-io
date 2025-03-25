@@ -339,6 +339,246 @@
             margin-bottom: 15px;
             line-height: 1.6;
         }
+
+        /* Result section styling */
+        .result-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .result-card {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+        .result-title {
+            font-size: 16px;
+            color: #5D6D7E;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        .result-title .tooltip-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background-color: #5D6D7E;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-size: 12px;
+            cursor: help;
+            margin-left: 4px;
+            vertical-align: middle;
+        }
+        .result-title .tooltip-text {
+            visibility: hidden;
+            width: 250px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 13px;
+            font-weight: normal;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        .result-title .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2c3e50 transparent transparent transparent;
+        }
+        .result-title:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .result-value {
+            font-size: 36px;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        .result-value.positive {
+            color: #2ecc71;
+        }
+        .result-value.negative {
+            color: #e74c3c;
+        }
+        .result-description {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-top: 5px;
+            display: none; /* Hide the descriptions as requested */
+        }
+
+        /* Formula explanation styling */
+        .toggle-explanation {
+            display: inline-flex;
+            align-items: center;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 13px;
+            color: #6c757d;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .toggle-explanation svg {
+            margin-left: 6px;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-explanation.expanded svg {
+            transform: rotate(180deg);
+        }
+        
+        .toggle-explanation:hover {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .math-explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            text-align: left;
+            animation: fadeIn 0.3s ease;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .math-explanation.visible {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .math-formula {
+            display: block;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.8;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #2c3e50;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .math-explanation p {
+            font-size: 14px;
+            margin: 10px 0;
+            color: #495057;
+        }
+        
+        .math-explanation ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .math-explanation li {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #495057;
+            line-height: 1.6;
+        }
+        
+        .formula-step {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .formula-step .step-number {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .formula-variable {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin: 0 2px;
+            font-weight: 500;
+        }
+        
+        .variable-intrinsic {
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+        
+        .variable-options {
+            background: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+            border: 1px solid rgba(155, 89, 182, 0.2);
+        }
+        
+        .variable-cost {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+        
+        .variable-result {
+            background: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+        
+        .variable-result.negative {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+        
+        .formula-equals {
+            margin: 0 8px;
+            color: #7f8c8d;
+        }
+        
+        /* Tooltip styling improvements */
+        .tooltip-text {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
     </style>
 </head>
 <body>
@@ -426,21 +666,69 @@
 
         <div class="results-section">
             <div class="result-card">
-                <div class="result-title">Option Status</div>
-                <div id="optionStatus" class="result-value">-</div>
+                <div class="result-title">
+                    Option Status
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">Indicates whether the option is in-the-money (profitable to exercise), out-of-the-money (not profitable to exercise), or at-the-money (break-even).</span>
+                </div>
+                <div id="optionStatus" class="result-value">At-the-Money</div>
                 <div class="result-description">Whether the option is in-the-money or out-of-the-money</div>
             </div>
 
             <div class="result-card">
-                <div class="result-title">Total Value</div>
+                <div class="result-title">
+                    Total Value
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">The total value of all options at the current market price, calculated as the intrinsic value multiplied by the number of options.</span>
+                </div>
                 <div id="totalValue" class="result-value">$0</div>
                 <div class="result-description">Total value of the options at current price</div>
             </div>
 
             <div class="result-card">
-                <div class="result-title">Net Gain</div>
+                <div class="result-title">
+                    Net Gain/Loss
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">The total profit or loss after accounting for the option purchase cost. Calculated as (Total Value - Option Cost). Positive values represent profit, negative values represent loss.</span>
+                </div>
                 <div id="netGain" class="result-value">$0</div>
-                <div class="result-description">Net gain after paying the exercise price</div>
+                <div class="result-description">Total profit or loss including option purchase cost</div>
+                
+                <button id="toggleExplanation" class="toggle-explanation">
+                    Show Formula
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                
+                <div id="mathExplanation" class="math-explanation">
+                    <p>The net gain/loss is calculated as:</p>
+                    <div class="math-formula">
+                        <div class="formula-step">
+                            <span class="step-number">1</span>
+                            <span>Net Gain/Loss = <span class="formula-variable variable-intrinsic">Intrinsic Value</span> × <span class="formula-variable variable-options">Number of Options</span> - <span class="formula-variable variable-cost">Option Cost</span></span>
+                        </div>
+                        <div class="formula-step">
+                            <span class="step-number">2</span>
+                            <span>= <span class="formula-variable variable-intrinsic" id="formula-intrinsic-value">$5.00</span> × <span class="formula-variable variable-options" id="formula-num-options">100</span> - <span class="formula-variable variable-cost" id="formula-option-cost">$500.00</span></span>
+                        </div>
+                        <div class="formula-step">
+                            <span class="step-number">3</span>
+                            <span>= <span class="formula-variable variable-intrinsic" id="formula-total-value">$500.00</span> - <span class="formula-variable variable-cost" id="formula-cost-total">$500.00</span></span>
+                        </div>
+                        <div class="formula-step">
+                            <span class="step-number">4</span>
+                            <span>= <span class="formula-variable variable-result" id="formula-result">$0.00</span></span>
+                        </div>
+                    </div>
+                    <p>Where:</p>
+                    <ul id="formula-explanation-list">
+                        <li><span class="formula-variable variable-intrinsic">Intrinsic Value</span> = The option's value if exercised immediately</li>
+                        <li><span class="formula-variable variable-cost">Option Cost</span> = Option Price × Number of Options (what you paid)</li>
+                        <li>A negative result represents a loss on your investment</li>
+                    </ul>
+                    <p>This represents your actual profit or loss, factoring in what you paid for the options.</p>
+                </div>
             </div>
         </div>
 
@@ -510,48 +798,130 @@
                 intrinsicValue = 0;
             }
 
-            // Calculate total value and net gain
+            // Calculate total value and net gain (allowing negative values)
             const totalValue = intrinsicValue * numOptions;
-            const netGain = Math.max(0, totalValue - (optionPrice * numOptions));
-
-            // Update results
+            const optionCost = optionPrice * numOptions;
+            const netGain = totalValue - optionCost;
+            
+            // Update DOM with calculated values
             document.getElementById('optionStatus').textContent = optionStatus;
             document.getElementById('optionStatus').style.color = 
                 optionStatus === 'In-the-Money' ? '#2ecc71' : 
                 optionStatus === 'Out-of-the-Money' ? '#e74c3c' : 
                 '#f1c40f';
             document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
-            document.getElementById('netGain').textContent = `$${netGain.toFixed(2)}`;
-            document.getElementById('netGain').style.color = netGain > 0 ? '#2ecc71' : '';
+            
+            // Update net gain with proper formatting and color
+            const netGainElement = document.getElementById('netGain');
+            
+            if (netGain > 0) {
+                netGainElement.className = 'result-value positive';
+                netGainElement.textContent = `+$${netGain.toFixed(2)}`;
+            } else if (netGain < 0) {
+                netGainElement.className = 'result-value negative';
+                netGainElement.textContent = `-$${Math.abs(netGain).toFixed(2)}`;
+            } else {
+                netGainElement.className = 'result-value';
+                netGainElement.textContent = `$0.00`;
+            }
+            
+            // Update the math explanation to match the current values
+            updateMathExplanation(optionType, currentPrice, strikePrice, numOptions, optionPrice, netGain);
 
             // Generate data points
-            const prices = [];
-            const marketLine = [];
-            const strikeLine = [];
-            for (let price = minPrice; price <= maxPrice; price += (maxPrice - minPrice) / 100) {
-                prices.push(price);
-                marketLine.push(price);
-                strikeLine.push(strikePrice);
+            const pricePoints = [];
+            const optionValuePoints = [];
+            const netGainPoints = [];
+            
+            // Calculate step size based on price range
+            const steps = 50;
+            const stepSize = (maxPrice - minPrice) / steps;
+            
+            // Generate data for each price point
+            for (let i = 0; i <= steps; i++) {
+                const price = minPrice + (stepSize * i);
+                pricePoints.push(price);
+                
+                let value = 0;
+                if (optionType === 'call') {
+                    value = Math.max(0, price - strikePrice);
+                } else {
+                    value = Math.max(0, strikePrice - price);
+                }
+                
+                optionValuePoints.push(value);
+                
+                // Calculate net gain/loss at this price point (allowing negative values)
+                const totalValueAtPrice = value * numOptions;
+                const netGainAtPrice = totalValueAtPrice - optionCost;
+                netGainPoints.push(netGainAtPrice);
             }
-
-            updateChart(prices, marketLine, strikeLine, strikePrice, optionType);
+            
+            // Update chart with new data (passing all required parameters)
+            updateChart(optionType, strikePrice, pricePoints, optionValuePoints, netGainPoints);
         }
 
-        function updateChart(prices, marketLine, strikeLine, strikePrice, optionType) {
+        function updateMathExplanation(optionType, currentPrice, strikePrice, numOptions, optionPrice, netGain) {
+            const optionCost = optionPrice * numOptions;
+            let intrinsicValue = 0;
+            
+            if (optionType === 'call') {
+                intrinsicValue = Math.max(0, currentPrice - strikePrice);
+            } else {
+                intrinsicValue = Math.max(0, strikePrice - currentPrice);
+            }
+            
+            const totalValue = intrinsicValue * numOptions;
+            
+            // Update step values in formula display
+            document.getElementById('formula-intrinsic-value').textContent = `$${intrinsicValue.toFixed(2)}`;
+            document.getElementById('formula-num-options').textContent = numOptions;
+            document.getElementById('formula-option-cost').textContent = `$${optionCost.toFixed(2)}`;
+            document.getElementById('formula-total-value').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('formula-cost-total').textContent = `$${optionCost.toFixed(2)}`;
+            
+            const resultElement = document.getElementById('formula-result');
+            resultElement.textContent = `${netGain >= 0 ? '+' : ''}$${Math.abs(netGain).toFixed(2)}`;
+            resultElement.className = `formula-variable ${netGain >= 0 ? 'variable-result' : 'variable-result negative'}`;
+            
+            // Update explanation based on option type
+            const explanation = document.querySelector('#formula-explanation-list');
+            if (optionType === 'call') {
+                explanation.innerHTML = `
+                    <li><span class="formula-variable variable-intrinsic">Intrinsic Value</span> = ${currentPrice > strikePrice ? 
+                        `Market Price - Strike Price = $${currentPrice.toFixed(2)} - $${strikePrice.toFixed(2)} = $${intrinsicValue.toFixed(2)}` : 
+                        'Market Price < Strike Price, so $0.00'}</li>
+                    <li><span class="formula-variable variable-cost">Option Cost</span> = Option Price × Number of Options = $${optionPrice.toFixed(2)} × ${numOptions} = $${optionCost.toFixed(2)}</li>
+                    <li>Net Gain/Loss = ${netGain >= 0 ? '+' : ''}$${Math.abs(netGain).toFixed(2)} (${netGain >= 0 ? 'Profit' : 'Loss'})</li>
+                `;
+            } else {
+                explanation.innerHTML = `
+                    <li><span class="formula-variable variable-intrinsic">Intrinsic Value</span> = ${currentPrice < strikePrice ? 
+                        `Strike Price - Market Price = $${strikePrice.toFixed(2)} - $${currentPrice.toFixed(2)} = $${intrinsicValue.toFixed(2)}` : 
+                        'Strike Price < Market Price, so $0.00'}</li>
+                    <li><span class="formula-variable variable-cost">Option Cost</span> = Option Price × Number of Options = $${optionPrice.toFixed(2)} × ${numOptions} = $${optionCost.toFixed(2)}</li>
+                    <li>Net Gain/Loss = ${netGain >= 0 ? '+' : ''}$${Math.abs(netGain).toFixed(2)} (${netGain >= 0 ? 'Profit' : 'Loss'})</li>
+                `;
+            }
+        }
+
+        function updateChart(optionType, strikePrice, pricePoints, optionValuePoints, netGainPoints) {
+            const ctx = document.getElementById('optionChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
             if (optionChart) {
                 optionChart.destroy();
             }
-
-            const ctx = document.getElementById('optionChart').getContext('2d');
             
+            // Create a new chart
             optionChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: prices.map(p => `$${Math.round(p)}`),
+                    labels: pricePoints.map(p => `$${Math.round(p)}`),
                     datasets: [
                         {
                             label: 'Market Price',
-                            data: marketLine,
+                            data: pricePoints,
                             borderColor: '#3498db',
                             borderWidth: 2,
                             fill: false,
@@ -559,7 +929,7 @@
                         },
                         {
                             label: 'Strike Price',
-                            data: strikeLine,
+                            data: pricePoints.map(() => strikePrice),
                             borderColor: '#34495e',
                             borderWidth: 2,
                             borderDash: [5, 5],
@@ -597,13 +967,13 @@
                             }
                         },
                         tooltip: {
-                            mode: 'index',
-                            intersect: false,
                             backgroundColor: 'rgba(255, 255, 255, 0.95)',
                             titleColor: '#2c3e50',
                             bodyColor: '#2c3e50',
                             borderColor: '#e9ecef',
                             borderWidth: 1,
+                            mode: 'index',
+                            intersect: false,
                             padding: 10,
                             bodyFont: {
                                 size: 13,
@@ -623,20 +993,28 @@
                                     const optionType = document.getElementById('optionType').value;
                                     
                                     if (label === 'Market Price') {
+                                        const marketPrice = parseFloat(value);
                                         const totalValue = (value * numOptions).toFixed(2);
                                         
                                         // Calculate intrinsic value based on option type
                                         let intrinsicValue = 0;
                                         if (optionType === 'call') {
-                                            intrinsicValue = Math.max(0, value - strikePrice);
+                                            intrinsicValue = Math.max(0, marketPrice - strikePrice);
                                         } else {
-                                            intrinsicValue = Math.max(0, strikePrice - value);
+                                            intrinsicValue = Math.max(0, strikePrice - marketPrice);
                                         }
                                         
-                                        // Calculate net gain after exercise
-                                        const netGain = Math.max(0, intrinsicValue * numOptions - optionPrice * numOptions).toFixed(2);
+                                        // Calculate total value
+                                        const totalOptionValue = (intrinsicValue * numOptions).toFixed(2);
                                         
-                                        return `Market Price: $${value} (Total: $${totalValue}, Net Gain: $${netGain})`;
+                                        // Calculate net gain/loss after exercise
+                                        const optionCost = optionPrice * numOptions;
+                                        const netGain = intrinsicValue * numOptions - optionCost;
+                                        const netGainText = netGain >= 0 ? 
+                                            `+$${netGain.toFixed(2)}` : 
+                                            `-$${Math.abs(netGain).toFixed(2)}`;
+                                        
+                                        return `Market Price: $${marketPrice.toFixed(2)} (Total: $${totalOptionValue}, Net Gain/Loss: ${netGainText})`;
                                     }
                                     return null; // Don't show Strike Price in tooltip
                                 }
@@ -656,6 +1034,13 @@
                                     size: 13,
                                     family: "'Segoe UI', system-ui, -apple-system, sans-serif"
                                 }
+                            },
+                            ticks: {
+                                maxTicksLimit: 10,
+                                callback: function(value, index, values) {
+                                    const price = this.getLabelForValue(value);
+                                    return price;
+                                }
                             }
                         },
                         y: {
@@ -669,6 +1054,12 @@
                                 font: {
                                     size: 13,
                                     family: "'Segoe UI', system-ui, -apple-system, sans-serif"
+                                }
+                            },
+                            ticks: {
+                                maxTicksLimit: 10,
+                                callback: function(value) {
+                                    return '$' + value.toFixed(0);
                                 }
                             }
                         }
@@ -722,7 +1113,7 @@
                                 strikePricePixel - chartArea.top
                             );
                         }
-
+                        
                         // Add zone labels
                         ctx.save();
                         ctx.fillStyle = '#2c3e50';
@@ -759,10 +1150,35 @@
             });
         }
 
-        // Initialize on page load
-        window.onload = function() {
+        // Add toggle functionality for math explanation
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggleExplanation');
+            const mathExplanation = document.getElementById('mathExplanation');
+            
+            toggleButton.addEventListener('click', function() {
+                mathExplanation.classList.toggle('visible');
+                toggleButton.classList.toggle('expanded');
+                
+                if (mathExplanation.classList.contains('visible')) {
+                    toggleButton.innerHTML = `
+                        Hide Formula
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    `;
+                } else {
+                    toggleButton.innerHTML = `
+                        Show Formula
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    `;
+                }
+            });
+            
+            // Initialize calculator
             calculateOptionValue();
-        };
+        });
     </script>
 </body>
 </html> 
