@@ -1,7 +1,40 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 const port = 4000; // Try a completely different port
+
+// Create a simple counter repository
+let visitCounter = 0;
+
+// Try to load visit count from a file
+const counterFilePath = path.join(__dirname, 'visit-counter.json');
+try {
+    if (fs.existsSync(counterFilePath)) {
+        const data = fs.readFileSync(counterFilePath, 'utf8');
+        const counterData = JSON.parse(data);
+        visitCounter = counterData.count || 0;
+    }
+} catch (err) {
+    console.error('Error reading counter file:', err);
+    // If there's an error, just start with 0
+}
+
+// Save counter to file
+const saveCounter = () => {
+    try {
+        fs.writeFileSync(counterFilePath, JSON.stringify({ count: visitCounter }), 'utf8');
+    } catch (err) {
+        console.error('Error saving counter:', err);
+    }
+};
+
+// API endpoint to get and increment the visit counter
+app.get('/api/visit-count', (req, res) => {
+    visitCounter++;
+    saveCounter();
+    res.json({ count: visitCounter });
+});
 
 // First handle specific routes before serving static files
 // Route for the root path (Home page) - always serve home.html
