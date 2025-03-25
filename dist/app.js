@@ -34,16 +34,34 @@ const saveCounter = () => {
     }
 };
 
-// API endpoint to get and increment the visit counter
-app.get('/api/visit-count', (req, res) => {
-    try {
+// Track unique visitors using a session cookie
+app.use((req, res, next) => {
+    // Use an object to store visited IPs
+    if (!req.app.locals.visitedIPs) {
+        req.app.locals.visitedIPs = new Set();
+    }
+    
+    // Get client IP address
+    const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    
+    // Increment counter only if this IP hasn't been seen in this server session
+    if (!req.app.locals.visitedIPs.has(clientIP) && req.path === '/') {
+        req.app.locals.visitedIPs.add(clientIP);
         visitCounter++;
         saveCounter();
-        console.log(`Visit counter incremented to: ${visitCounter}`);
+        console.log(`New visitor (${clientIP}). Visit counter incremented to: ${visitCounter}`);
+    }
+    
+    next();
+});
+
+// API endpoint to get the visit counter (without incrementing)
+app.get('/api/visit-count', (req, res) => {
+    try {
         res.json({ count: visitCounter });
     } catch (error) {
         console.error('Error in visit counter API:', error);
-        res.status(500).json({ error: 'Server error', count: 0 });
+        res.status(500).json({ error: 'Server error', count: visitCounter });
     }
 });
 
