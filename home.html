@@ -464,45 +464,33 @@
         }
     </style>
     <script>
-        // Visit counter functionality with reliable display
+        // Simple visit counter that increments on page load
         document.addEventListener('DOMContentLoaded', function() {
-            let countElement = document.getElementById('visit-count');
+            const countElement = document.getElementById('visit-count');
             
-            // Get the count from the server API
-            fetch('/api/visit-count')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data && typeof data.count === 'number') {
-                        countElement.textContent = data.count;
-                    } else {
-                        // Use the last known count or default to 0
-                        countElement.textContent = localStorage.getItem('lastKnownCount') || 0;
-                    }
-                })
-                .catch(error => {
-                    console.warn('Could not fetch visit count from server', error);
-                    // Use the last known count or default to 0
-                    countElement.textContent = localStorage.getItem('lastKnownCount') || 0;
-                });
-                
-            // Second attempt with slight delay to handle race conditions
-            setTimeout(() => {
-                fetch('/api/visit-count')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && typeof data.count === 'number') {
-                            countElement.textContent = data.count;
-                            // Store the count for future reference
-                            localStorage.setItem('lastKnownCount', data.count);
-                        }
-                    })
-                    .catch(err => console.warn('Second attempt failed', err));
-            }, 1000);
+            // Show loading state
+            countElement.textContent = "...";
+            
+            // Fetch and increment the counter
+            fetch('/api/visit-count', {
+                cache: 'no-store',
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Cache-Control': 'no-cache'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data && typeof data.count === 'number') {
+                    countElement.textContent = data.count;
+                } else {
+                    countElement.textContent = "0";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching visit count:', error);
+                countElement.textContent = "0";
+            });
         });
     </script>
 </head>
