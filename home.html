@@ -463,36 +463,6 @@
             }
         }
     </style>
-    <script>
-        // Simple visit counter that increments on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const countElement = document.getElementById('visit-count');
-            
-            // Show loading state
-            countElement.textContent = "...";
-            
-            // Fetch and increment the counter
-            fetch('/api/visit-count', {
-                cache: 'no-store',
-                headers: {
-                    'Pragma': 'no-cache',
-                    'Cache-Control': 'no-cache'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data && typeof data.count === 'number') {
-                    countElement.textContent = data.count;
-                } else {
-                    countElement.textContent = "0";
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching visit count:', error);
-                countElement.textContent = "0";
-            });
-        });
-    </script>
 </head>
 <body>
     <div class="container">
@@ -568,12 +538,6 @@
     
     <footer class="footer">
         <div class="footer-content">
-            <div class="visit-counter">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
-                </svg>
-                <span>Site Visits: <span id="visit-count">0</span></span>
-            </div>
             <p class="footer-copyright">© 2025 All Rights Reserved</p>
         </div>
     </footer>
