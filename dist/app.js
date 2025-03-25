@@ -6,18 +6,24 @@ const port = 4000; // Try a completely different port
 
 // Create a simple counter repository
 let visitCounter = 0;
+// Track visited IPs to prevent duplicate counting
+let visitedIPs = new Set();
 
-// Try to load visit count from a file
+// Try to load visit count and tracked IPs from a file
 const counterFilePath = path.join(__dirname, 'visit-counter.json');
 try {
     if (fs.existsSync(counterFilePath)) {
         const data = fs.readFileSync(counterFilePath, 'utf8');
         const counterData = JSON.parse(data);
         visitCounter = counterData.count || 0;
-        console.log(`Loaded visit counter: ${visitCounter}`);
+        // Convert the array back to a Set if it exists
+        if (counterData.ips && Array.isArray(counterData.ips)) {
+            visitedIPs = new Set(counterData.ips);
+        }
+        console.log(`Loaded visit counter: ${visitCounter} (${visitedIPs.size} unique IPs tracked)`);
     } else {
         // Create the file if it doesn't exist
-        fs.writeFileSync(counterFilePath, JSON.stringify({ count: 0 }), 'utf8');
+        fs.writeFileSync(counterFilePath, JSON.stringify({ count: 0, ips: [] }), 'utf8');
         console.log('Created new visit counter file');
     }
 } catch (err) {
@@ -28,25 +34,25 @@ try {
 // Save counter to file
 const saveCounter = () => {
     try {
-        fs.writeFileSync(counterFilePath, JSON.stringify({ count: visitCounter }), 'utf8');
+        // Convert the Set to an array for storage
+        const ipsArray = Array.from(visitedIPs);
+        fs.writeFileSync(counterFilePath, JSON.stringify({ 
+            count: visitCounter,
+            ips: ipsArray
+        }), 'utf8');
     } catch (err) {
         console.error('Error saving counter:', err);
     }
 };
 
-// Track unique visitors using a session cookie
+// Track unique visitors
 app.use((req, res, next) => {
-    // Use an object to store visited IPs
-    if (!req.app.locals.visitedIPs) {
-        req.app.locals.visitedIPs = new Set();
-    }
-    
     // Get client IP address
     const clientIP = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     
-    // Increment counter only if this IP hasn't been seen in this server session
-    if (!req.app.locals.visitedIPs.has(clientIP) && req.path === '/') {
-        req.app.locals.visitedIPs.add(clientIP);
+    // Increment counter only if this IP hasn't been seen and it's accessing the home page
+    if (!visitedIPs.has(clientIP) && (req.path === '/' || req.path === '/home' || req.path === '/home.html')) {
+        visitedIPs.add(clientIP);
         visitCounter++;
         saveCounter();
         console.log(`New visitor (${clientIP}). Visit counter incremented to: ${visitCounter}`);
