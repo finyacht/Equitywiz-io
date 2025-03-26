@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Interest Rate Calculator</title>
+    <!-- Load Chart.js with all required modules -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Mobile Responsiveness Enhancements -->
+    <link rel="stylesheet" href="/css/mobile-responsive.css">
+    <!-- Add navigation bar styles -->
+    <style>
+        :root {
+            --primary-color: #0ea5e9; /* Sky blue as primary color */
+            --secondary-color: #0284c7; /* Darker sky blue */
+            --accent-color: #f97316; /* Orange for accent */
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            color: var(--gray-800);
+        }
+
+        .nav-bar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 30px;
+            margin: 0;
+            border: none;
+        }
+
+        .nav-bar a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            gap: 12px;
+            font-size: 16px;
+        }
+
+        .nav-bar .nav-title {
+            margin-left: auto;
+            font-weight: 600;
+            color: white;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 75px auto 0;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            margin: 0 0 30px;
+            padding: 25px 20px;
+            background: var(--gray-100);
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            clip-path: polygon(0 0, 100% 0, 100% 20%, 20% 20%, 20% 100%, 0 100%);
+            opacity: 0.9;
+            top: 10px;
+            left: 10px;
+        }
+
+        .logo::after {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 80% 100%, 80% 80%, 0 80%);
+            opacity: 0.7;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .logo-text {
+            flex: 1;
+        }
+
+        .logo-title {
+            font-size: 24px;
+            color: var(--gray-900);
+            margin: 0;
+            font-weight: 600;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 16px;
+            color: var(--gray-600);
+            margin: 4px 0 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            color: var(--gray-600);
+            font-size: 14px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .tool-description {
+            font-size: 15px;
+            color: var(--gray-700);
+            line-height: 1.6;
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+
+        .summary-data {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .data-card {
+            background: var(--gray-100);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .data-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 5px;
+        }
+
+        .data-value {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 14px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 15px;
+            color: var(--gray-800);
+            transition: border-color 0.2s;
+            background-color: white;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            margin-top: 16px;
+            margin-bottom: 30px;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 24px;
+            background: linear-gradient(90deg, 
+                var(--primary-color) 0%, 
+                var(--accent-color) 50%, 
+                var(--primary-color) 100%);
+            outline: none;
+            opacity: 0.9;
+            -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+
+        .slider:hover {
+            opacity: 1;
+            height: 10px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 0 0 3px var(--primary-color), 0 2px 10px rgba(0, 0, 0, 0.15);
+            position: relative;
+            transition: all 0.25s ease;
+            background: linear-gradient(135deg, white, #f5f5f5);
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 0 4px var(--accent-color), 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: white;
+        }
+
+        .slider::-webkit-slider-thumb:active {
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 0 0 3px var(--primary-color), 0 2px 10px rgba(0, 0, 0, 0.15);
+            border: none;
+            transition: all 0.25s ease;
+            background: linear-gradient(135deg, white, #f5f5f5);
+        }
+
+        .slider::-moz-range-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 0 4px var(--accent-color), 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: white;
+        }
+
+        .slider::-moz-range-thumb:active {
+            transform: scale(1.1);
+        }
+
+        .slider-value {
+            position: absolute;
+            top: -45px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transform: translateX(-50%);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            visibility: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        .slider-value::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: var(--accent-color) transparent transparent transparent;
+        }
+
+        .slider:hover + .slider-value, .slider:active + .slider-value {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-8px);
+        }
+
+        .radio-toggle {
+            display: flex;
+            background: var(--gray-200);
+            border-radius: 6px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radio-toggle label {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray-700);
+            position: relative;
+            z-index: 2;
+            transition: color 0.3s;
+        }
+
+        .radio-toggle input[type="radio"] {
+            display: none;
+        }
+
+        .radio-toggle input[type="radio"]:checked + label {
+            color: white;
+        }
+
+        .radio-toggle .radio-highlight {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            background: var(--primary-color);
+            border-radius: 5px;
+            transition: transform 0.3s;
+            z-index: 1;
+        }
+
+        .inline-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .calculate-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .results-table th {
+            background: var(--gray-100);
+            padding: 12px;
+            text-align: left;
+            color: var(--gray-700);
+            font-weight: 600;
+            border-bottom: 2px solid var(--gray-300);
+        }
+
+        .results-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .results-table tr:hover td {
+            background: var(--gray-100);
+        }
+
+        /* Modern toggle switches */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .switch-container label {
+            margin-left: 10px;
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .switch-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:focus + .switch-slider {
+            box-shadow: 0 0 1px var(--primary-color);
+        }
+
+        input:checked + .switch-slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Time unit toggle buttons */
+        .time-unit-toggle {
+            display: flex;
+            margin-bottom: 15px;
+            background: var(--gray-100);
+            border-radius: 10px;
+            padding: 4px;
+            position: relative;
+            width: fit-content;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .time-unit-btn {
+            border: none;
+            background: transparent;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            border-radius: 8px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.25s ease;
+            min-width: 70px;
+        }
+
+        .time-unit-btn:hover {
+            color: var(--gray-800);
+        }
+
+        .time-unit-btn.active {
+            color: var(--primary-color);
+        }
+
+        .time-unit-toggle::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            bottom: 4px;
+            width: calc(33.33% - 4px);
+            background: white;
+            border-radius: 8px;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 0;
+            box-shadow: 0 2px 6px rgba(14, 165, 233, 0.15);
+        }
+
+        .time-unit-toggle[data-active="months"]::after {
+            transform: translateX(100%);
+        }
+
+        .time-unit-toggle[data-active="days"]::after {
+            transform: translateX(200%);
+        }
+
+        /* Section headings */
+        .input-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 25px 0 15px;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 8px;
+            position: relative;
+        }
+
+        .input-section h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        }
+
+        /* First heading doesn't need top margin */
+        .input-section h3:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Tablet Responsiveness */
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .input-section {
+                order: 1;
+            }
+
+            .results-section {
+                order: 2;
+            }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 15px;
+                margin-top: 60px;
+            }
+
+            .nav-bar {
+                padding: 12px 20px;
+                height: 25px;
+            }
+
+            .header-section {
+                padding: 20px 15px;
+                margin-bottom: 20px;
+            }
+
+            .logo {
+                width: 40px;
+                height: 40px;
+            }
+
+            .logo-title {
+                font-size: 20px;
+            }
+
+            .logo-subtitle {
+                font-size: 14px;
+            }
+
+            .input-section, .results-section {
+                padding: 20px 15px;
+            }
+
+            .summary-data {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .inline-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Disclaimer styles */
+        .disclaimer {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: var(--gray-100);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            font-size: 14px;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .deposits-card {
+            display: block;
+        }
+
+        .deposits-card.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="home.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+        </a>
+        <span class="nav-title">INTEREST RATE CALCULATOR</span>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="logo-container">
+                <div class="logo"></div>
+                <div class="logo-text">
+                    <h1 class="logo-title">Interest Rate Calculator</h1>
+                    <p class="logo-subtitle">Simple & Compound Interest Modeler</p>
+                    <div class="author-info">
+                        by Amal Ganatra
+                        <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <p class="tool-description">Calculate how your investments grow over time with this interactive interest calculator. Compare simple and compound interest with various compounding frequencies, and visualize the impact of regular deposits on your investment growth.</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <!-- Initial Investment Section -->
+                <h3>Investment Details</h3>
+                <div class="input-group">
+                    <label for="initial-investment">Initial Investment ($)</label>
+                    <input type="number" id="initial-investment" min="0" step="100" value="1000">
+                </div>
+
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" id="regular-deposit-toggle">
+                        <span class="switch-slider"></span>
+                    </label>
+                    <label for="regular-deposit-toggle">Add Regular Deposits</label>
+                </div>
+
+                <div id="regular-deposit-options" style="display: none;">
+                    <div class="input-group">
+                        <label for="deposit-amount">Deposit Amount ($)</label>
+                        <input type="number" id="deposit-amount" min="0" step="10" value="100">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="deposit-frequency">Deposit Frequency</label>
+                        <select id="deposit-frequency">
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Interest Rate Settings -->
+                <h3>Interest Details</h3>
+                <div class="switch-container">
+                    <label class="switch">
+                        <input type="checkbox" id="interest-type-toggle" checked>
+                        <span class="switch-slider"></span>
+                    </label>
+                    <label for="interest-type-toggle">Compound Interest</label>
+                </div>
+
+                <div class="input-group">
+                    <label for="interest-rate">Annual Interest Rate (%)</label>
+                    <input type="number" id="interest-rate" min="0" max="30" step="0.1" value="5">
+                    <div class="slider-container">
+                        <input type="range" min="0" max="30" step="0.1" value="5" class="slider" id="interest-rate-slider">
+                        <div class="slider-value">5%</div>
+                    </div>
+                </div>
+
+                <div class="input-group" id="compound-frequency-group">
+                    <label for="compound-frequency">Compounding Frequency</label>
+                    <select id="compound-frequency">
+                        <option value="daily">Daily</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly" selected>Yearly</option>
+                    </select>
+                </div>
+
+                <!-- Time Period Settings -->
+                <h3>Time Period</h3>
+                <div class="input-group">
+                    <div class="time-unit-toggle">
+                        <button class="time-unit-btn active" data-unit="years">Years</button>
+                        <button class="time-unit-btn" data-unit="months">Months</button>
+                        <button class="time-unit-btn" data-unit="days">Days</button>
+                    </div>
+                    <input type="number" id="time-period" min="1" max="50" step="1" value="10">
+                    <div class="slider-container">
+                        <input type="range" min="1" max="50" step="1" value="10" class="slider" id="time-period-slider">
+                        <div class="slider-value">10 years</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="chart-container">
+                    <canvas id="growth-chart"></canvas>
+                </div>
+
+                <div class="summary-data">
+                    <div class="data-card">
+                        <div class="data-label">Initial Investment</div>
+                        <div class="data-value" id="summary-initial">$1,000</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label">Final Balance</div>
+                        <div class="data-value" id="summary-final">$1,628.89</div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label">Total Interest</div>
+                        <div class="data-value" id="summary-interest">$628.89</div>
+                    </div>
+                    <div class="data-card deposits-card" id="deposits-card">
+                        <div class="data-label">Total Deposits</div>
+                        <div class="data-value" id="summary-deposits">$0</div>
+                    </div>
+                </div>
+
+                <h3>Yearly Breakdown</h3>
+                <div style="overflow-x: auto;">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Starting Balance</th>
+                                <th>Deposits</th>
+                                <th>Interest</th>
+                                <th>Ending Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-table-body">
+                            <!-- Table rows will be generated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <strong>Disclaimer:</strong> The Interest Rate Calculator is provided for educational and illustrative purposes only. It does not constitute financial advice. Interest rates, inflation, and other economic factors can vary over time. Please consult a qualified financial advisor before making investment decisions.
+    </div>
+
+    <script src="/js/interestCalculator.js"></script>
+</body>
+</html> 

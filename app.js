@@ -47,6 +47,15 @@ app.get('/vanilla', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'vanilla.html'));
 });
 
+// Route for the Interest Rate Calculator
+app.get('/interest-calculator', (req, res) => {
+  res.sendFile(path.join(__dirname, 'interest-calculator.html'));
+});
+
+app.get('/interest-calculator.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'interest-calculator.html'));
+});
+
 // Serve static files from the current directory
 // This comes AFTER route definitions to prevent conflicts
 app.use(express.static(__dirname));
@@ -56,7 +65,7 @@ app.use(express.static(__dirname));
 app.use((req, res, next) => {
   // Don't redirect if the path is already for Waterfall or Netflix tools
   if (req.path.includes('/waterfall') || req.path === '/index.html' || 
-      req.path.includes('/netflix')) {
+      req.path.includes('/netflix') || req.path.includes('/interest-calculator')) {
     return next();
   }
   res.status(302).redirect('/');
