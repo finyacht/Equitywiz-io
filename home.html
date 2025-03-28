@@ -220,6 +220,10 @@
             background-color: var(--interest-color);
         }
         
+        .budget-card::before {
+            background-color: #8B5CF6;
+        }
+        
         .tool-icon {
             display: flex;
             align-items: center;
@@ -477,6 +481,24 @@
                 padding: 20px;
             }
         }
+        
+        .interest-card .tool-icon {
+            background-color: rgba(14, 165, 233, 0.1);
+            color: #0EA5E9;
+        }
+        
+        .interest-card .tool-button {
+            background-color: #0EA5E9;
+        }
+        
+        .budget-card .tool-icon {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: #8B5CF6;
+        }
+        
+        .budget-card .tool-button {
+            background-color: #8B5CF6;
+        }
     </style>
 </head>
 <body>
@@ -562,6 +584,21 @@
                     <h3 class="tool-subtitle">Investment Growth Modeler</h3>
                     <p class="tool-description">Calculate how your investments grow over time with this interactive tool. Compare simple and compound interest with various compounding frequencies, and visualize the impact of regular deposits on your investment growth.</p>
                     <a href="/interest-calculator" class="tool-button">Open Tool</a>
+                </div>
+            </div>
+
+            <div class="tool-card budget-card">
+                <div class="tool-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="budget-icon">
+                        <rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                </div>
+                <div class="tool-content">
+                    <h2 class="tool-title">Budget & Finances Modeler</h2>
+                    <h3 class="tool-subtitle">Smart Budget Planning Tool</h3>
+                    <p class="tool-description">Plan your budget with flexible allocation rules and see how your savings can grow over time.</p>
+                    <a href="/budget-calculator" class="tool-button">Open Tool</a>
                 </div>
             </div>
         </div>
