@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Budget & Finances Modeler</title>
+    <!-- Load Chart.js with all required modules -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Mobile Responsiveness Enhancements -->
+    <link rel="stylesheet" href="/css/mobile-responsive.css">
+    <style>
+        :root {
+            --primary-color: #8B5CF6; /* Violet as primary color */
+            --secondary-color: #7C3AED; /* Darker violet */
+            --accent-color: #EC4899; /* Pink for accent */
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            background-color: #f9f9f9;
+            color: var(--gray-800);
+        }
+
+        .nav-bar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 30px;
+            margin: 0;
+            border: none;
+        }
+
+        .nav-bar a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            gap: 12px;
+            font-size: 16px;
+        }
+
+        .nav-bar .nav-title {
+            margin-left: auto;
+            font-weight: 600;
+            color: white;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 75px auto 0;
+            padding: 0 20px;
+        }
+
+        .header-section {
+            margin: 0 0 30px;
+            padding: 25px 20px;
+            background: var(--gray-100);
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            clip-path: polygon(0 0, 100% 0, 100% 20%, 20% 20%, 20% 100%, 0 100%);
+            opacity: 0.9;
+            top: 10px;
+            left: 10px;
+        }
+
+        .logo::after {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: white;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 80% 100%, 80% 80%, 0 80%);
+            opacity: 0.7;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .logo-text {
+            flex: 1;
+        }
+
+        .logo-title {
+            font-size: 24px;
+            color: var(--gray-900);
+            margin: 0;
+            font-weight: 600;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 16px;
+            color: var(--gray-600);
+            margin: 4px 0 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            color: var(--gray-600);
+            font-size: 14px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .tool-description {
+            font-size: 15px;
+            color: var(--gray-700);
+            line-height: 1.6;
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 30px;
+            margin: 0 0 20px;
+            padding: 0;
+            max-width: 100%;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            width: 380px;
+            position: relative;
+            z-index: 0;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .step-container {
+            position: relative;
+            z-index: 0;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .step-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+            border-radius: 4px 0 0 4px;
+            z-index: 1;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-content {
+            position: relative;
+            z-index: 2;
+            padding: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 8px;
+        }
+
+        .budget-rule-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            padding: 4px;
+        }
+
+        .budget-rule-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background: white;
+            color: var(--gray-700);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .budget-rule-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .budget-rule-btn:hover:not(.active) {
+            background: var(--gray-50);
+        }
+
+        .budget-total-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 10px;
+            background: var(--gray-200);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--primary-color);
+            border-radius: 5px;
+        }
+
+        .budget-category {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .budget-category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .budget-category-title {
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .budget-category-percentage {
+            color: var(--gray-600);
+            font-size: 14px;
+        }
+
+        .budget-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .budget-input-group input {
+            flex: 1;
+        }
+
+        .budget-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-icon {
+            font-size: 20px;
+        }
+
+        .status-icon.over-budget {
+            color: #ef4444;
+        }
+
+        .status-icon.under-budget {
+            color: #22c55e;
+        }
+
+        .summary-data {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .data-card {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+        
+        .data-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-title {
+            font-size: 16px;
+            color: var(--gray-600);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 10px;
+        }
+        
+        .card-breakdown {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--gray-700);
+            border-top: 1px solid var(--gray-200);
+            padding-top: 10px;
+        }
+        
+        .stocks-breakdown {
+            color: #F59E0B;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .bank-breakdown {
+            color: #3B82F6;
+            font-weight: 500;
+        }
+
+        .investment-options {
+            padding: 12px;
+            margin-top: 0;
+        }
+
+        .investment-option {
+            margin-bottom: 15px;
+        }
+
+        .investment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .investment-header label {
+            font-weight: 500;
+            color: var(--gray-800);
+            font-size: 15px;
+        }
+
+        .percentage {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 15px;
+        }
+
+        .slider-container {
+            width: 100%;
+            padding: 0;
+            margin: 8px 0;
+        }
+
+        .growth-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .growth-input label {
+            font-size: 14px;
+            color: var(--gray-600);
+            min-width: 95px;
+        }
+
+        .growth-input input {
+            width: 70px;
+            padding: 6px 8px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .investment-details {
+            margin-top: 20px;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 20px;
+        }
+
+        .details-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: none;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            color: var(--gray-700);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .details-toggle:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .chevron-icon {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            transition: transform 0.2s ease;
+        }
+
+        .details-toggle[aria-expanded="true"] .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        .details-content {
+            display: none;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+
+        .details-content.show {
+            display: block;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            padding: 25px;
+            height: 360px;
+            position: relative;
+            margin-bottom: 20px;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-wrapper h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: var(--gray-700);
+            text-align: center;
+        }
+
+        .chart-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .chart-view-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            background: white;
+            color: var(--gray-700);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chart-view-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .chart-view-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .step-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .input-with-tooltip {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-with-tooltip input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .tooltip-icon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            font-size: 14px;
+            cursor: help;
+        }
+
+        .tooltip-icon:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: calc(100% + 10px);
+            background: var(--gray-800);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tooltip-icon:hover::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: calc(100% + 4px);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--gray-800);
+            z-index: 1000;
+        }
+
+        /* Investment table styles */
+        .investment-breakdown {
+            display: none;
+        }
+
+        /* Increase font sizes */
+        .input-group label {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group input {
+            font-size: 16px;
+            padding: 12px;
+        }
+
+        .budget-category-title {
+            font-size: 16px;
+        }
+
+        .budget-category-percentage {
+            font-size: 16px;
+        }
+
+        .data-value {
+            font-size: 20px;
+        }
+
+        .data-label {
+            font-size: 16px;
+        }
+
+        /* Chart controls and legends */
+        .chart-wrapper {
+            padding: 24px;
+            height: 350px;  /* Increased height for better legend fit */
+        }
+
+        .chart-controls button {
+            font-size: 16px;
+            padding: 10px 20px;
+        }
+
+        /* Investment explanation */
+        .investment-explanation {
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .investment-header label {
+            font-size: 16px;
+        }
+
+        .investment-amount {
+            font-size: 16px;
+        }
+
+        .percentage {
+            font-size: 16px;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .input-section {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-wrapper {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .header-section {
+                padding: 15px;
+            }
+
+            .logo-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .summary-data {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-controls {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-data {
+                grid-template-columns: 1fr;
+            }
+
+            .projection-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .budget-rule-selector {
+                flex-direction: column;
+            }
+
+            .budget-rule-btn {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Modern slider styles */
+        .modern-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gray-200);
+            outline: none;
+            margin: 10px 0;
+        }
+
+        .modern-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .modern-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Ensure legends are inside the chart */
+        canvas {
+            max-width: 100%;
+            max-height: 280px;
+        }
+
+        /* Table styling improvements */
+        .table-container {
+            overflow: visible;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .results-table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .results-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        .growth-cell {
+            position: relative;
+        }
+        
+        .growth-total {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .toggle-breakdown {
+            margin-left: 6px;
+            color: var(--gray-500);
+            font-size: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .growth-breakdown {
+            display: none;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px dashed var(--gray-300);
+            font-size: 13px;
+        }
+        
+        .growth-breakdown.show {
+            display: block;
+        }
+
+        .stocks-growth {
+            color: #F59E0B;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .bank-growth {
+            color: #3B82F6;
+            font-weight: 500;
+        }
+
+        .operation-cell {
+            text-align: center;
+            font-weight: bold;
+            color: var(--gray-600);
+            width: 40px;
+            padding: 0;
+            vertical-align: middle;
+            font-size: 18px;
+        }
+
+        /* Single tooltip for Net Monthly Salary */
+        .tooltip-single {
+            display: inline-flex;
+            position: relative;
+            align-items: center;
+            margin-left: 8px;
+        }
+
+        .data-card {
+            background: var(--gray-50);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Add styles for selects */
+        .growth-input select {
+            padding: 6px 8px;
+            border: 1px solid var(--gray-300);
+            border-radius: 4px;
+            font-size: 14px;
+            width: auto;
+            min-width: 120px;
+        }
+
+        /* Admin controls */
+        .admin-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            opacity: 0.4;
+            transition: opacity 0.3s;
+        }
+        
+        .admin-controls:hover {
+            opacity: 1;
+        }
+        
+        .admin-controls .btn {
+            font-size: 12px;
+            padding: 2px 8px;
+        }
+        
+        /* Advanced explanations */
+        .advanced-explanation {
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 12px;
+            border-left: 3px solid #6c757d;
+        }
+        
+        .advanced-explanation p {
+            margin-bottom: 6px;
+        }
+        
+        .advanced-explanation ul {
+            margin-bottom: 0;
+            padding-left: 16px;
+        }
+        
+        .advanced-explanation small {
+            color: #6c757d;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="/home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+        </a>
+        <span class="nav-title">Budget & Finances Modeler</span>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="logo-container">
+                <div class="logo"></div>
+                <div class="logo-text">
+                    <h1 class="logo-title">Budget & Finances Modeler</h1>
+                    <h2 class="logo-subtitle">Smart Budget Planning Tool</h2>
+                    <div class="author-info">
+                        By Amal Ganatra
+                        <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <p class="tool-description">
+                Plan your budget with flexible allocation rules and see how your savings can grow over time with customizable investment strategies. Choose from predefined budget rules or create your own to match your financial goals.
+            </p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <!-- Step 1: Net Salary -->
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">1</span>
+                        <h3>Monthly Net Salary</h3>
+                    </div>
+                    <div class="step-content">
+                        <div class="input-group">
+                            <label for="net-salary">
+                                Net Monthly Salary ($)
+                                <div class="tooltip-single">
+                                    <div class="tooltip-icon" title="Your total take-home pay after taxes and deductions, including all sources of regular income">ⓘ</div>
+                                </div>
+                            </label>
+                            <input type="number" id="net-salary" min="0" step="100" value="5000">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Budget Rule -->
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">2</span>
+                        <h3>Budget Allocation</h3>
+                    </div>
+                    <div class="step-content">
+                        <div class="budget-rule-selector">
+                            <button class="budget-rule-btn active" data-rule="50-30-20">50-30-20</button>
+                            <button class="budget-rule-btn" data-rule="60-20-20">60-20-20</button>
+                            <button class="budget-rule-btn" data-rule="custom">Custom</button>
+                        </div>
+
+                        <div class="budget-allocation">
+                            <div class="budget-total-indicator">
+                                <div class="progress-bar">
+                                    <div class="progress" id="total-progress"></div>
+                                </div>
+                                <span class="total-percentage" id="total-percentage">0%</span>
+                            </div>
+
+                            <div class="budget-category">
+                                <div class="budget-category-header">
+                                    <span class="budget-category-title needs-title">Needs</span>
+                                    <span class="budget-category-percentage needs-percentage">50%</span>
+                                </div>
+                                <div class="budget-input-group">
+                                    <input type="number" id="needs-amount" min="0" step="100" value="2500">
+                                    <div class="budget-status">
+                                        <span class="status-icon" title="">👍</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="budget-category">
+                                <div class="budget-category-header">
+                                    <span class="budget-category-title wants-title">Wants</span>
+                                    <span class="budget-category-percentage wants-percentage">30%</span>
+                                </div>
+                                <div class="budget-input-group">
+                                    <input type="number" id="wants-amount" min="0" step="100" value="1500">
+                                    <div class="budget-status">
+                                        <span class="status-icon" title="">👍</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="budget-category">
+                                <div class="budget-category-header">
+                                    <span class="budget-category-title savings-title">Savings</span>
+                                    <span class="budget-category-percentage savings-percentage">20%</span>
+                                </div>
+                                <div class="budget-input-group">
+                                    <input type="number" id="savings-amount" min="0" step="100" value="1000">
+                                    <div class="budget-status">
+                                        <span class="status-icon" title="">👍</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Investment Strategy -->
+                <div class="step-container">
+                    <div class="step-header">
+                        <span class="step-number">3</span>
+                        <h3>Investment Strategy</h3>
+                    </div>
+                    <div class="step-content">
+                        <div class="investment-options">
+                            <div class="investment-explanation">
+                                This section allows you to allocate your monthly savings ($<span id="current-savings">1000</span>) between stocks and savings bank. 
+                                The percentages below represent how you want to split your savings, and the growth rates represent expected annual returns.
+                            </div>
+                            <div class="investment-option">
+                                <div class="investment-header">
+                                    <div class="investment-info">
+                                        <label>Stocks</label>
+                                        <span class="investment-amount stocks-amount">$400</span>
+                                    </div>
+                                    <span class="percentage stocks-percentage">40%</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="stocks-percentage" class="modern-slider" min="0" max="100" value="40" step="1">
+                                </div>
+                                <div class="growth-input">
+                                    <label>Rate of Return (%)</label>
+                                    <input type="number" id="stocks-return-rate" min="0" max="30" value="15" step="0.1">
+                                </div>
+                                <div class="growth-input">
+                                    <label>Growth Pattern</label>
+                                    <select id="stocks-growth-pattern">
+                                        <option value="reinvest">Reinvest Gains (Compound)</option>
+                                        <option value="monthly">Redeem Monthly</option>
+                                        <option value="yearly" selected>Redeem Yearly</option>
+                                        <option value="maturity">Redeem at Maturity</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="investment-option">
+                                <div class="investment-header">
+                                    <div class="investment-info">
+                                        <label>Savings Bank</label>
+                                        <span class="investment-amount bank-amount">$600</span>
+                                    </div>
+                                    <span class="percentage bank-percentage">60%</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="bank-percentage" class="modern-slider" min="0" max="100" value="60" step="1">
+                                </div>
+                                <div class="growth-input">
+                                    <label>Interest Rate (%)</label>
+                                    <input type="number" id="bank-interest-rate" min="0" max="30" value="7" step="0.1">
+                                </div>
+                                <div class="growth-input">
+                                    <label>Interest Type</label>
+                                    <select id="bank-interest-type" onchange="toggleBankCompounding()">
+                                        <option value="compound" selected>Compound</option>
+                                        <option value="simple">Simple</option>
+                                    </select>
+                                </div>
+                                <div class="growth-input" id="bank-compounding-container">
+                                    <label>Compounding</label>
+                                    <select id="bank-compounding">
+                                        <option value="monthly" selected>Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div class="growth-input">
+                                    <label>Redeem Interest</label>
+                                    <select id="bank-redeem-frequency">
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly" selected>Yearly</option>
+                                        <option value="maturity">At Maturity</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="investment-details">
+                                <button class="details-toggle" id="investment-details-toggle">
+                                    How the Numbers Work
+                                    <svg class="chevron-icon" viewBox="0 0 24 24">
+                                        <path d="M6 9l6 6 6-6"></path>
+                                    </svg>
+                                </button>
+                                <div class="details-content" id="math-explanation">
+                                    <!-- Math explanation will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="chart-controls">
+                    <button class="chart-view-btn active" data-view="monthly">Monthly</button>
+                    <button class="chart-view-btn" data-view="yearly">Yearly</button>
+                    <button class="chart-view-btn" data-view="projection">Full Projection</button>
+                </div>
+
+                <div class="charts-container">
+                    <div class="chart-wrapper">
+                        <h4>Budget Split</h4>
+                        <canvas id="budget-chart"></canvas>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h4>Investment Split</h4>
+                        <canvas id="investment-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="summary-data">
+                    <div class="data-card">
+                        <div class="card-title">Savings</div>
+                        <div id="summary-savings" class="card-value">$1,000</div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">Investment Growth</div>
+                        <div id="summary-growth" class="card-value">$0</div>
+                        <div class="card-breakdown">
+                            <div class="stocks-breakdown">Stocks: <span id="stocks-growth-amount">$400</span></div>
+                            <div class="bank-breakdown">Bank: <span id="bank-growth-amount">$600</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-title">End Balance</div>
+                        <div id="summary-balance" class="card-value">$0</div>
+                    </div>
+                </div>
+
+                <div class="projection-controls">
+                    <label for="projection-years">Project for</label>
+                    <select id="projection-years">
+                        <option value="3" selected>3 years</option>
+                        <option value="5">5 years</option>
+                        <option value="10">10 years</option>
+                        <option value="15">15 years</option>
+                        <option value="20">20 years</option>
+                    </select>
+                </div>
+
+                <div class="results-table-container">
+                    <table id="projection-table">
+                        <thead id="results-table-header">
+                            <!-- Header row will be inserted here -->
+                        </thead>
+                        <tbody id="results-table-body">
+                            <!-- Year data rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <strong>Disclaimer:</strong> The Budget & Finances Modeler is provided for educational and illustrative purposes only. It does not constitute financial advice. Investment returns, inflation, and other economic factors can vary over time. Please consult a qualified financial advisor before making investment decisions.
+    </div>
+
+    <!-- Add admin options bar -->
+    <div class="admin-controls">
+        <button id="toggle-explanations" class="btn btn-sm btn-outline-secondary" onclick="toggleAdvancedExplanations()">
+            Show Explanations
+        </button>
+    </div>
+
+    <script src="/js/budgetCalculator.js"></script>
+    <script>
+        function toggleBankCompounding() {
+            const interestType = document.getElementById('bank-interest-type').value;
+            const compoundingContainer = document.getElementById('bank-compounding-container');
+            
+            if (interestType === 'simple') {
+                compoundingContainer.style.display = 'none';
+            } else {
+                compoundingContainer.style.display = 'flex';
+            }
+        }
+        
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleBankCompounding();
+        });
+    </script>
+</body>
+</html> 

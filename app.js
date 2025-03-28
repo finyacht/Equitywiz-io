@@ -1,8 +1,9 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { exec } = require('child_process');
 const app = express();
-const port = 4000; // Try a completely different port
+const port = 3000; // Changed from 4000 to 3000
 
 // First handle specific routes before serving static files
 // Route for the root path (Home page) - always serve home.html
@@ -56,24 +57,42 @@ app.get('/interest-calculator.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'interest-calculator.html'));
 });
 
+// Route for the Budget & Finances Modeler
+app.get('/budget-calculator', (req, res) => {
+  res.sendFile(path.join(__dirname, 'budget-calculator.html'));
+});
+
+app.get('/budget-calculator.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'budget-calculator.html'));
+});
+
 // Serve static files from the current directory
 // This comes AFTER route definitions to prevent conflicts
 app.use(express.static(__dirname));
 
-// Custom 404 handler - redirect to home.html ONLY for unknown routes
-// Don't redirect for the tools themselves
-app.use((req, res, next) => {
-  // Don't redirect if the path is already for Waterfall or Netflix tools
-  if (req.path.includes('/waterfall') || req.path === '/index.html' || 
-      req.path.includes('/netflix') || req.path.includes('/interest-calculator')) {
-    return next();
+// Custom 404 handler
+app.use((req, res) => {
+  // Don't redirect tool routes
+  if (req.path.includes('calculator') || req.path.includes('modeler')) {
+    res.sendFile(path.join(__dirname, req.path + '.html'));
+  } else {
+    res.redirect('/home');
   }
-  res.status(302).redirect('/');
 });
 
-// Start the server with explicit localhost binding
-app.listen(port, 'localhost', () => {
+// Start the server listening on all interfaces (0.0.0.0)
+app.listen(port, '0.0.0.0', () => {
   console.log(`Financial Modeling Tools running at http://localhost:${port}`);
+  console.log(`You can also try http://127.0.0.1:${port}`);
+  
+  // Try to open the browser window automatically
+  try {
+    console.log('Attempting to open browser window...');
+    // For Windows
+    exec(`start http://localhost:${port}/budget-calculator`);
+  } catch (err) {
+    console.error('Failed to open browser window:', err);
+  }
 }).on('error', (err) => {
   console.error('Error starting server:', err);
 }); 
