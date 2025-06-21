@@ -2,8 +2,20 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
+
+// Try to use built-in fetch (Node 18+) or fallback to node-fetch
+let fetch;
+try {
+  fetch = globalThis.fetch;
+} catch {
+  fetch = require('node-fetch');
+}
+
 const app = express();
 const port = 3000; // Changed from 4000 to 3000
+
+// Add middleware to parse JSON bodies
+app.use(express.json());
 
 // First handle specific routes before serving static files
 // Route for the root path (Home page) - always serve home.html
@@ -82,6 +94,91 @@ app.get('/chatbot-demo', (req, res) => {
 
 app.get('/chatbot-demo.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'chatbot-demo.html'));
+});
+
+// Gemini API Proxy Route
+app.post('/api/gemini-chat', async (req, res) => {
+  try {
+    const { message, history, apiKey } = req.body;
+    
+    if (!apiKey) {
+      return res.status(400).json({ error: 'API key is required' });
+    }
+
+    console.log('🤖 Gemini Proxy: Received request with message:', message);
+    console.log('🔑 Gemini Proxy: API Key present:', !!apiKey);
+
+    // Build conversation for Gemini (simplified format)
+    let conversationText = "You are Yikes AI, an expert assistant for equity and cap table management. Help users with: adding shares, equity plans, round modeling, option exercises, vesting schedules, participant portals, and cap table administration. Be helpful, concise, and professional.\n\n";
+    
+    // Add conversation history (last 6 messages)
+    const recentHistory = (history || []).slice(-6);
+    recentHistory.forEach(msg => {
+      if (msg.role === 'user') {
+        conversationText += `User: ${msg.content}\n`;
+      } else if (msg.role === 'assistant') {
+        conversationText += `Assistant: ${msg.content}\n`;
+      }
+    });
+    
+    // Add current message
+    conversationText += `User: ${message}\nAssistant:`;
+    
+    const contents = [{
+      parts: [{
+        text: conversationText
+      }]
+    }];
+
+    const requestBody = {
+      contents: contents,
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024
+      }
+    };
+
+    console.log('📤 Gemini Proxy: Sending request to Gemini API');
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    console.log('📥 Gemini Proxy: Response status:', response.status);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ Gemini Proxy: Success');
+      
+      // Transform Gemini response to match expected format
+      if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+        const transformedResponse = {
+          candidates: [{
+            content: {
+              parts: [{ text: data.candidates[0].content.parts[0].text }]
+            }
+          }]
+        };
+        res.json(transformedResponse);
+      } else {
+        console.error('❌ Gemini Proxy: Invalid response format:', data);
+        res.status(500).json({ error: 'Invalid response format from Gemini API' });
+      }
+    } else {
+      const errorText = await response.text();
+      console.error('❌ Gemini Proxy: API Error:', errorText);
+      res.status(response.status).json({ error: errorText });
+    }
+  } catch (error) {
+    console.error('💥 Gemini Proxy: Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 // Serve static files from the current directory

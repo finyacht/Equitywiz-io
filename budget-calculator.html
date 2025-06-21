@@ -1302,5 +1302,18 @@
             toggleBankCompounding();
         });
     </script>
+    <!-- Chatbot Widget -->
+    <script src="js/chatbotWidget.js"></script>
+    <script>
+        // Initialize chatbot with API key
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.yikesAIChatbot) {
+                window.yikesAIChatbot = new YikesAIChatbot({
+                    apiKey: 'AIzaSyB4ix_spZPsxIw_A3T6X0y6dc33fCmkvqk',
+                    position: 'bottom-left'
+                });
+            }
+        });
+    </script>
 </body>
 </html> 

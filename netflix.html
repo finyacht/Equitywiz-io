@@ -1592,5 +1592,52 @@
             }
         });
     </script>
+    <!-- Chatbot Widget CSS Override -->
+    <style>
+        .gs-chatbot-widget {
+            position: fixed !important;
+            bottom: 20px !important;
+            left: 20px !important;
+            z-index: 999999 !important;
+            display: block !important;
+        }
+    </style>
+    <!-- Chatbot Widget -->
+    <script src="/js/chatbotWidget.js"></script>
+    <script>
+        // Initialize chatbot with API key - force initialization
+        function initChatbot() {
+            console.log('🔧 Attempting to initialize chatbot...');
+            console.log('🔧 YikesAIChatbot available:', !!window.YikesAIChatbot);
+            console.log('🔧 Existing instance:', !!window.yikesAIChatbot);
+            
+            if (window.YikesAIChatbot) {
+                // Remove existing widget if any
+                const existingWidget = document.querySelector('.gs-chatbot-widget');
+                if (existingWidget) {
+                    existingWidget.remove();
+                }
+                
+                window.yikesAIChatbot = new YikesAIChatbot({
+                    apiKey: 'AIzaSyB4ix_spZPsxIw_A3T6X0y6dc33fCmkvqk',
+                    position: 'bottom-left'
+                });
+                console.log('🔧 Chatbot initialized successfully');
+            } else {
+                console.log('🔧 YikesAIChatbot class not found, retrying...');
+                setTimeout(initChatbot, 500);
+            }
+        }
+        
+        // Try multiple initialization methods
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initChatbot);
+        } else {
+            initChatbot();
+        }
+        
+        // Fallback initialization
+        setTimeout(initChatbot, 2000);
+    </script>
 </body>
 </html> 
