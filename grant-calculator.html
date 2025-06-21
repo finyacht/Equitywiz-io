@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-RT0B6NXFG6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Grant Calculator</title>
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/mobile-responsive.css">
+    <style>
+        :root {
+            --primary-color: #f4e5d3; /* Very subtle orange primary */
+            --secondary-color: #f0d5b7; /* Slightly darker subtle orange */
+            --accent-color: #faf7f2; /* Almost white with orange hint */
+            --primary-dark: #d97706; /* Muted orange for text/borders */
+            --primary-light: #fffbf7; /* Lightest orange */
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-color) 100%);
+            color: var(--gray-800);
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+        }
+
+        .nav-bar {
+            background: linear-gradient(90deg, var(--primary-dark), #b45309);
+            color: white;
+            padding: 15px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 30px;
+            margin: 0;
+            border: none;
+        }
+
+        .nav-bar a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            gap: 12px;
+            font-size: 16px;
+        }
+
+        .nav-bar .nav-title {
+            margin-left: auto;
+            font-weight: 600;
+            color: white;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 75px auto 0;
+            padding: 0 40px 40px;
+        }
+
+        .header-section {
+            margin: 0 0 30px;
+            padding: 25px 30px;
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            box-shadow: 0 2px 12px rgba(249, 115, 22, 0.08);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            margin-right: 15px;
+            background: linear-gradient(135deg, var(--primary-dark), #b45309);
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(217, 119, 6, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo svg {
+            width: 36px;
+            height: 36px;
+            color: white;
+        }
+
+        .logo-text {
+            flex: 1;
+        }
+
+        .logo-title {
+            font-size: 2rem;
+            color: var(--gray-900);
+            margin: 0;
+            font-weight: 700;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray-600);
+            margin: 4px 0 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            color: var(--gray-600);
+            font-size: 14px;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .tool-description {
+            font-size: 15px;
+            color: var(--gray-700);
+            line-height: 1.6;
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .tab {
+            padding: 12px 32px;
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab.active {
+            color: var(--primary-dark);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: -2px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-dark), #b45309);
+            border-radius: 2px;
+        }
+
+        .tab-content { 
+            display: none; 
+        }
+
+        .tab-content.active { 
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+
+        .input-section {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(249, 115, 22, 0.08);
+            padding: 40px 36px;
+        }
+
+        .results-section {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 20px;
+            grid-template-areas: 
+                "progress progress"
+                "results chart"
+                "table table";
+        }
+
+        /* Better responsive breakpoints for results section */
+        @media (min-width: 769px) and (max-width: 1023px) {
+            .results-section {
+                grid-template-columns: 1fr;
+                grid-template-areas: 
+                    "progress"
+                    "results"
+                    "chart"
+                    "table";
+            }
+            
+            .results-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                max-width: 700px;
+                margin: 0 auto;
+            }
+        }
+
+        /* Adjust card sizing for better chart space */
+        @media (min-width: 1200px) {
+            .results-section {
+                grid-template-columns: 0.7fr 1.3fr;
+            }
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .results-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(217, 119, 6, 0.08);
+            padding: 25px;
+            min-height: 200px;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .progress-card {
+            grid-area: progress;
+        }
+
+        .chart-card {
+            grid-area: chart;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(217, 119, 6, 0.08);
+            padding: 25px;
+        }
+
+        .table-card {
+            grid-area: table;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(217, 119, 6, 0.08);
+            padding: 25px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        label {
+            font-size: 1rem;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tooltip-icon {
+            width: 16px;
+            height: 16px;
+            background: var(--gray-400);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: help;
+            position: relative;
+        }
+
+        .tooltip-icon:hover::after {
+            content: attr(data-tooltip);
+            position: fixed;
+            bottom: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--gray-900);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            white-space: normal;
+            z-index: 999999;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            max-width: 300px;
+            min-width: 200px;
+            width: max-content;
+            pointer-events: none;
+            text-align: center;
+            line-height: 1.4;
+            border: 1px solid #4f46e5;
+        }
+
+        .tooltip-icon:hover::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: 999998;
+            pointer-events: none;
+        }
+
+        input[type="number"], input[type="date"], select {
+            background: var(--accent-color);
+            border: 1.5px solid var(--secondary-color);
+            color: var(--gray-900);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            transition: border 0.2s;
+        }
+
+        input[type="number"]:focus, input[type="date"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.08);
+        }
+
+        .vesting-config-section {
+            background: var(--accent-color);
+            border: 1px solid var(--secondary-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .vesting-config-section h4 {
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .vesting-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .vesting-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .vesting-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            min-width: 90px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vesting-input {
+            background: var(--accent-color);
+            border: 1.5px solid var(--secondary-color);
+            color: var(--gray-900);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.2s;
+            width: 120px;
+        }
+
+        .vesting-input-wide {
+            background: var(--accent-color);
+            border: 1.5px solid var(--secondary-color);
+            color: var(--gray-900);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.2s;
+            width: 160px;
+        }
+
+        .vesting-input:focus,
+        .vesting-input-wide:focus {
+            outline: none;
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.08);
+        }
+
+        .vesting-select {
+            background: var(--accent-color);
+            border: 1.5px solid var(--secondary-color);
+            color: var(--gray-900);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.2s;
+            width: 100px;
+            cursor: pointer;
+        }
+
+        .vesting-select:focus {
+            outline: none;
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.08);
+        }
+
+        .vesting-combo {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .cliff-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .cliff-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-dark);
+        }
+
+        .cliff-period-row {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .cliff-period-row.hidden {
+            opacity: 0;
+            max-height: 0;
+            margin-bottom: 0;
+            padding: 0;
+        }
+
+        .dual-input {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+            align-items: end;
+        }
+
+        .results {
+            margin-top: 0;
+            padding: 0;
+            background: none;
+            border-radius: 0;
+            border: none;
+            opacity: 1;
+            transform: none;
+            transition: none;
+        }
+
+        .results.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+
+        .result-item:last-child { 
+            border-bottom: none; 
+        }
+
+        .results-subsection {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #fef7ed 100%);
+            border-radius: 12px;
+            border: 1px solid var(--secondary-color);
+        }
+
+        .results-subsection:last-child {
+            margin-bottom: 0;
+        }
+
+        .subsection-title {
+            margin: 0 0 16px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Simple tooltip styling */
+        .result-value[title] {
+            cursor: help;
+            position: relative;
+            border-bottom: 1px dotted #f59e0b;
+            transition: all 0.2s ease;
+        }
+
+        .result-value[title]:hover {
+            color: #f59e0b;
+            border-bottom-color: #d97706;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, var(--primary-dark), #ea580c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.3rem;
+        }
+
+        .info-box {
+            background: var(--accent-color);
+            border: 1px solid var(--secondary-color);
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .progress-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(249, 115, 22, 0.08);
+            padding: 20px 25px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin: 0;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background: var(--gray-200);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-dark), #f97316);
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1), background 0.5s ease;
+            position: relative;
+        }
+
+        .progress-bar.complete {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .celebration {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.5s ease;
+        }
+
+        .celebration.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .celebration-emoji {
+            font-size: 24px;
+            margin: 0 5px;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background-color: #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+
+        .toggle-switch.active {
+            background-color: var(--primary-dark);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: var(--gray-700);
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .vesting-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.08);
+            table-layout: fixed;
+        }
+
+        .vesting-table th {
+            background: var(--primary-color);
+            color: var(--gray-800);
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        .vesting-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: middle;
+        }
+
+        /* Stock Options table column widths - Updated to match RSU table structure */
+        #options-vesting-table .vesting-table th:nth-child(1),
+        #options-vesting-table .vesting-table td:nth-child(1) { width: 6%; text-align: center; } /* Tranche */
+        #options-vesting-table .vesting-table th:nth-child(2),
+        #options-vesting-table .vesting-table td:nth-child(2) { width: 14%; } /* Date */
+        #options-vesting-table .vesting-table th:nth-child(3),
+        #options-vesting-table .vesting-table td:nth-child(3) { width: 10%; } /* Type */
+        #options-vesting-table .vesting-table th:nth-child(4),
+        #options-vesting-table .vesting-table td:nth-child(4) { width: 12%; text-align: right; } /* Shares */
+        #options-vesting-table .vesting-table th:nth-child(5),
+        #options-vesting-table .vesting-table td:nth-child(5) { width: 12%; } /* Status */
+        #options-vesting-table .vesting-table th:nth-child(6),
+        #options-vesting-table .vesting-table td:nth-child(6) { width: 10%; text-align: center; } /* % Vested */
+        #options-vesting-table .vesting-table th:nth-child(7),
+        #options-vesting-table .vesting-table td:nth-child(7) { width: 18%; text-align: right; } /* Gross Value */
+        #options-vesting-table .vesting-table th:nth-child(8),
+        #options-vesting-table .vesting-table td:nth-child(8) { width: 18%; text-align: right; } /* Net Value */
+        #options-vesting-table .vesting-table th:nth-child(9),
+        #options-vesting-table .vesting-table td:nth-child(9) { width: 12%; text-align: right; } /* Cumulative */
+
+        /* RSU table column widths - Updated to match Options table structure */
+        #rsu-vesting-table .vesting-table th:nth-child(1),
+        #rsu-vesting-table .vesting-table td:nth-child(1) { width: 6%; text-align: center; } /* Tranche */
+        #rsu-vesting-table .vesting-table th:nth-child(2),
+        #rsu-vesting-table .vesting-table td:nth-child(2) { width: 14%; } /* Date */
+        #rsu-vesting-table .vesting-table th:nth-child(3),
+        #rsu-vesting-table .vesting-table td:nth-child(3) { width: 10%; } /* Type */
+        #rsu-vesting-table .vesting-table th:nth-child(4),
+        #rsu-vesting-table .vesting-table td:nth-child(4) { width: 12%; text-align: right; } /* Shares */
+        #rsu-vesting-table .vesting-table th:nth-child(5),
+        #rsu-vesting-table .vesting-table td:nth-child(5) { width: 12%; } /* Status */
+        #rsu-vesting-table .vesting-table th:nth-child(6),
+        #rsu-vesting-table .vesting-table td:nth-child(6) { width: 10%; text-align: center; } /* % Vested */
+        #rsu-vesting-table .vesting-table th:nth-child(7),
+        #rsu-vesting-table .vesting-table td:nth-child(7) { width: 18%; text-align: right; } /* Gross Value */
+        #rsu-vesting-table .vesting-table th:nth-child(8),
+        #rsu-vesting-table .vesting-table td:nth-child(8) { width: 18%; text-align: right; } /* Net Value */
+        #rsu-vesting-table .vesting-table th:nth-child(9),
+        #rsu-vesting-table .vesting-table td:nth-child(9) { width: 12%; text-align: right; } /* Cumulative */
+
+        .vesting-table tr:nth-child(even) {
+            background: var(--accent-color);
+        }
+
+        .vesting-table tr:hover {
+            background: var(--secondary-color);
+        }
+
+        .vested-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .vested-indicator.vested {
+            background: #10b981;
+        }
+
+        .vested-indicator.unvested {
+            background: var(--gray-400);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 0 30px 30px;
+            }
+            
+            .main-content,
+            .tab-content.active {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .input-section {
+                position: static;
+            }
+
+            .results-section {
+                grid-template-columns: 1fr;
+                grid-template-areas: 
+                    "progress"
+                    "results"
+                    "chart"
+                    "table";
+            }
+
+            .results-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .vesting-simple-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .results-card, .chart-card, .table-card {
+                padding: 25px;
+            }
+
+            .results-card h3,
+            .chart-card h3,
+            .table-card h3 {
+                margin-top: 0;
+            }
+        }
+
+        /* Tablet and larger mobile devices */
+        @media (max-width: 768px) and (min-width: 480px) {
+            .results-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            
+            .results-card {
+                padding: 20px;
+                min-height: 180px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                padding: 0 20px 20px;
+            }
+            
+            .header-section {
+                padding: 20px 25px;
+            }
+            
+            .logo-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .logo-title {
+                font-size: 1.8rem;
+            }
+            
+            .input-section,
+            .results-section {
+                padding: 30px 25px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .tab {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+
+            .vesting-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-bar {
+                padding: 10px 20px;
+            }
+            
+            .container {
+                margin: 65px auto 0;
+                padding: 0 15px 15px;
+            }
+            
+            .header-section {
+                padding: 15px 20px;
+            }
+            
+            .input-section,
+            .results-section {
+                padding: 25px 20px;
+            }
+            
+            .logo-title {
+                font-size: 1.6rem;
+            }
+            
+            .logo-subtitle {
+                font-size: 1rem;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .vesting-table {
+                font-size: 0.9rem;
+            }
+
+            .vesting-table th,
+            .vesting-table td {
+                padding: 8px;
+            }
+
+            .vesting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .vesting-label {
+                min-width: auto;
+                margin-bottom: 4px;
+            }
+
+            .vesting-input,
+            .vesting-select {
+                width: 100%;
+            }
+
+            .vesting-combo {
+                width: 100%;
+            }
+
+            .results-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .results-card {
+                padding: 20px;
+                min-height: 160px;
+            }
+        }
+
+        /* Prevent text overflow in cards */
+        .results-card h3 {
+            font-size: 1.1rem;
+            margin: 0 0 16px 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .result-item {
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .result-label {
+            color: var(--gray-600); 
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: left;
+            margin: 0;
+        }
+
+        .result-value {
+            font-size: 1.15rem; 
+            font-weight: 600; 
+            color: var(--primary-dark);
+            position: relative;
+            cursor: help;
+            text-align: left;
+            margin: 0;
+        }
+
+        /* Remove complex tooltip CSS and replace with simple styling */
+        .result-value[title] {
+            cursor: help;
+            position: relative;
+            border-bottom: 1px dotted #f59e0b;
+            transition: all 0.2s ease;
+        }
+
+        .result-value[title]:hover {
+            color: #f59e0b;
+            border-bottom-color: #d97706;
+        }
+
+        /* Remove all complex tooltip styles */
+        /* .tooltip, .tooltip-backdrop, etc. - removing these */
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="nav-bar">
+        <a href="/home">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Home
+        </a>
+        <div class="nav-title">Grant Calculator</div>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="logo-container">
+                <div class="logo">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C13.1046 2 14 2.89543 14 4V6H16C17.1046 6 18 6.89543 18 8V10C19.1046 10 20 10.8954 20 12V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V12C4 10.8954 4.89543 10 6 10V8C6 6.89543 6.89543 6 8 6H10V4C10 2.89543 10.8954 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 14L15 11M12 14L9 11M12 14V18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1 class="logo-title">Grant Calculator</h1>
+                    <p class="logo-subtitle">Calculate Stock Options & RSU Values</p>
+                    <div class="author-info">
+                        <span>💼</span>
+                        <span>Financial Modeling Tool</span>
+                    </div>
+                </div>
+            </div>
+            <p class="tool-description">
+                Calculate the value of your stock grants including stock options and RSUs with comprehensive analysis of potential returns, taxes, and vesting schedules. Live calculations update as you modify values.
+            </p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('stock-options')">Stock Options</button>
+            <button class="tab" onclick="switchTab('rsus')">RSUs</button>
+        </div>
+
+        <div id="stock-options-tab" class="tab-content active">
+            <div class="input-section">
+                <h3 style="margin: 0 0 24px; color: var(--gray-800); font-size: 1.4rem;">Stock Options Calculator</h3>
+                <div class="input-group">
+                    <label for="num-options">
+                        Number of Options
+                        <span class="tooltip-icon" data-tooltip="Total number of stock options granted to you">?</span>
+                    </label>
+                    <input type="number" id="num-options" value="10000" min="0" oninput="calculateOptions()">
+                </div>
+                <div class="input-group">
+                    <label for="strike-price">
+                        Strike Price ($)
+                        <span class="tooltip-icon" data-tooltip="The fixed price at which you can exercise your options">?</span>
+                    </label>
+                    <input type="number" id="strike-price" value="1.50" min="0" step="0.01" oninput="calculateOptions()">
+                </div>
+                <div class="input-group">
+                    <label for="current-price">
+                        Current Share Price ($)
+                        <span class="tooltip-icon" data-tooltip="Current market price of the company's stock">?</span>
+                    </label>
+                    <input type="number" id="current-price" value="5.00" min="0" step="0.01" oninput="calculateOptions()">
+                </div>
+                <div class="input-group">
+                    <label for="future-price">
+                        Projected Future Price ($)
+                        <span class="tooltip-icon" data-tooltip="Your estimate of the stock price in the future">?</span>
+                    </label>
+                    <input type="number" id="future-price" value="25.00" min="0" step="0.01" oninput="calculateOptions()">
+                </div>
+                <div class="vesting-config-section">
+                    <h4>Vesting Schedule</h4>
+                    <div class="vesting-row">
+                        <span class="vesting-label">
+                            Start Date
+                            <span class="tooltip-icon" data-tooltip="When your vesting began">?</span>
+                        </span>
+                        <input type="date" id="vesting-start-date" value="2023-01-01" class="vesting-input-wide" oninput="calculateOptions()">
+                    </div>
+                    <div class="vesting-row">
+                        <span class="vesting-label">
+                            Total Duration
+                            <span class="tooltip-icon" data-tooltip="Total time to vest all shares">?</span>
+                        </span>
+                        <div class="vesting-combo">
+                            <input type="number" id="vesting-duration" value="4" min="1" class="vesting-input" oninput="calculateOptions()">
+                            <select id="vesting-unit" class="vesting-select" onchange="calculateOptions()">
+                                <option value="years" selected>Years</option>
+                                <option value="months">Months</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="vesting-row">
+                        <span class="vesting-label">
+                            Frequency
+                            <span class="tooltip-icon" data-tooltip="How often shares vest">?</span>
+                        </span>
+                        <select id="vesting-frequency" class="vesting-select" onchange="calculateOptions()">
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="annual" selected>Annual</option>
+                        </select>
+                    </div>
+                    <div class="vesting-row">
+                        <div class="toggle-container" style="justify-content: flex-start; margin-bottom: 0;">
+                            <button type="button" class="toggle-switch" id="has-cliff-toggle" onclick="toggleCliff('options')">
+                                <div class="toggle-slider"></div>
+                            </button>
+                            <span class="toggle-label" onclick="toggleCliff('options')">Enable Cliff Period</span>
+                            <span class="tooltip-icon" data-tooltip="Check if there's a waiting period before vesting starts" style="margin-left: 8px;">?</span>
+                        </div>
+                    </div>
+                    <div class="vesting-row cliff-period-row hidden" id="options-cliff-row">
+                        <span class="vesting-label">
+                            Cliff Period
+                            <span class="tooltip-icon" data-tooltip="Waiting period before vesting starts">?</span>
+                        </span>
+                        <div class="vesting-combo">
+                            <input type="number" id="cliff-period" value="1" min="0" class="vesting-input" oninput="calculateOptions()">
+                            <select id="cliff-unit" class="vesting-select" onchange="calculateOptions()">
+                                <option value="months">Months</option>
+                                <option value="years" selected>Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    Stock options give you the right to buy shares at a fixed price (strike price). Your profit is the difference between current price and strike price.
+                </div>
+            </div>
+            <div class="results-section">
+                <div class="progress-card" style="grid-area: progress;">
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <div class="progress-title">Vesting Progress</div>
+                            <div class="progress-text" id="options-progress-text">Loading...</div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="options-progress-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="celebration" id="options-celebration">
+                            <span class="celebration-emoji">🎉</span>
+                            Congratulations! Your vesting is complete!
+                            <span class="celebration-emoji">🎉</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-container" style="grid-area: results;">
+                    <div class="results-card">
+                        <div id="options-results" class="results show"></div>
+                    </div>
+                    <div class="results-card">
+                        <div id="options-all-results" class="results show"></div>
+                    </div>
+                </div>
+                <div class="chart-card" style="grid-area: chart;">
+                    <h3 style="margin: 0 0 16px; color: var(--gray-800); font-size: 1.2rem;">Value Progression Chart</h3>
+                    <div class="chart-container">
+                        <canvas id="options-chart"></canvas>
+                    </div>
+                </div>
+                <div class="table-card" style="grid-area: table;">
+                    <h3 style="margin: 0 0 16px; color: var(--gray-800); font-size: 1.2rem;">Vesting Schedule</h3>
+                    <div id="options-vesting-table"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="rsus-tab" class="tab-content">
+            <div class="input-section">
+                <h3 style="margin: 0 0 24px; color: var(--gray-800); font-size: 1.4rem;">RSU Calculator</h3>
+                <div class="input-group">
+                    <label for="num-rsus">
+                        Number of RSUs
+                        <span class="tooltip-icon" data-tooltip="Total number of Restricted Stock Units granted to you">?</span>
+                    </label>
+                    <input type="number" id="num-rsus" value="10000" min="0" oninput="calculateRSUs()">
+                </div>
+                <div class="input-group">
+                    <label for="rsu-current-price">
+                        Current Share Price ($)
+                        <span class="tooltip-icon" data-tooltip="Current market price of the company's stock">?</span>
+                    </label>
+                    <input type="number" id="rsu-current-price" value="5.00" min="0" step="0.01" oninput="calculateRSUs()">
+                </div>
+                <div class="input-group">
+                    <label for="rsu-future-price">
+                        Projected Future Price ($)
+                        <span class="tooltip-icon" data-tooltip="Your estimate of the stock price in the future">?</span>
+                    </label>
+                    <input type="number" id="rsu-future-price" value="25.00" min="0" step="0.01" oninput="calculateRSUs()">
+                </div>
+                <div class="vesting-config-section">
+                    <h4>Vesting Schedule</h4>
+                    <div class="vesting-row">
+                        <span class="vesting-label">
+                            Start Date
+                            <span class="tooltip-icon" data-tooltip="When your vesting began">?</span>
+                        </span>
+                        <input type="date" id="rsu-vesting-start-date" value="2023-01-01" class="vesting-input-wide" oninput="calculateRSUs()">
+                    </div>
+                    <div class="vesting-row">
+                        <span class="vesting-label">
+                            Total Duration
+                            <span class="tooltip-icon" data-tooltip="Total time to vest all shares">?</span>
+                        </span>
+                        <div class="vesting-combo">
+                            <input type="number" id="rsu-vesting-duration" value="4" min="1" class="vesting-input" oninput="calculateRSUs()">
+                            <select id="rsu-vesting-unit" class="vesting-select" onchange="calculateRSUs()">
+                                <option value="years" selected>Years</option>
+                                <option value="months">Months</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="vesting-row">
+                        <span class="vesting-label">
+                            Frequency
+                            <span class="tooltip-icon" data-tooltip="How often shares vest">?</span>
+                        </span>
+                        <select id="rsu-vesting-frequency" class="vesting-select" onchange="calculateRSUs()">
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="annual" selected>Annual</option>
+                        </select>
+                    </div>
+                    <div class="vesting-row">
+                        <div class="toggle-container" style="justify-content: flex-start; margin-bottom: 0;">
+                            <button type="button" class="toggle-switch" id="rsu-has-cliff-toggle" onclick="toggleCliff('rsu')">
+                                <div class="toggle-slider"></div>
+                            </button>
+                            <span class="toggle-label" onclick="toggleCliff('rsu')">Enable Cliff Period</span>
+                            <span class="tooltip-icon" data-tooltip="Check if there's a waiting period before vesting starts" style="margin-left: 8px;">?</span>
+                        </div>
+                    </div>
+                    <div class="vesting-row cliff-period-row hidden" id="rsu-cliff-row">
+                        <span class="vesting-label">
+                            Cliff Period
+                            <span class="tooltip-icon" data-tooltip="Waiting period before vesting starts">?</span>
+                        </span>
+                        <div class="vesting-combo">
+                            <input type="number" id="rsu-cliff-period" value="1" min="0" class="vesting-input" oninput="calculateRSUs()">
+                            <select id="rsu-cliff-unit" class="vesting-select" onchange="calculateRSUs()">
+                                <option value="months">Months</option>
+                                <option value="years" selected>Years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="tax-rate">
+                        Estimated Tax Rate (%)
+                        <span class="tooltip-icon" data-tooltip="Your estimated tax rate for ordinary income (RSUs are taxed as income when they vest)">?</span>
+                    </label>
+                    <input type="number" id="tax-rate" value="35" min="0" max="100" step="1" oninput="calculateRSUs()">
+                </div>
+                <div class="info-box">
+                    RSUs are actual shares given to you that vest over time. Their value is based on the current stock price, and you'll pay taxes on the full value when they vest.
+                </div>
+            </div>
+            <div class="results-section">
+                <div class="progress-card" style="grid-area: progress;">
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <div class="progress-title">Vesting Progress</div>
+                            <div class="progress-text" id="rsu-progress-text">Loading...</div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="rsu-progress-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="celebration" id="rsu-celebration">
+                            <span class="celebration-emoji">🎉</span>
+                            Congratulations! Your vesting is complete!
+                            <span class="celebration-emoji">🎉</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="results-container" style="grid-area: results;">
+                    <div class="results-card">
+                        <div id="rsu-results" class="results show"></div>
+                    </div>
+                    <div class="results-card">
+                        <div id="rsu-all-results" class="results show"></div>
+                    </div>
+                </div>
+                <div class="chart-card" style="grid-area: chart;">
+                    <h3 style="margin: 0 0 16px; color: var(--gray-800); font-size: 1.2rem;">Value Progression Chart</h3>
+                    <div class="chart-container">
+                        <canvas id="rsu-chart"></canvas>
+                    </div>
+                </div>
+                <div class="table-card" style="grid-area: table;">
+                    <h3 style="margin: 0 0 16px; color: var(--gray-800); font-size: 1.2rem;">Vesting Schedule</h3>
+                    <div id="rsu-vesting-table"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let optionsChart = null;
+        let rsuChart = null;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            
+            // Trigger calculations when switching tabs
+            if (tab === 'stock-options') {
+                calculateOptions();
+            } else {
+                calculateRSUs();
+            }
+        }
+
+        function updateProgressBar(type, progress, vested, total) {
+            const progressPercent = Math.min(progress * 100, 100);
+            const progressBar = document.getElementById(`${type}-progress-bar`);
+            const progressText = document.getElementById(`${type}-progress-text`);
+            const celebration = document.getElementById(`${type}-celebration`);
+            
+            progressBar.style.width = progressPercent + '%';
+            progressText.textContent = `${vested.toLocaleString()} of ${total.toLocaleString()} shares vested (${progressPercent.toFixed(1)}%)`;
+            
+            if (progressPercent >= 100) {
+                progressBar.classList.add('complete');
+                celebration.classList.add('show');
+            } else {
+                progressBar.classList.remove('complete');
+                celebration.classList.remove('show');
+            }
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            }).format(date);
+        }
+
+        function convertToMonths(duration, unit) {
+            switch(unit) {
+                case 'years': return duration * 12;
+                case 'months': return duration;
+                default: return duration * 12;
+            }
+        }
+
+        function getVestingIntervalMonths(frequency) {
+            switch(frequency) {
+                case 'monthly': return 1;
+                case 'quarterly': return 3;
+                case 'annual': return 12;
+                default: return 3;
+            }
+        }
+
+        function getVestingProgress(startDate, cliffMonths, durationMonths) {
+            const start = new Date(startDate);
+            const now = new Date();
+            const monthsElapsed = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+            
+            if (monthsElapsed < cliffMonths) {
+                return 0; // No vesting before cliff
+            }
+            
+            return Math.min((monthsElapsed - cliffMonths) / (durationMonths - cliffMonths), 1);
+        }
+
+        function generateVestingSchedule(startDate, totalShares, cliffMonths, durationMonths, frequency, isRSU = false, taxRate = 0, currentPrice = 0) {
+            const start = new Date(startDate);
+            const schedule = [];
+            const intervalMonths = getVestingIntervalMonths(frequency);
+            const now = new Date();
+            
+            let sharesAllocated = 0;
+            
+            // Validate cliff period: cliff cannot be longer than total duration
+            if (cliffMonths > 0 && cliffMonths >= durationMonths) {
+                // If cliff is >= total duration, treat as no cliff and show warning
+                console.warn(`Cliff period (${cliffMonths} months) cannot be >= total duration (${durationMonths} months). Treating as no cliff.`);
+                cliffMonths = 0;
+            }
+            
+            if (cliffMonths > 0) {
+                // CLIFF LOGIC: Cliff is first and single tranche
+                // Typically 25% of total shares vest at cliff, then remaining shares vest regularly
+                const cliffShares = Math.floor(totalShares * 0.25); // 25% at cliff
+                const cliffDate = new Date(start);
+                cliffDate.setMonth(cliffDate.getMonth() + cliffMonths);
+                
+                // Add cliff event
+                schedule.push({
+                    date: cliffDate,
+                    shares: cliffShares,
+                    isVested: cliffDate <= now,
+                    type: 'cliff',
+                    grossValue: isRSU ? cliffShares * currentPrice : 0,
+                    netValue: isRSU ? cliffShares * currentPrice * (1 - taxRate/100) : 0
+                });
+                
+                sharesAllocated += cliffShares;
+                
+                // Calculate remaining shares to vest regularly AFTER cliff
+                const remainingShares = totalShares - cliffShares;
+                const remainingMonths = durationMonths - cliffMonths;
+                const remainingPeriods = Math.floor(remainingMonths / intervalMonths);
+                
+                if (remainingPeriods > 0) {
+                    const sharesPerPeriod = remainingShares / remainingPeriods;
+                    let remainingAllocated = 0;
+                    
+                    // Generate regular vesting events after cliff
+                    for (let i = 1; i <= remainingPeriods; i++) {
+                        const vestDate = new Date(start);
+                        vestDate.setMonth(vestDate.getMonth() + cliffMonths + (i * intervalMonths));
+                        
+                        // Calculate shares for this period
+                        const expectedTotalByNow = Math.floor(sharesPerPeriod * i);
+                        const sharesThisPeriod = expectedTotalByNow - remainingAllocated;
+                        remainingAllocated += sharesThisPeriod;
+                        
+                        if (sharesThisPeriod > 0) {
+                            schedule.push({
+                                date: vestDate,
+                                shares: sharesThisPeriod,
+                                isVested: vestDate <= now,
+                                type: 'regular',
+                                grossValue: isRSU ? sharesThisPeriod * currentPrice : 0,
+                                netValue: isRSU ? sharesThisPeriod * currentPrice * (1 - taxRate/100) : 0
+                            });
+                            sharesAllocated += sharesThisPeriod;
+                        }
+                    }
+                }
+            } else {
+                // NO CLIFF: Regular vesting from start
+                const totalVestingPeriods = Math.floor(durationMonths / intervalMonths);
+                const sharesPerPeriod = totalShares / totalVestingPeriods;
+                
+                for (let i = 1; i <= totalVestingPeriods; i++) {
+                    const vestDate = new Date(start);
+                    vestDate.setMonth(vestDate.getMonth() + (i * intervalMonths));
+                    
+                    const expectedTotalByNow = Math.floor(sharesPerPeriod * i);
+                    const sharesThisPeriod = expectedTotalByNow - sharesAllocated;
+                    sharesAllocated += sharesThisPeriod;
+                    
+                    if (sharesThisPeriod > 0) {
+                        schedule.push({
+                            date: vestDate,
+                            shares: sharesThisPeriod,
+                            isVested: vestDate <= now,
+                            type: 'regular',
+                            grossValue: isRSU ? sharesThisPeriod * currentPrice : 0,
+                            netValue: isRSU ? sharesThisPeriod * currentPrice * (1 - taxRate/100) : 0
+                        });
+                    }
+                }
+            }
+            
+            // Handle any remaining shares due to rounding (allocate to last period)
+            const remainingShares = totalShares - sharesAllocated;
+            if (remainingShares > 0 && schedule.length > 0) {
+                const lastEvent = schedule[schedule.length - 1];
+                lastEvent.shares += remainingShares;
+                if (isRSU) {
+                    lastEvent.grossValue = lastEvent.shares * currentPrice;
+                    lastEvent.netValue = lastEvent.shares * currentPrice * (1 - taxRate/100);
+                }
+            }
+
+            return schedule;
+        }
+
+        function createVestingChart(canvasId, vestingSchedule, totalShares, isRSU = false) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (canvasId === 'options-chart' && optionsChart) {
+                optionsChart.destroy();
+            } else if (canvasId === 'rsu-chart' && rsuChart) {
+                rsuChart.destroy();
+            }
+
+            // Prepare data for step chart
+            const sortedSchedule = vestingSchedule.sort((a, b) => a.date - b.date);
+            const labels = [];
+            const vestedShares = [];
+            const values = [];
+            const colors = [];
+            
+            let cumulativeShares = 0;
+            let cumulativeValue = 0;
+            
+            // Add starting point
+            labels.push('Start');
+            vestedShares.push(0);
+            values.push(0);
+            colors.push('rgba(156, 163, 175, 0.6)');
+            
+            sortedSchedule.forEach((vest, index) => {
+                cumulativeShares += vest.shares;
+                cumulativeValue += isRSU ? vest.netValue : vest.shares;
+                
+                const monthYear = vest.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                labels.push(`${monthYear}${vest.type === 'cliff' ? ' (Cliff)' : ''}`);
+                vestedShares.push(cumulativeShares);
+                values.push(cumulativeValue);
+                colors.push(vest.isVested ? '#10b981' : '#f97316');
+            });
+
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: isRSU ? 'Cumulative Net Value ($)' : 'Cumulative Vested Shares',
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: colors.map(color => color.replace('0.6', '1')),
+                        borderWidth: 2,
+                        borderRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            titleColor: 'white',
+                            bodyColor: 'white',
+                            borderColor: '#f97316',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function(context) {
+                                    const index = context.dataIndex;
+                                    if (index === 0) return 'Vesting Start';
+                                    
+                                    const vest = sortedSchedule[index - 1];
+                                    const lines = [
+                                        `Shares this period: ${vest.shares.toLocaleString()}`,
+                                        `Total vested: ${vestedShares[index].toLocaleString()} / ${totalShares.toLocaleString()}`,
+                                        `Progress: ${((vestedShares[index] / totalShares) * 100).toFixed(1)}%`
+                                    ];
+                                    
+                                    if (isRSU) {
+                                        lines.push(`Gross value: ${formatCurrency(vest.grossValue)}`);
+                                        lines.push(`Net value: ${formatCurrency(vest.netValue)}`);
+                                    }
+                                    
+                                    return lines;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return isRSU ? '$' + value.toLocaleString() : value.toLocaleString();
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: isRSU ? 'Cumulative Net Value ($)' : 'Cumulative Vested Shares'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Vesting Timeline'
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (canvasId === 'options-chart') {
+                optionsChart = chart;
+            } else {
+                rsuChart = chart;
+            }
+        }
+
+        function calculateOptions() {
+            const numOptions = parseFloat(document.getElementById('num-options').value) || 0;
+            const strikePrice = parseFloat(document.getElementById('strike-price').value) || 0;
+            const currentPrice = parseFloat(document.getElementById('current-price').value) || 0;
+            const futurePrice = parseFloat(document.getElementById('future-price').value) || 0;
+            const vestingStartDate = document.getElementById('vesting-start-date').value;
+            const hasCliff = document.getElementById('has-cliff-toggle').classList.contains('active');
+            const cliffPeriod = hasCliff ? (parseFloat(document.getElementById('cliff-period').value) || 0) : 0;
+            const cliffUnit = document.getElementById('cliff-unit').value;
+            const vestingDuration = parseFloat(document.getElementById('vesting-duration').value) || 4;
+            const vestingUnit = document.getElementById('vesting-unit').value;
+            const vestingFrequency = document.getElementById('vesting-frequency').value;
+
+            const cliffMonths = convertToMonths(cliffPeriod, cliffUnit);
+            const durationMonths = convertToMonths(vestingDuration, vestingUnit);
+            
+            // Validate cliff period
+            if (hasCliff && cliffMonths >= durationMonths) {
+                alert(`Invalid cliff period: Cliff period (${cliffPeriod} ${cliffUnit}) cannot be equal to or longer than total duration (${vestingDuration} ${vestingUnit}). Please adjust your settings.`);
+                return;
+            }
+            
+            // Validate vesting frequency vs duration
+            const intervalMonths = getVestingIntervalMonths(vestingFrequency);
+            const totalVestingPeriods = Math.floor(durationMonths / intervalMonths);
+            if (totalVestingPeriods < 2) {
+                alert(`Warning: Your settings create only ${totalVestingPeriods} vesting event(s).\n\nWith ${durationMonths} months duration and ${vestingFrequency} frequency (every ${intervalMonths} months):\n\n• Consider increasing duration to ${intervalMonths * 2}+ months for multiple events\n• Or change frequency to monthly for more frequent vesting`);
+            }
+            
+            // Calculate actual vested shares from schedule
+            const tempVestingSchedule = generateVestingSchedule(vestingStartDate, numOptions, cliffMonths, durationMonths, vestingFrequency);
+            const vestedOptions = tempVestingSchedule
+                .filter(vest => vest.isVested)
+                .reduce((total, vest) => total + vest.shares, 0);
+            
+            const vestingProgress = vestedOptions / numOptions;
+            
+            const currentValuePerOption = Math.max(currentPrice - strikePrice, 0);
+            const currentTotalValue = vestedOptions * currentValuePerOption;
+            const futureValuePerOption = Math.max(futurePrice - strikePrice, 0);
+            const futureTotalValue = numOptions * futureValuePerOption;
+            const exerciseCost = vestedOptions * strikePrice;
+            const totalExerciseCost = numOptions * strikePrice;
+            const netProfit = currentTotalValue - exerciseCost;
+            const futureNetProfit = futureTotalValue - totalExerciseCost;
+
+            // Create simple tooltip texts for Options
+            const vestedTooltip = `VESTED OPTIONS CALCULATION:
+• Vested: ${vestedOptions.toLocaleString()} options
+• Total: ${numOptions.toLocaleString()} options  
+• Progress: ${(vestingProgress * 100).toFixed(1)}%
+
+Based on your vesting schedule`;
+            
+            const currentValueTooltip = `CURRENT VALUE CALCULATION:
+• Current Price: $${currentPrice.toFixed(2)}
+• Strike Price: $${strikePrice.toFixed(2)}
+• Profit per Option: $${(currentPrice - strikePrice).toFixed(2)}
+• Vested Options: ${vestedOptions.toLocaleString()}
+
+Formula: $${currentPrice.toFixed(2)} - $${strikePrice.toFixed(2)} = $${(currentPrice - strikePrice).toFixed(2)} per option
+Total: $${(currentPrice - strikePrice).toFixed(2)} × ${vestedOptions.toLocaleString()} = ${formatCurrency(currentTotalValue)}`;
+            
+            const exerciseCostTooltip = `EXERCISE COST CALCULATION:
+• Strike Price: $${strikePrice.toFixed(2)}
+• Vested Options: ${vestedOptions.toLocaleString()}
+
+Formula: $${strikePrice.toFixed(2)} × ${vestedOptions.toLocaleString()} = ${formatCurrency(exerciseCost)}`;
+            
+            const netProfitTooltip = `NET PROFIT CALCULATION:
+• Current Value: ${formatCurrency(currentTotalValue)}
+• Exercise Cost: ${formatCurrency(exerciseCost)}
+
+Formula: ${formatCurrency(currentTotalValue)} - ${formatCurrency(exerciseCost)} = ${formatCurrency(netProfit)}`;
+
+            const totalOptionsTooltip = `TOTAL OPTIONS: ${numOptions.toLocaleString()} options granted in your equity package`;
+            
+            const futureValueTooltip = `FUTURE VALUE CALCULATION:
+• Future Price: $${futurePrice.toFixed(2)}
+• Strike Price: $${strikePrice.toFixed(2)}
+• Profit per Option: $${(futurePrice - strikePrice).toFixed(2)}
+• Total Options: ${numOptions.toLocaleString()}
+
+Formula: $${futurePrice.toFixed(2)} - $${strikePrice.toFixed(2)} = $${(futurePrice - strikePrice).toFixed(2)} per option
+Total: $${(futurePrice - strikePrice).toFixed(2)} × ${numOptions.toLocaleString()} = ${formatCurrency(futureTotalValue)}`;
+            
+            const totalExerciseCostTooltip = `TOTAL EXERCISE COST:
+• Strike Price: $${strikePrice.toFixed(2)}
+• Total Options: ${numOptions.toLocaleString()}
+
+Formula: $${strikePrice.toFixed(2)} × ${numOptions.toLocaleString()} = ${formatCurrency(totalExerciseCost)}`;
+            
+            const futureNetProfitTooltip = `FUTURE NET PROFIT:
+• Future Value: ${formatCurrency(futureTotalValue)}
+• Total Exercise Cost: ${formatCurrency(totalExerciseCost)}
+
+Formula: ${formatCurrency(futureTotalValue)} - ${formatCurrency(totalExerciseCost)} = ${formatCurrency(futureNetProfit)}`;
+
+            const vestedResultsHTML = `
+                <div class="results-subsection">
+                    <h4 class="subsection-title">📊 Vested Options</h4>
+                    <div class="result-item">
+                        <span class="result-label">Vested Options</span>
+                        <span class="result-value" title="${vestedTooltip}">${vestedOptions.toLocaleString()} (${(vestingProgress * 100).toFixed(1)}%)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Current Value</span>
+                        <span class="result-value" title="${currentValueTooltip}">${formatCurrency(currentTotalValue)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Exercise Cost</span>
+                        <span class="result-value" title="${exerciseCostTooltip}">${formatCurrency(exerciseCost)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Net Profit Now</span>
+                        <span class="result-value highlight" title="${netProfitTooltip}">${formatCurrency(netProfit)}</span>
+                    </div>
+                </div>
+            `;
+
+            const allResultsHTML = `
+                <div class="results-subsection">
+                    <h4 class="subsection-title">🎯 All Options</h4>
+                    <div class="result-item">
+                        <span class="result-label">Total Options</span>
+                        <span class="result-value" title="${totalOptionsTooltip}">${numOptions.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Future Value</span>
+                        <span class="result-value" title="${futureValueTooltip}">${formatCurrency(futureTotalValue)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Total Exercise Cost</span>
+                        <span class="result-value" title="${totalExerciseCostTooltip}">${formatCurrency(totalExerciseCost)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Future Net Profit</span>
+                        <span class="result-value highlight" title="${futureNetProfitTooltip}">${formatCurrency(futureNetProfit)}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('options-results').innerHTML = vestedResultsHTML;
+            document.getElementById('options-all-results').innerHTML = allResultsHTML;
+            
+            // Debug: Log to console to verify content is being set
+            console.log('Options results set:', vestedResultsHTML.length > 0);
+            console.log('Options all results set:', allResultsHTML.length > 0);
+            
+            // Update progress bar
+            updateProgressBar('options', vestingProgress, vestedOptions, numOptions);
+
+            // Generate vesting schedule and chart
+            const vestingSchedule = generateVestingSchedule(vestingStartDate, numOptions, cliffMonths, durationMonths, vestingFrequency);
+            createVestingChart('options-chart', vestingSchedule, numOptions, false);
+
+            // Generate vesting table for Options with consistent columns
+            let tableHTML = `
+                <table class="vesting-table">
+                    <thead>
+                        <tr>
+                            <th>Tranche</th>
+                            <th>Vesting Date</th>
+                            <th>Type</th>
+                            <th>Shares</th>
+                            <th>Status</th>
+                            <th>% Vested</th>
+                            <th>Gross Value</th>
+                            <th>Net Value</th>
+                            <th>Cumulative</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            let cumulative = 0;
+            vestingSchedule.forEach((vest, index) => {
+                cumulative += vest.shares;
+                const percentVested = (cumulative / numOptions * 100).toFixed(1);
+                const grossValue = vest.shares * currentPrice;
+                const netValue = vest.shares * (currentPrice - strikePrice);
+                tableHTML += `
+                    <tr>
+                        <td><span style="color: #6b7280; font-weight: 500;">#${index + 1}</span></td>
+                        <td>${formatDate(vest.date)}</td>
+                        <td><span style="color: ${vest.type === 'cliff' ? '#f97316' : '#6b7280'}; font-weight: 500;">${vest.type === 'cliff' ? 'Cliff' : 'Regular'}</span></td>
+                        <td>${vest.shares.toLocaleString()}</td>
+                        <td>
+                            <span class="vested-indicator ${vest.isVested ? 'vested' : 'unvested'}"></span>
+                            <span style="color: ${vest.isVested ? '#059669' : '#6b7280'}; font-weight: 500;">${vest.isVested ? 'Vested' : 'Unvested'}</span>
+                        </td>
+                        <td><span style="color: ${vest.isVested ? '#059669' : '#6b7280'}; font-weight: 500;">${percentVested}%</span></td>
+                        <td>${formatCurrency(grossValue)}</td>
+                        <td>${formatCurrency(netValue)}</td>
+                        <td>${cumulative.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            document.getElementById('options-vesting-table').innerHTML = tableHTML;
+        }
+
+        function calculateRSUs() {
+            const numRSUs = parseFloat(document.getElementById('num-rsus').value) || 0;
+            const currentPrice = parseFloat(document.getElementById('rsu-current-price').value) || 0;
+            const futurePrice = parseFloat(document.getElementById('rsu-future-price').value) || 0;
+            const vestingStartDate = document.getElementById('rsu-vesting-start-date').value;
+            const hasCliff = document.getElementById('rsu-has-cliff-toggle').classList.contains('active');
+            const cliffPeriod = hasCliff ? (parseFloat(document.getElementById('rsu-cliff-period').value) || 0) : 0;
+            const cliffUnit = document.getElementById('rsu-cliff-unit').value;
+            const vestingDuration = parseFloat(document.getElementById('rsu-vesting-duration').value) || 4;
+            const vestingUnit = document.getElementById('rsu-vesting-unit').value;
+            const vestingFrequency = document.getElementById('rsu-vesting-frequency').value;
+            const taxRate = parseFloat(document.getElementById('tax-rate').value) || 0;
+
+            const cliffMonths = convertToMonths(cliffPeriod, cliffUnit);
+            const durationMonths = convertToMonths(vestingDuration, vestingUnit);
+            
+            // Validate cliff period
+            if (hasCliff && cliffMonths >= durationMonths) {
+                alert(`Invalid cliff period: Cliff period (${cliffPeriod} ${cliffUnit}) cannot be equal to or longer than total duration (${vestingDuration} ${vestingUnit}). Please adjust your settings.`);
+                return;
+            }
+            
+            // Validate vesting frequency vs duration
+            const intervalMonths = getVestingIntervalMonths(vestingFrequency);
+            const totalVestingPeriods = Math.floor(durationMonths / intervalMonths);
+            if (totalVestingPeriods < 2) {
+                alert(`Warning: Your settings create only ${totalVestingPeriods} vesting event(s).\n\nWith ${durationMonths} months duration and ${vestingFrequency} frequency (every ${intervalMonths} months):\n\n• Consider increasing duration to ${intervalMonths * 2}+ months for multiple events\n• Or change frequency to monthly for more frequent vesting`);
+            }
+            
+            // Calculate actual vested shares from schedule
+            const tempRSUSchedule = generateVestingSchedule(vestingStartDate, numRSUs, cliffMonths, durationMonths, vestingFrequency, true, taxRate, currentPrice);
+            const vestedRSUs = tempRSUSchedule
+                .filter(vest => vest.isVested)
+                .reduce((total, vest) => total + vest.shares, 0);
+            
+            const vestingProgress = vestedRSUs / numRSUs;
+
+            const currentGrossValue = vestedRSUs * currentPrice;
+            const currentNetValue = currentGrossValue * (1 - taxRate / 100);
+            const futureGrossValue = numRSUs * futurePrice;
+            const futureNetValue = futureGrossValue * (1 - taxRate / 100);
+            const annualRSUs = numRSUs / (durationMonths / 12);
+            const annualGrossValue = annualRSUs * currentPrice;
+            const annualNetValue = annualGrossValue * (1 - taxRate / 100);
+
+            // Create simple tooltip texts for RSUs
+            const vestedRSUTooltip = `VESTED RSUs CALCULATION:
+• Vested: ${vestedRSUs.toLocaleString()} RSUs
+• Total: ${numRSUs.toLocaleString()} RSUs
+• Progress: ${(vestingProgress * 100).toFixed(1)}%
+
+Calculated from your vesting schedule`;
+            
+            const grossValueTooltip = `GROSS VALUE CALCULATION:
+• Current Price: $${currentPrice.toFixed(2)}
+• Vested RSUs: ${vestedRSUs.toLocaleString()}
+
+Formula: $${currentPrice.toFixed(2)} × ${vestedRSUs.toLocaleString()} = ${formatCurrency(currentGrossValue)}`;
+            
+            const netValueTooltip = `NET VALUE (AFTER TAX):
+• Gross Value: ${formatCurrency(currentGrossValue)}
+• Tax Rate: ${taxRate}%
+
+Formula: ${formatCurrency(currentGrossValue)} × (1 - ${taxRate}%) = ${formatCurrency(currentNetValue)}`;
+            
+            const totalRSUTooltip = `TOTAL RSUs: ${numRSUs.toLocaleString()} RSUs granted in your equity package`;
+            
+            const annualGrossTooltip = `ANNUAL VESTING (GROSS):
+• Annual RSUs: ${annualRSUs.toFixed(0)}
+• Current Price: $${currentPrice.toFixed(2)}
+
+Formula: ${annualRSUs.toFixed(0)} × $${currentPrice.toFixed(2)} = ${formatCurrency(annualGrossValue)}`;
+            
+            const annualNetTooltip = `ANNUAL VESTING (NET):
+• Annual Gross: ${formatCurrency(annualGrossValue)}
+• Tax Rate: ${taxRate}%
+
+Formula: ${formatCurrency(annualGrossValue)} × (1 - ${taxRate}%) = ${formatCurrency(annualNetValue)}`;
+            
+            const rsuFutureValueTooltip = `FUTURE TOTAL VALUE:
+• Future Price: $${futurePrice.toFixed(2)}
+• Total RSUs: ${numRSUs.toLocaleString()}
+• Tax Rate: ${taxRate}%
+
+Formula: $${futurePrice.toFixed(2)} × ${numRSUs.toLocaleString()} × (1 - ${taxRate}%) = ${formatCurrency(futureNetValue)}`;
+
+            const vestedRSUResultsHTML = `
+                <div class="results-subsection">
+                    <h4 class="subsection-title">📊 Vested RSUs</h4>
+                    <div class="result-item">
+                        <span class="result-label">Vested RSUs</span>
+                        <span class="result-value" title="${vestedRSUTooltip}">${vestedRSUs.toLocaleString()} (${(vestingProgress * 100).toFixed(1)}%)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Gross Value</span>
+                        <span class="result-value" title="${grossValueTooltip}">${formatCurrency(currentGrossValue)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Net Value (After Tax)</span>
+                        <span class="result-value highlight" title="${netValueTooltip}">${formatCurrency(currentNetValue)}</span>
+                    </div>
+                </div>
+            `;
+
+            const allRSUResultsHTML = `
+                <div class="results-subsection">
+                    <h4 class="subsection-title">🎯 All RSUs</h4>
+                    <div class="result-item">
+                        <span class="result-label">Total RSUs</span>
+                        <span class="result-value" title="${totalRSUTooltip}">${numRSUs.toLocaleString()}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Annual Vesting (Gross)</span>
+                        <span class="result-value" title="${annualGrossTooltip}">${formatCurrency(annualGrossValue)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Annual Vesting (Net)</span>
+                        <span class="result-value" title="${annualNetTooltip}">${formatCurrency(annualNetValue)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Future Total Value</span>
+                        <span class="result-value highlight" title="${rsuFutureValueTooltip}">${formatCurrency(futureNetValue)}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('rsu-results').innerHTML = vestedRSUResultsHTML;
+            document.getElementById('rsu-all-results').innerHTML = allRSUResultsHTML;
+            
+            // Update progress bar
+            updateProgressBar('rsu', vestingProgress, vestedRSUs, numRSUs);
+
+            // Generate vesting schedule and chart
+            const vestingSchedule = generateVestingSchedule(vestingStartDate, numRSUs, cliffMonths, durationMonths, vestingFrequency, true, taxRate, currentPrice);
+            createVestingChart('rsu-chart', vestingSchedule, numRSUs, true);
+
+            // Generate vesting table
+            let tableHTML = `
+                <table class="vesting-table">
+                    <thead>
+                        <tr>
+                            <th>Tranche</th>
+                            <th>Vesting Date</th>
+                            <th>Type</th>
+                            <th>Shares</th>
+                            <th>Status</th>
+                            <th>% Vested</th>
+                            <th>Gross Value</th>
+                            <th>Net Value</th>
+                            <th>Cumulative</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            let cumulativeRSUs = 0;
+            vestingSchedule.forEach((vest, index) => {
+                cumulativeRSUs += vest.shares;
+                const percentVested = (cumulativeRSUs / numRSUs * 100).toFixed(1);
+                const grossValue = vest.shares * currentPrice;
+                const netValue = grossValue * (1 - taxRate / 100);
+                tableHTML += `
+                    <tr>
+                        <td><span style="color: #6b7280; font-weight: 500;">#${index + 1}</span></td>
+                        <td>${formatDate(vest.date)}</td>
+                        <td><span style="color: ${vest.type === 'cliff' ? '#f97316' : '#6b7280'}; font-weight: 500;">${vest.type === 'cliff' ? 'Cliff' : 'Regular'}</span></td>
+                        <td>${vest.shares.toLocaleString()}</td>
+                        <td>
+                            <span class="vested-indicator ${vest.isVested ? 'vested' : 'unvested'}"></span>
+                            <span style="color: ${vest.isVested ? '#059669' : '#6b7280'}; font-weight: 500;">${vest.isVested ? 'Vested' : 'Unvested'}</span>
+                        </td>
+                        <td><span style="color: ${vest.isVested ? '#059669' : '#6b7280'}; font-weight: 500;">${percentVested}%</span></td>
+                        <td>${formatCurrency(grossValue)}</td>
+                        <td>${formatCurrency(netValue)}</td>
+                        <td>${cumulativeRSUs.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            document.getElementById('rsu-vesting-table').innerHTML = tableHTML;
+        }
+
+        function toggleCliff(type) {
+            const toggleSwitch = document.getElementById(type === 'options' ? 'has-cliff-toggle' : 'rsu-has-cliff-toggle');
+            const cliffRow = document.getElementById(type === 'options' ? 'options-cliff-row' : 'rsu-cliff-row');
+            
+            // Toggle the switch state
+            const isActive = toggleSwitch.classList.contains('active');
+            
+            if (isActive) {
+                toggleSwitch.classList.remove('active');
+                cliffRow.classList.add('hidden');
+                // Reset cliff period to 0 when disabled
+                document.getElementById(type === 'options' ? 'cliff-period' : 'rsu-cliff-period').value = 0;
+            } else {
+                toggleSwitch.classList.add('active');
+                cliffRow.classList.remove('hidden');
+            }
+            
+            // Recalculate based on type
+            if (type === 'options') {
+                calculateOptions();
+            } else {
+                calculateRSUs();
+            }
+        }
+
+        // Initialize calculations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateOptions();
+            calculateRSUs();
+        });
+    </script>
+</body>
+</html> 
