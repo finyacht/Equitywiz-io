@@ -565,6 +565,13 @@ th .tooltip {
     margin: 30px 0;
 }
 
+/* CUSTOM CLASSES FOR NETFLIX OPTION MODELER */
+.centered-link {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+}
+
 .results-summary {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

@@ -39,7 +39,7 @@ app.get('/index.html', (req, res) => {
 
 // Route for the Netflix Option Modeler - both with and without .html extension
 app.get('/netflix', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'netflix.html'));
+  res.sendFile(path.join(__dirname, 'netflix.html'));
 });
 
 app.get('/netflix.html', (req, res) => {
@@ -57,7 +57,11 @@ app.get('/home.html', (req, res) => {
 
 // Route for the Vanilla Option Modeler
 app.get('/vanilla', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'vanilla.html'));
+  res.sendFile(path.join(__dirname, 'vanilla.html'));
+});
+
+app.get('/vanilla.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'vanilla.html'));
 });
 
 // Route for the Interest Rate Calculator
@@ -109,7 +113,46 @@ app.post('/api/gemini-chat', async (req, res) => {
     console.log('🔑 Gemini Proxy: API Key present:', !!apiKey);
 
     // Build conversation for Gemini (simplified format)
-    let conversationText = "You are Yikes AI, an expert assistant for equity and cap table management. Help users with: adding shares, equity plans, round modeling, option exercises, vesting schedules, participant portals, and cap table administration. Be helpful, concise, and professional.\n\n";
+    let conversationText = `You are Yikes AI, a specialized assistant for equity and cap table management based on comprehensive platform user guides.
+
+**YOUR KNOWLEDGE SOURCE:**
+You are trained on comprehensive user guides covering:
+- Cap Table & Compliance Management
+- Stakeholder Management & Participant Portals
+- Share Transactions & Equity Grant Administration
+- Vesting Schedules & Plan Management
+- Option Exercise & Release Processes
+- Round Modeling & Convertible Instruments
+- Warrant Management & Board Approvals
+- Document Management & Compliance Reporting
+- Company Overview & Administrative Functions
+
+**CRITICAL RESPONSE REQUIREMENTS:**
+1. NEVER limit to 3 steps - provide COMPLETE workflows (6-12 action points as needed)
+2. Use bullet points (•) NOT numbered steps
+3. Each action point should be on a new line
+4. Include ALL necessary actions for complete workflow
+5. Be thorough and comprehensive - don't skip important actions
+6. End with a practical tip using 💡
+
+**RESPONSE FORMAT:**
+• [First action with specific details]
+
+• [Second action with platform specifics]
+
+• [Third action continuing the workflow]
+
+• [Fourth action with more details]
+
+• [Fifth action as needed]
+
+• [Continue with as many actions as required for complete workflow]
+
+• [Final action to complete the process]
+
+💡 Tip: [Practical advice for best results]
+
+IMPORTANT: Always provide comprehensive workflows with 6-12+ action points. Never stop at just 3 actions.\n\n`;
     
     // Add conversation history (last 6 messages)
     const recentHistory = (history || []).slice(-6);
