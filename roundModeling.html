@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Round Modeling Tool - Calculate funding rounds, manage convertible notes and SAFEs">
+    <title>Round Modeling - Investment Analysis Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/roundModeling.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Investment Analysis</a>
+            <ul class="nav-links">
+                <li><a href="budget-calculator.html">Budget Calculator</a></li>
+                <li><a href="roundModeling.html" class="active">Round Modeling</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <div class="tool-header">
+                <h1>Round Modeling Calculator</h1>
+                <p>Model your funding rounds, manage convertible notes and SAFEs, and calculate dilution scenarios.</p>
+            </div>
+
+            <!-- Funding Calculator -->
+            <div class="card">
+                <h2>Funding Calculator</h2>
+                <div class="calculation-method">
+                    <h3>Calculation Method</h3>
+                    <div class="toggle-container">
+                        <input type="radio" id="pre-money" name="calculation-method" value="pre-money" checked>
+                        <label for="pre-money">Pre-Money Valuation</label>
+                        <input type="radio" id="percentage" name="calculation-method" value="percentage">
+                        <label for="percentage">Ownership Percentage</label>
+                    </div>
+                </div>
+                
+                <div class="input-grid">
+                    <div class="input-group" id="pre-money-group">
+                        <label for="pre-money">Pre-money Valuation</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="pre-money" placeholder="0" min="0">
+                            <i class="bi bi-info-circle tooltip" data-tooltip="Company valuation before investment"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="investment-amount">Investment Amount</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="investment-amount" placeholder="0" min="0">
+                            <i class="bi bi-info-circle tooltip" data-tooltip="Amount to be invested in this round"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group" id="percentage-group">
+                        <label for="target-ownership">Target Ownership (%)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="target-ownership" placeholder="0" min="0" max="100" disabled>
+                            <i class="bi bi-info-circle tooltip" data-tooltip="Desired ownership percentage for investor"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="results-container">
+                    <div class="result-item">
+                        <h3>Post-money Valuation</h3>
+                        <p id="post-money-result">$0</p>
+                    </div>
+                    <div class="result-item">
+                        <h3>New Investor Ownership</h3>
+                        <p id="new-ownership-result">0%</p>
+                    </div>
+                    <div class="result-item">
+                        <h3>Existing Shareholder Dilution</h3>
+                        <p id="dilution-result">0%</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts -->
+            <div class="chart-container">
+                <div class="card chart-card">
+                    <h3>Ownership Distribution</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="ownership-chart"></canvas>
+                    </div>
+                </div>
+                <div class="card chart-card">
+                    <h3>Dilution Analysis</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="dilution-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Convertible Notes -->
+            <div class="card">
+                <div class="section-header">
+                    <h2>Convertible Notes</h2>
+                    <button class="btn btn-primary" id="add-note-btn">
+                        <i class="bi bi-plus-lg"></i> Add Note
+                    </button>
+                </div>
+                
+                <div id="notes-container" class="cards-container">
+                    <div class="empty-state">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <p>No convertible notes yet</p>
+                        <small>Add a note to see it here</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SAFEs -->
+            <div class="card">
+                <div class="section-header">
+                    <h2>SAFEs (Simple Agreement for Future Equity)</h2>
+                    <button class="btn btn-primary" id="add-safe-btn">
+                        <i class="bi bi-plus-lg"></i> Add SAFE
+                    </button>
+                </div>
+                
+                <div id="safes-container" class="cards-container">
+                    <div class="empty-state">
+                        <i class="bi bi-file-earmark-check"></i>
+                        <p>No SAFEs yet</p>
+                        <small>Add a SAFE to see it here</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Add Note Modal -->
+    <div class="modal" id="note-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Convertible Note</h2>
+                <button class="close-modal" id="close-note-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="note-form">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="note-name">Note Name</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="note-name" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="note-amount">Principal Amount</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="note-amount" min="0" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="note-interest">Interest Rate (%)</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="note-interest" min="0" max="100" required>
+                                <i class="bi bi-info-circle tooltip" data-tooltip="Annual interest rate"></i>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="note-date">Issue Date</label>
+                            <div class="input-wrapper">
+                                <input type="date" id="note-date" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="note-discount">Discount Rate (%)</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="note-discount" min="0" max="100">
+                                <i class="bi bi-info-circle tooltip" data-tooltip="Discount on the valuation for conversion"></i>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="note-cap">Valuation Cap</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="note-cap" min="0">
+                                <i class="bi bi-info-circle tooltip" data-tooltip="Maximum valuation for conversion"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-note-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-note-btn">Save Note</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add SAFE Modal -->
+    <div class="modal" id="safe-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add SAFE</h2>
+                <button class="close-modal" id="close-safe-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="safe-form">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label for="safe-name">SAFE Name</label>
+                            <div class="input-wrapper">
+                                <input type="text" id="safe-name" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="safe-amount">Investment Amount</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="safe-amount" min="0" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="safe-type">SAFE Type</label>
+                            <div class="input-wrapper">
+                                <select id="safe-type" required>
+                                    <option value="cap-only">Valuation Cap Only</option>
+                                    <option value="discount-only">Discount Only</option>
+                                    <option value="cap-and-discount">Cap and Discount</option>
+                                    <option value="mfn">Most Favored Nation (MFN)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="safe-date">Issue Date</label>
+                            <div class="input-wrapper">
+                                <input type="date" id="safe-date" required>
+                            </div>
+                        </div>
+                        <div class="input-group" id="safe-cap-group">
+                            <label for="safe-cap">Valuation Cap</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="safe-cap" min="0">
+                                <i class="bi bi-info-circle tooltip" data-tooltip="Maximum valuation for conversion"></i>
+                            </div>
+                        </div>
+                        <div class="input-group" id="safe-discount-group">
+                            <label for="safe-discount">Discount Rate (%)</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="safe-discount" min="0" max="100">
+                                <i class="bi bi-info-circle tooltip" data-tooltip="Discount on the valuation for conversion"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-safe-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-safe-btn">Save SAFE</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chatbot -->
+    <button class="chatbot-toggle" id="chatbot-toggle">
+        <i class="bi bi-chat-dots-fill"></i>
+    </button>
+    
+    <div class="chatbot-modal" id="chatbot-modal">
+        <div class="chatbot-header">
+            <h3>Funding Assistant</h3>
+            <button id="close-chat"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot-message">
+                Hello! I'm your funding assistant. How can I help you with your round modeling today?
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Type your question...">
+            <button id="send-message"><i class="bi bi-send"></i></button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Investment Analysis Tools. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script src="js/roundModeling.js"></script>
+</body>
+</html> 

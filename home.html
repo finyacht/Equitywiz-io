@@ -233,6 +233,10 @@
             background-color: #8B5CF6;
         }
         
+        .grant-card::before {
+            background-color: #d97706;
+        }
+        
         .tool-icon {
             display: flex;
             align-items: center;
@@ -508,6 +512,15 @@
         .budget-card .tool-button {
             background-color: #8B5CF6;
         }
+        
+        .grant-card .tool-icon {
+            background-color: rgba(217, 119, 6, 0.1);
+            color: #d97706;
+        }
+        
+        .grant-card .tool-button {
+            background-color: #d97706;
+        }
     </style>
 </head>
 <body>
@@ -608,6 +621,21 @@
                     <h3 class="tool-subtitle">Smart Budget Planning Tool</h3>
                     <p class="tool-description">Plan your budget with flexible allocation rules and see how your savings can grow over time.</p>
                     <a href="/budget-calculator" class="tool-button">Open Tool</a>
+                </div>
+            </div>
+
+            <div class="tool-card grant-card">
+                <div class="tool-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="grant-icon">
+                        <path d="M12 2C13.1046 2 14 2.89543 14 4V6H16C17.1046 6 18 6.89543 18 8V10C19.1046 10 20 10.8954 20 12V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V12C4 10.8954 4.89543 10 6 10V8C6 6.89543 6.89543 6 8 6H10V4C10 2.89543 10.8954 2 12 2Z"></path>
+                        <path d="M12 14L15 11M12 14L9 11M12 14V18"></path>
+                    </svg>
+                </div>
+                <div class="tool-content">
+                    <h2 class="tool-title">Grant Calculator</h2>
+                    <h3 class="tool-subtitle">Calculate the potential value of your stock options and RSUs</h3>
+                    <p class="tool-description">Estimate the value of your equity compensation, including both stock options and RSUs, with modern, intuitive analysis.</p>
+                    <a href="/grant-calculator" class="tool-button">Open Tool</a>
                 </div>
             </div>
         </div>
