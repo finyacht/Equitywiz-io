@@ -66,6 +66,24 @@ app.get('/budget-calculator.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'budget-calculator.html'));
 });
 
+// Route for the Grant Calculator
+app.get('/grant-calculator', (req, res) => {
+  res.sendFile(path.join(__dirname, 'grant-calculator.html'));
+});
+
+app.get('/grant-calculator.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'grant-calculator.html'));
+});
+
+// Route for the Chatbot Demo
+app.get('/chatbot-demo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'chatbot-demo.html'));
+});
+
+app.get('/chatbot-demo.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'chatbot-demo.html'));
+});
+
 // Serve static files from the current directory
 // This comes AFTER route definitions to prevent conflicts
 app.use(express.static(__dirname));
