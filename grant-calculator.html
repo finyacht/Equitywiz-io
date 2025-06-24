@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Equity Grant Calculator</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <style>
         * {
             margin: 0;
@@ -153,10 +156,11 @@
             height: 8px;
             -webkit-appearance: none;
             appearance: none;
-            background: linear-gradient(to right, #007AFF 0%, #007AFF var(--value), #5856D6 var(--value), #5856D6 100%);
+            background: linear-gradient(to right, #007AFF 0%, #007AFF var(--value, 50%), #5856D6 var(--value, 50%), #5856D6 100%);
             border-radius: 8px;
             outline: none;
             cursor: pointer;
+            transition: background 0.1s ease;
         }
 
         .split-slider::-webkit-slider-thumb {
@@ -338,6 +342,45 @@
 
         .collapse-icon.rotated {
             transform: rotate(180deg);
+        }
+
+        /* Tooltip styles */
+        .tooltip-trigger {
+            cursor: help;
+            color: #007AFF;
+            margin-left: 8px;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .tooltip-trigger:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            max-width: 250px;
+            white-space: normal;
+            width: max-content;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tooltip-trigger:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 115%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
         }
 
         .chart-container {
@@ -719,21 +762,29 @@
                 <input type="number" id="totalGrant" class="amount-input" placeholder="$100,000" value="100000">
             </div>
 
+            <div class="amount-input-wrapper">
+                <label for="valueDelivered">
+                    Value Delivered 
+                    <span class="tooltip-trigger" data-tooltip="Enter the total value you've already realized from past option exercises and stock sales. This helps calculate your complete equity compensation picture.">ℹ️</span>
+                </label>
+                <input type="number" id="valueDelivered" class="amount-input" placeholder="$0" value="0" min="0">
+            </div>
+
             <div class="split-section">
                 <div class="split-labels">
-                    <span class="split-label options">Options: <span id="optionsPercent">50%</span></span>
-                    <span class="split-label rsus">RSUs: <span id="rsusPercent">50%</span></span>
+                    <span class="split-label options">Options: <span id="optionsPercent">0%</span></span>
+                    <span class="split-label rsus">RSUs: <span id="rsusPercent">0%</span></span>
                 </div>
                 <div class="slider-wrapper">
                     <input type="range" id="splitSlider" class="split-slider" min="0" max="100" value="50" style="--value: 50%">
                 </div>
                 <div class="split-amounts">
                     <div class="split-amount">
-                        <div class="split-amount-value" id="optionsAmount" style="color: #007AFF">$50,000</div>
+                        <div class="split-amount-value" id="optionsAmount" style="color: #007AFF">$0</div>
                         <div class="split-amount-label">Options Budget</div>
                     </div>
                     <div class="split-amount">
-                        <div class="split-amount-value" id="rsusAmount" style="color: #5856D6">$50,000</div>
+                        <div class="split-amount-value" id="rsusAmount" style="color: #5856D6">$0</div>
                         <div class="split-amount-label">RSUs Budget</div>
                     </div>
                 </div>
@@ -1013,6 +1064,21 @@
                         • RSUs: Target Price × RSUs × Tax Rate
                     </span>
                 </div>
+                <div class="metric-card tooltip">
+                    <div class="metric-value" style="color: #007AFF;" id="totalGainsDelivered">$0</div>
+                    <div class="metric-label">Total Gains Delivered</div>
+                    <span class="tooltiptext">
+                        <strong>Total Lifetime Equity Value:</strong><br>
+                        = Value Delivered + Options Value + RSUs Value<br><br>
+                        <strong>📊 Breakdown:</strong><br>
+                        • Past Gains: <span id="pastGainsAmount">$0</span><br>
+                        • Future Options: <span id="futureOptionsAmount">$0</span><br>
+                        • Future RSUs: <span id="futureRSUsAmount">$0</span><br>
+                        • Total: <span id="totalGainsAmount">$0</span><br><br>
+                        <strong>💡 Purpose:</strong><br>
+                        Shows your complete equity compensation picture including both realized and projected gains.
+                    </span>
+                </div>
             </div>
 
             <div class="explanation-section">
@@ -1044,18 +1110,47 @@
 
         // Setup event listeners
         function setupEventListeners() {
-            // All input fields
-            const inputs = document.querySelectorAll('input');
+            // All input fields except the slider
+            const inputs = document.querySelectorAll('input:not(#splitSlider)');
             inputs.forEach(input => {
                 input.addEventListener('input', updateCalculations);
             });
 
             // Special handling for the slider
             const slider = document.getElementById('splitSlider');
-            slider.addEventListener('input', function() {
-                this.style.setProperty('--value', this.value + '%');
-                updateCalculations();
-            });
+            if (slider) {
+                console.log('Slider found, initial value:', slider.value);
+                
+                // Set initial CSS property
+                slider.style.setProperty('--value', slider.value + '%');
+                
+                slider.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    console.log('Slider changed to:', value);
+                    
+                    // Update CSS custom property for gradient
+                    this.style.setProperty('--value', value + '%');
+                    
+                    // Alternative: Update background directly
+                    this.style.background = `linear-gradient(to right, #007AFF 0%, #007AFF ${value}%, #5856D6 ${value}%, #5856D6 100%)`;
+                    
+                    // Force a repaint to ensure visual update
+                    this.offsetHeight;
+                    
+                    updateCalculations();
+                });
+                
+                // Also listen for 'change' event for better compatibility
+                slider.addEventListener('change', function() {
+                    const value = parseFloat(this.value);
+                    console.log('Slider change event:', value);
+                    this.style.setProperty('--value', value + '%');
+                    this.style.background = `linear-gradient(to right, #007AFF 0%, #007AFF ${value}%, #5856D6 ${value}%, #5856D6 100%)`;
+                    updateCalculations();
+                });
+            } else {
+                console.error('Slider not found!');
+            }
         }
 
         // Format currency
@@ -1149,6 +1244,7 @@
             
             // Get input values
             const totalGrant = parseFloat(document.getElementById('totalGrant').value) || 0;
+            const valueDelivered = parseFloat(document.getElementById('valueDelivered').value) || 0;
             const splitPercent = parseFloat(document.getElementById('splitSlider').value) || 50;
             const currentSharePrice = parseFloat(document.getElementById('currentSharePrice').value) || 0;
             const strikePrice = parseFloat(document.getElementById('strikePrice').value) || 0;
@@ -1162,10 +1258,40 @@
             const rsusBudget = totalGrant * ((100 - splitPercent) / 100);
             
             // Update UI - split display
-            document.getElementById('optionsPercent').textContent = formatPercent(splitPercent);
-            document.getElementById('rsusPercent').textContent = formatPercent(100 - splitPercent);
-            document.getElementById('optionsAmount').textContent = formatCurrency(optionsBudget);
-            document.getElementById('rsusAmount').textContent = formatCurrency(rsusBudget);
+            console.log('Updating split display - Options:', splitPercent, '%, RSUs:', (100 - splitPercent), '%');
+            
+            const optionsPercentEl = document.getElementById('optionsPercent');
+            const rsusPercentEl = document.getElementById('rsusPercent');
+            const optionsAmountEl = document.getElementById('optionsAmount');
+            const rsusAmountEl = document.getElementById('rsusAmount');
+            
+            if (optionsPercentEl) {
+                optionsPercentEl.textContent = formatPercent(splitPercent);
+                console.log('Updated optionsPercent to:', formatPercent(splitPercent));
+            } else {
+                console.error('optionsPercent element not found!');
+            }
+            
+            if (rsusPercentEl) {
+                rsusPercentEl.textContent = formatPercent(100 - splitPercent);
+                console.log('Updated rsusPercent to:', formatPercent(100 - splitPercent));
+            } else {
+                console.error('rsusPercent element not found!');
+            }
+            
+            if (optionsAmountEl) {
+                optionsAmountEl.textContent = formatCurrency(optionsBudget);
+                console.log('Updated optionsAmount to:', formatCurrency(optionsBudget));
+            } else {
+                console.error('optionsAmount element not found!');
+            }
+            
+            if (rsusAmountEl) {
+                rsusAmountEl.textContent = formatCurrency(rsusBudget);
+                console.log('Updated rsusAmount to:', formatCurrency(rsusBudget));
+            } else {
+                console.error('rsusAmount element not found!');
+            }
             
             // Calculate quantities
             const numOptions = strikePrice > 0 ? Math.floor(optionsBudget / strikePrice) : 0;
@@ -1194,10 +1320,52 @@
             document.getElementById('rsusValueAtTarget').textContent = formatCurrency(rsusCalc.netValue);
             document.getElementById('totalTaxes').textContent = formatCurrency(optionsCalc.taxes + rsusCalc.taxes);
             
+            // Update Options value tooltip with actual numbers
+            const optionsTooltip = document.querySelector('#optionsValueAtTarget').parentElement.querySelector('.tooltiptext');
+            if (optionsTooltip) {
+                optionsTooltip.innerHTML = `
+                    <strong>Options Net Value Calculation:</strong><br>
+                    = (${formatCurrency(targetPrice)} - ${formatCurrency(strikePrice)}) × ${formatNumber(numOptions)} × (1 - ${taxRate}%)<br><br>
+                    <strong>📊 Step-by-step:</strong><br>
+                    • Intrinsic Value = Max(0, ${formatCurrency(targetPrice)} - ${formatCurrency(strikePrice)}) = ${formatCurrency(optionsCalc.intrinsicValue)}<br>
+                    • Gross Value = ${formatCurrency(optionsCalc.intrinsicValue)} × ${formatNumber(numOptions)} = ${formatCurrency(optionsCalc.grossValue)}<br>
+                    • Taxes = ${formatCurrency(optionsCalc.grossValue)} × ${taxRate}% = ${formatCurrency(optionsCalc.taxes)}<br>
+                    • Net Value = ${formatCurrency(optionsCalc.grossValue)} - ${formatCurrency(optionsCalc.taxes)} = ${formatCurrency(optionsCalc.netValue)}<br><br>
+                    <strong>💡 Status:</strong> ${optionsCalc.inTheMoney ? '✅ In the money' : '❌ Out of the money'}
+                `;
+            }
+            
+            // Update RSUs value tooltip with actual numbers
+            const rsusTooltip = document.querySelector('#rsusValueAtTarget').parentElement.querySelector('.tooltiptext');
+            if (rsusTooltip) {
+                rsusTooltip.innerHTML = `
+                    <strong>RSUs Net Value Calculation:</strong><br>
+                    = ${formatCurrency(targetPrice)} × ${formatNumber(numRSUs)} × (1 - ${taxRate}%)<br><br>
+                    <strong>📊 Step-by-step:</strong><br>
+                    • Gross Value = ${formatCurrency(targetPrice)} × ${formatNumber(numRSUs)} = ${formatCurrency(rsusCalc.grossValue)}<br>
+                    • Taxes = ${formatCurrency(rsusCalc.grossValue)} × ${taxRate}% = ${formatCurrency(rsusCalc.taxes)}<br>
+                    • Net Value = ${formatCurrency(rsusCalc.grossValue)} - ${formatCurrency(rsusCalc.taxes)} = ${formatCurrency(rsusCalc.netValue)}<br><br>
+                    <strong>💡 Benefits:</strong><br>
+                    • No strike price or exercise cost<br>
+                    • Always have value above $0<br>
+                    • Simpler tax treatment
+                `;
+            }
+            
             // Update tax breakdown in tooltip
             document.getElementById('optionsTaxAmount').textContent = formatCurrency(optionsCalc.taxes);
             document.getElementById('rsusTaxAmount').textContent = formatCurrency(rsusCalc.taxes);
             document.getElementById('totalTaxAmount').textContent = formatCurrency(optionsCalc.taxes + rsusCalc.taxes);
+            
+            // Calculate and update Total Gains Delivered
+            const totalGainsDelivered = valueDelivered + optionsCalc.netValue + rsusCalc.netValue;
+            document.getElementById('totalGainsDelivered').textContent = formatCurrency(totalGainsDelivered);
+            
+            // Update Total Gains Delivered breakdown in tooltip
+            document.getElementById('pastGainsAmount').textContent = formatCurrency(valueDelivered);
+            document.getElementById('futureOptionsAmount').textContent = formatCurrency(optionsCalc.netValue);
+            document.getElementById('futureRSUsAmount').textContent = formatCurrency(rsusCalc.netValue);
+            document.getElementById('totalGainsAmount').textContent = formatCurrency(totalGainsDelivered);
             
             // Determine better choice
             const betterChoice = optionsCalc.netValue > rsusCalc.netValue ? 'Options' : 'RSUs';
@@ -1577,7 +1745,66 @@
                                         if (context.dataset.label === 'Breakpoint') {
                                             return 'Breakpoint: ' + formatCurrency(context.parsed.x);
                                         }
-                                        return context.dataset.label + ': ' + formatPercent(context.parsed.y);
+                                        const roi = context.parsed.y;
+                                        const label = context.dataset.label + ': ' + formatPercent(roi);
+                                        return label;
+                                    },
+                                    afterLabel: function(context) {
+                                        if (context.dataset.label === 'Breakpoint') return '';
+                                        
+                                        const roi = context.parsed.y;
+                                        const sharePrice = context.parsed.x;
+                                        
+                                        if (context.dataset.label.includes('Options')) {
+                                            const investment = numOptions * strikePrice;
+                                            const intrinsicValue = Math.max(0, sharePrice - strikePrice);
+                                            const grossGain = intrinsicValue * numOptions;
+                                            const netGain = grossGain * (1 - taxRate / 100);
+                                            const totalValue = investment + netGain;
+                                            
+                                            if (roi < 0) {
+                                                return [
+                                                    '',
+                                                    '📉 Negative ROI because:',
+                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Strike price (' + formatCurrency(strikePrice) + ')',
+                                                    '• Options are "out of the money"',
+                                                    '• Investment: ' + formatCurrency(investment),
+                                                    '• Current value: ' + formatCurrency(totalValue)
+                                                ];
+                                            } else {
+                                                return [
+                                                    '',
+                                                    '📈 Positive ROI calculation:',
+                                                    '• Intrinsic value: (' + formatCurrency(sharePrice) + ' - ' + formatCurrency(strikePrice) + ') × ' + numOptions,
+                                                    '• Gross gain: ' + formatCurrency(grossGain),
+                                                    '• After taxes: ' + formatCurrency(netGain),
+                                                    '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100'
+                                                ];
+                                            }
+                                        } else {
+                                            const investment = numRSUs * currentPrice;
+                                            const grossGain = (sharePrice - currentPrice) * numRSUs;
+                                            const netGain = grossGain * (1 - taxRate / 100);
+                                            
+                                            if (roi < 0) {
+                                                return [
+                                                    '',
+                                                    '📉 Negative ROI because:',
+                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Purchase price (' + formatCurrency(currentPrice) + ')',
+                                                    '• Stock value declined',
+                                                    '• Investment: ' + formatCurrency(investment)
+                                                ];
+                                            } else {
+                                                return [
+                                                    '',
+                                                    '📈 Positive ROI calculation:',
+                                                    '• Price appreciation: ' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentPrice) + ' = ' + formatCurrency(sharePrice - currentPrice),
+                                                    '• Gross gain: ' + formatCurrency(grossGain),
+                                                    '• After taxes: ' + formatCurrency(netGain),
+                                                    '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100'
+                                                ];
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1844,6 +2071,8 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Initializing...');
+            
             // Set default vesting start date to today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('vestingStartDate').value = today;
@@ -1852,6 +2081,18 @@
             document.getElementById('vestingPeriod').addEventListener('input', updateCalculations);
             document.getElementById('cliffPeriod').addEventListener('input', updateCalculations);
             document.getElementById('vestingFrequency').addEventListener('change', updateCalculations);
+            
+            // Ensure slider is set to its default value and trigger initial calculation
+            const slider = document.getElementById('splitSlider');
+            if (slider) {
+                const initialValue = parseFloat(slider.value);
+                console.log('Setting slider initial state, value:', initialValue);
+                slider.style.setProperty('--value', initialValue + '%');
+                slider.style.background = `linear-gradient(to right, #007AFF 0%, #007AFF ${initialValue}%, #5856D6 ${initialValue}%, #5856D6 100%)`;
+            }
+            
+            // Add a visual indicator that JavaScript is working
+            console.log('🚀 JavaScript loaded successfully! Slider should now work.');
             
             init();
         });
