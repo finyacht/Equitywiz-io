@@ -37,7 +37,7 @@
         .header h1 {
             font-size: 56px;
             font-weight: 600;
-            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
@@ -69,7 +69,7 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
             color: white;
             display: flex;
             align-items: center;
@@ -115,7 +115,7 @@
 
         .amount-input:focus {
             outline: none;
-            border-color: #007AFF;
+            border-color: #0a5264;
             background: white;
             transform: scale(1.02);
         }
@@ -139,11 +139,11 @@
         }
 
         .split-label.options {
-            color: #007AFF;
+            color: #0a5264;
         }
 
         .split-label.rsus {
-            color: #5856D6;
+            color: #084552;
         }
 
         .slider-wrapper {
@@ -156,7 +156,7 @@
             height: 8px;
             -webkit-appearance: none;
             appearance: none;
-            background: linear-gradient(to right, #007AFF 0%, #007AFF var(--value, 50%), #5856D6 var(--value, 50%), #5856D6 100%);
+            background: linear-gradient(to right, #0a5264 0%, #0a5264 var(--value, 50%), #084552 var(--value, 50%), #084552 100%);
             border-radius: 8px;
             outline: none;
             cursor: pointer;
@@ -238,10 +238,10 @@
             background: white;
         }
 
-                .input-field:focus {
+        .input-field:focus {
             outline: none;
-            border-color: #007AFF;
-            transform: scale(1.02);
+            border-color: #0a5264;
+            box-shadow: 0 0 0 3px rgba(10, 82, 100, 0.1);
         }
 
         .helper-text {
@@ -249,8 +249,6 @@
             font-size: 14px;
             opacity: 0.8;
         }
-
- 
 
         .calculation-result {
             background: linear-gradient(135deg, #e8f3ff 0%, #f3e8ff 100%);
@@ -449,7 +447,7 @@
         }
 
         .status-badge.unvested {
-            background: #FF9500;
+            background: #0a5264;
             color: white;
         }
 
@@ -461,7 +459,7 @@
         }
 
         .breakpoint-info {
-            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
             color: white;
             border-radius: 20px;
             padding: 40px;
@@ -516,7 +514,7 @@
             display: inline-flex;
             align-items: center;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
             color: white;
             text-decoration: none;
             border-radius: 12px;
@@ -565,7 +563,7 @@
             border-radius: 12px;
             padding: 20px;
             margin: 20px 0;
-            border-left: 4px solid #007AFF;
+            border-left: 4px solid #0a5264;
         }
 
         .info-box p {
@@ -575,7 +573,7 @@
         }
 
         .vesting-config {
-            background: #fff3e0;
+            background: #f1f3f4;
             border-radius: 16px;
             padding: 32px;
             margin: 32px 0;
@@ -585,7 +583,7 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 20px;
-            color: #FF9500;
+            color: #0a5264;
         }
 
         .vesting-inputs {
@@ -599,7 +597,7 @@
             position: relative;
             display: inline-block;
             cursor: help;
-            color: #007AFF;
+            color: #0a5264;
             font-weight: 600;
         }
 
@@ -663,9 +661,9 @@
 
         .pagination button {
             padding: 8px 16px;
-            border: 2px solid #007AFF;
+            border: 2px solid #0a5264;
             background: white;
-            color: #007AFF;
+            color: #0a5264;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
@@ -673,7 +671,7 @@
         }
 
         .pagination button:hover {
-            background: #007AFF;
+            background: #0a5264;
             color: white;
         }
 
@@ -684,7 +682,7 @@
 
         .pagination button:disabled:hover {
             background: white;
-            color: #007AFF;
+            color: #0a5264;
         }
 
         .pagination span {
@@ -734,6 +732,36 @@
                 height: 300px;
             }
         }
+
+        .choice-section {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+            border-left: 4px solid #0a5264;
+        }
+
+        .choice-section h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #0a5264;
+        }
+
+        .comparison-section {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+            border-left: 4px solid #0a5264;
+        }
+
+        .comparison-section h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #0a5264;
+        }
     </style>
 </head>
 <body>
@@ -759,7 +787,7 @@
             
             <div class="amount-input-wrapper">
                 <label for="totalGrant">Total amount to invest in equity</label>
-                <input type="number" id="totalGrant" class="amount-input" placeholder="$100,000" value="100000">
+                <input type="text" id="totalGrant" class="amount-input" placeholder="$1,500,000" value="1,500,000">
             </div>
 
             <div class="amount-input-wrapper">
@@ -767,7 +795,7 @@
                     Value Delivered 
                     <span class="tooltip-trigger" data-tooltip="Enter the total value you've already realized from past option exercises and stock sales. This helps calculate your complete equity compensation picture.">ℹ️</span>
                 </label>
-                <input type="number" id="valueDelivered" class="amount-input" placeholder="$0" value="0" min="0">
+                <input type="text" id="valueDelivered" class="amount-input" placeholder="$3,000,000" value="3,000,000" min="0">
             </div>
 
             <div class="split-section">
@@ -780,11 +808,11 @@
                 </div>
                 <div class="split-amounts">
                     <div class="split-amount">
-                        <div class="split-amount-value" id="optionsAmount" style="color: #007AFF">$0</div>
+                        <div class="split-amount-value" id="optionsAmount" style="color: #0a5264">$0</div>
                         <div class="split-amount-label">Options Budget</div>
                     </div>
                     <div class="split-amount">
-                        <div class="split-amount-value" id="rsusAmount" style="color: #5856D6">$0</div>
+                        <div class="split-amount-value" id="rsusAmount" style="color: #084552">$0</div>
                         <div class="split-amount-label">RSUs Budget</div>
                     </div>
                 </div>
@@ -801,11 +829,11 @@
             <div class="price-inputs">
                 <div class="input-group">
                     <label for="strikePrice">Option Strike Price</label>
-                    <input type="number" id="strikePrice" class="input-field" placeholder="$45" value="45" step="0.01">
+                    <input type="number" id="strikePrice" class="input-field" placeholder="$200" value="200" step="0.01">
                 </div>
                 <div class="input-group">
                     <label for="currentSharePrice">Current Share Price</label>
-                    <input type="number" id="currentSharePrice" class="input-field" placeholder="$50" value="50" step="0.01">
+                    <input type="number" id="currentSharePrice" class="input-field" placeholder="$500" value="500" step="0.01">
                 </div>
                 <div class="input-group">
                     <label for="appreciation">Expected Share Price Appreciation (%)</label>
@@ -820,18 +848,18 @@
                 </div>
             </div>
 
-                        <div class="info-box">
+            <div class="info-box">
                 <p><strong>Note:</strong> For Options, you pay the strike price per option. For RSUs, you pay the current share price per unit.</p>
             </div>
 
             <div class="calculation-result">
                 <div class="result-grid">
                     <div class="result-item">
-                        <div class="result-number" id="numOptions" style="color: #007AFF">0</div>
+                        <div class="result-number" id="numOptions" style="color: #0a5264">0</div>
                         <div class="result-label">Stock Options</div>
                     </div>
                     <div class="result-item">
-                        <div class="result-number" id="numRSUs" style="color: #5856D6">0</div>
+                        <div class="result-number" id="numRSUs" style="color: #084552">0</div>
                         <div class="result-label">RSUs</div>
                     </div>
                 </div>
@@ -859,33 +887,33 @@
 
             <div class="vesting-config">
                 <h4>Configure Vesting Schedule</h4>
-                            <div class="vesting-inputs">
-                <div class="input-group">
-                    <label for="vestingStartDate">Vesting Start Date</label>
-                    <input type="date" id="vestingStartDate" class="input-field" value="" onchange="updateCalculations()">
+                <div class="vesting-inputs">
+                    <div class="input-group">
+                        <label for="vestingStartDate">Vesting Start Date</label>
+                        <input type="date" id="vestingStartDate" class="input-field" value="" onchange="updateCalculations()">
+                    </div>
+                    <div class="input-group">
+                        <label for="vestingPeriod">Total Vesting Period (Years)</label>
+                        <input type="number" id="vestingPeriod" class="input-field" value="4" min="1" max="10" step="0.5">
+                    </div>
+                    <div class="input-group">
+                        <label for="cliffPeriod">Cliff Period (Years)</label>
+                        <input type="number" id="cliffPeriod" class="input-field" value="1" min="0" max="5" step="0.25">
+                    </div>
+                    <div class="input-group">
+                        <label for="vestingFrequency">Vesting Frequency</label>
+                        <select id="vestingFrequency" class="input-field">
+                            <option value="annual" selected>Annual</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="vestingPeriod">Total Vesting Period (Years)</label>
-                    <input type="number" id="vestingPeriod" class="input-field" value="4" min="1" max="10" step="0.5">
-                </div>
-                <div class="input-group">
-                    <label for="cliffPeriod">Cliff Period (Years)</label>
-                    <input type="number" id="cliffPeriod" class="input-field" value="1" min="0" max="5" step="0.25">
-                </div>
-                <div class="input-group">
-                    <label for="vestingFrequency">Vesting Frequency</label>
-                    <select id="vestingFrequency" class="input-field">
-                        <option value="annual">Annual</option>
-                        <option value="quarterly" selected>Quarterly</option>
-                        <option value="monthly">Monthly</option>
-                    </select>
-                </div>
-            </div>
             </div>
 
             <div style="display: block; width: 100%;">
                 <div style="margin-bottom: 40px;">
-                    <h3 style="font-size: 20px; margin-bottom: 16px; color: #007AFF;">Options Vesting</h3>
+                    <h3 style="font-size: 20px; margin-bottom: 16px; color: #0a5264;">Options Vesting</h3>
                     <div style="overflow-x: auto; width: 100%;">
                         <div class="vesting-table-container">
                             <table class="vesting-table">
@@ -913,7 +941,7 @@
                     </div>
                 </div>
                 <div>
-                    <h3 style="font-size: 20px; margin-bottom: 16px; color: #5856D6;">RSUs Vesting</h3>
+                    <h3 style="font-size: 20px; margin-bottom: 16px; color: #084552;">RSUs Vesting</h3>
                     <div style="overflow-x: auto; width: 100%;">
                         <div class="vesting-table-container">
                             <table class="vesting-table">
@@ -999,8 +1027,8 @@
                 <div style="margin-top: 16px; padding: 16px; background: #e8f3ff; border-radius: 8px; font-size: 14px;">
                     <strong>What this means:</strong><br>
                     • At the breakpoint price, both options and RSUs give you the same profit after taxes<br>
-                    • If you think the stock will go <strong>above</strong> this price → Choose <span style="color: #007AFF; font-weight: 600;">Options</span><br>
-                    • If you think the stock will stay <strong>below</strong> this price → Choose <span style="color: #5856D6; font-weight: 600;">RSUs</span><br>
+                    • If you think the stock will go <strong>above</strong> this price → Choose <span style="color: #0a5264; font-weight: 600;">Options</span><br>
+                    • If you think the stock will stay <strong>below</strong> this price → Choose <span style="color: #084552; font-weight: 600;">RSUs</span><br>
                     • The formula works because: (Share Price - Strike) × Options × (1 - Tax) = Share Price × RSUs × (1 - Tax)
                 </div>
             </div>
@@ -1011,7 +1039,7 @@
 
             <div class="metrics-grid">
                 <div class="metric-card tooltip">
-                    <div class="metric-value" style="color: #007AFF;" id="optionsValueAtTarget">$0</div>
+                    <div class="metric-value" style="color: #0a5264;" id="optionsValueAtTarget">$0</div>
                     <div class="metric-label">Options Value at Target Price</div>
                     <span class="tooltiptext">
                         <strong>Options Net Value Formula:</strong><br>
@@ -1024,7 +1052,7 @@
                     </span>
                 </div>
                 <div class="metric-card tooltip">
-                    <div class="metric-value" style="color: #5856D6;" id="rsusValueAtTarget">$0</div>
+                    <div class="metric-value" style="color: #084552;" id="rsusValueAtTarget">$0</div>
                     <div class="metric-label">RSUs Value at Target Price</div>
                     <span class="tooltiptext">
                         <strong>RSUs Net Value Formula:</strong><br>
@@ -1065,7 +1093,7 @@
                     </span>
                 </div>
                 <div class="metric-card tooltip">
-                    <div class="metric-value" style="color: #007AFF;" id="totalGainsDelivered">$0</div>
+                    <div class="metric-value" style="color: #0a5264;" id="totalGainsDelivered">$0</div>
                     <div class="metric-label">Total Gains Delivered</div>
                     <span class="tooltiptext">
                         <strong>Total Lifetime Equity Value:</strong><br>
@@ -1101,6 +1129,13 @@
         let rsusCurrentPage = 1;
         const itemsPerPage = 10;
         
+        // Global variables for chart tooltips
+        let globalNumOptions = 0;
+        let globalNumRSUs = 0;
+        let globalStrikePrice = 0;
+        let globalCurrentPrice = 0;
+        let globalTaxRate = 0;
+        
         // Initialize the calculator
         function init() {
             setupEventListeners();
@@ -1108,12 +1143,54 @@
             createCharts();
         }
 
+        // Format number with commas for display
+        function formatNumberWithCommas(value) {
+            // Remove all non-numeric characters except decimal point
+            const numStr = value.toString().replace(/[^\d.]/g, '');
+            const num = parseFloat(numStr);
+            if (isNaN(num)) return '';
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+
+        // Parse number from formatted string
+        function parseFormattedNumber(value) {
+            const numStr = value.toString().replace(/[^\d.]/g, '');
+            const num = parseFloat(numStr);
+            return isNaN(num) ? 0 : num;
+        }
+
         // Setup event listeners
         function setupEventListeners() {
-            // All input fields except the slider
-            const inputs = document.querySelectorAll('input:not(#splitSlider)');
+            // All input fields except the slider and amount fields
+            const inputs = document.querySelectorAll('input:not(#splitSlider):not(#totalGrant):not(#valueDelivered)');
             inputs.forEach(input => {
                 input.addEventListener('input', updateCalculations);
+            });
+
+            // Special handling for amount input fields with comma formatting
+            const amountFields = ['totalGrant', 'valueDelivered'];
+            amountFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', function() {
+                        const cursorPos = this.selectionStart;
+                        const oldLength = this.value.length;
+                        const cleanValue = parseFormattedNumber(this.value);
+                        this.value = formatNumberWithCommas(cleanValue);
+                        
+                        // Restore cursor position accounting for comma changes
+                        const newLength = this.value.length;
+                        const newPos = cursorPos + (newLength - oldLength);
+                        this.setSelectionRange(newPos, newPos);
+                        
+                        updateCalculations();
+                    });
+                    
+                    field.addEventListener('blur', function() {
+                        const cleanValue = parseFormattedNumber(this.value);
+                        this.value = formatNumberWithCommas(cleanValue);
+                    });
+                }
             });
 
             // Special handling for the slider
@@ -1132,7 +1209,7 @@
                     this.style.setProperty('--value', value + '%');
                     
                     // Alternative: Update background directly
-                    this.style.background = `linear-gradient(to right, #007AFF 0%, #007AFF ${value}%, #5856D6 ${value}%, #5856D6 100%)`;
+                    this.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${value}%, #084552 ${value}%, #084552 100%)`;
                     
                     // Force a repaint to ensure visual update
                     this.offsetHeight;
@@ -1145,7 +1222,7 @@
                     const value = parseFloat(this.value);
                     console.log('Slider change event:', value);
                     this.style.setProperty('--value', value + '%');
-                    this.style.background = `linear-gradient(to right, #007AFF 0%, #007AFF ${value}%, #5856D6 ${value}%, #5856D6 100%)`;
+                    this.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${value}%, #084552 ${value}%, #084552 100%)`;
                     updateCalculations();
                 });
             } else {
@@ -1243,8 +1320,8 @@
             console.log('updateCalculations called');
             
             // Get input values
-            const totalGrant = parseFloat(document.getElementById('totalGrant').value) || 0;
-            const valueDelivered = parseFloat(document.getElementById('valueDelivered').value) || 0;
+            const totalGrant = parseFormattedNumber(document.getElementById('totalGrant').value) || 0;
+            const valueDelivered = parseFormattedNumber(document.getElementById('valueDelivered').value) || 0;
             const splitPercent = parseFloat(document.getElementById('splitSlider').value) || 50;
             const currentSharePrice = parseFloat(document.getElementById('currentSharePrice').value) || 0;
             const strikePrice = parseFloat(document.getElementById('strikePrice').value) || 0;
@@ -1252,6 +1329,11 @@
             const appreciation = parseFloat(document.getElementById('appreciation').value) || 0;
             
             console.log('Input values:', { totalGrant, splitPercent, currentSharePrice, strikePrice, taxRate, appreciation });
+            
+            // Update global variables for chart tooltips
+            globalStrikePrice = strikePrice;
+            globalCurrentPrice = currentSharePrice;
+            globalTaxRate = taxRate;
             
             // Calculate split amounts
             const optionsBudget = totalGrant * (splitPercent / 100);
@@ -1296,6 +1378,10 @@
             // Calculate quantities
             const numOptions = strikePrice > 0 ? Math.floor(optionsBudget / strikePrice) : 0;
             const numRSUs = currentSharePrice > 0 ? Math.floor(rsusBudget / currentSharePrice) : 0;
+            
+            // Update global variables for chart tooltips
+            globalNumOptions = numOptions;
+            globalNumRSUs = numRSUs;
             
             console.log('Calculated quantities:', { numOptions, numRSUs });
             
@@ -1371,7 +1457,7 @@
             const betterChoice = optionsCalc.netValue > rsusCalc.netValue ? 'Options' : 'RSUs';
             const betterElement = document.getElementById('betterChoice');
             betterElement.textContent = betterChoice;
-            betterElement.style.color = betterChoice === 'Options' ? '#007AFF' : '#5856D6';
+            betterElement.style.color = betterChoice === 'Options' ? '#0a5264' : '#084552';
             
             // Calculate and display breakpoint
             const breakpoint = findBreakpoint(strikePrice, numOptions, numRSUs, taxRate);
@@ -1604,7 +1690,7 @@
             
             if (betterChoice === 'Options') {
                 explanation += `
-                    <p><strong style="color: #007AFF;">📈 Options are the better choice</strong> at your target price of ${formatCurrency(targetPrice)}.</p>
+                    <p><strong style="color: #0a5264;">📈 Options are the better choice</strong> at your target price of ${formatCurrency(targetPrice)}.</p>
                     
                     <p><strong>Why Options Win:</strong></p>
                     <ul style="margin: 12px 0; padding-left: 20px;">
@@ -1622,7 +1708,7 @@
                 `;
             } else {
                 explanation += `
-                    <p><strong style="color: #5856D6;">🛡️ RSUs are the better choice</strong> at your target price of ${formatCurrency(targetPrice)}.</p>
+                    <p><strong style="color: #084552;">🛡️ RSUs are the better choice</strong> at your target price of ${formatCurrency(targetPrice)}.</p>
                     
                     <p><strong>Why RSUs Win:</strong></p>
                     <ul style="margin: 12px 0; padding-left: 20px;">
@@ -1668,8 +1754,8 @@
                             {
                                 label: 'Options ROI',
                                 data: [],
-                                borderColor: '#007AFF',
-                                backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                                borderColor: '#0a5264',
+                                backgroundColor: 'rgba(10, 82, 100, 0.1)',
                                 borderWidth: 3,
                                 tension: 0.4,
                                 pointRadius: 0,
@@ -1678,8 +1764,8 @@
                             {
                                 label: 'RSUs ROI',
                                 data: [],
-                                borderColor: '#5856D6',
-                                backgroundColor: 'rgba(88, 86, 214, 0.1)',
+                                borderColor: '#084552',
+                                backgroundColor: 'rgba(8, 69, 82, 0.1)',
                                 borderWidth: 3,
                                 tension: 0.4,
                                 pointRadius: 0,
@@ -1756,17 +1842,17 @@
                                         const sharePrice = context.parsed.x;
                                         
                                         if (context.dataset.label.includes('Options')) {
-                                            const investment = numOptions * strikePrice;
-                                            const intrinsicValue = Math.max(0, sharePrice - strikePrice);
-                                            const grossGain = intrinsicValue * numOptions;
-                                            const netGain = grossGain * (1 - taxRate / 100);
+                                            const investment = globalNumOptions * globalStrikePrice;
+                                            const intrinsicValue = Math.max(0, sharePrice - globalStrikePrice);
+                                            const grossGain = intrinsicValue * globalNumOptions;
+                                            const netGain = grossGain * (1 - globalTaxRate / 100);
                                             const totalValue = investment + netGain;
                                             
                                             if (roi < 0) {
                                                 return [
                                                     '',
                                                     '📉 Negative ROI because:',
-                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Strike price (' + formatCurrency(strikePrice) + ')',
+                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Strike price (' + formatCurrency(globalStrikePrice) + ')',
                                                     '• Options are "out of the money"',
                                                     '• Investment: ' + formatCurrency(investment),
                                                     '• Current value: ' + formatCurrency(totalValue)
@@ -1775,22 +1861,22 @@
                                                 return [
                                                     '',
                                                     '📈 Positive ROI calculation:',
-                                                    '• Intrinsic value: (' + formatCurrency(sharePrice) + ' - ' + formatCurrency(strikePrice) + ') × ' + numOptions,
+                                                    '• Intrinsic value: (' + formatCurrency(sharePrice) + ' - ' + formatCurrency(globalStrikePrice) + ') × ' + globalNumOptions,
                                                     '• Gross gain: ' + formatCurrency(grossGain),
                                                     '• After taxes: ' + formatCurrency(netGain),
                                                     '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100'
                                                 ];
                                             }
                                         } else {
-                                            const investment = numRSUs * currentPrice;
-                                            const grossGain = (sharePrice - currentPrice) * numRSUs;
-                                            const netGain = grossGain * (1 - taxRate / 100);
+                                            const investment = globalNumRSUs * globalCurrentPrice;
+                                            const grossGain = (sharePrice - globalCurrentPrice) * globalNumRSUs;
+                                            const netGain = grossGain * (1 - globalTaxRate / 100);
                                             
                                             if (roi < 0) {
                                                 return [
                                                     '',
                                                     '📉 Negative ROI because:',
-                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Purchase price (' + formatCurrency(currentPrice) + ')',
+                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Purchase price (' + formatCurrency(globalCurrentPrice) + ')',
                                                     '• Stock value declined',
                                                     '• Investment: ' + formatCurrency(investment)
                                                 ];
@@ -1798,7 +1884,7 @@
                                                 return [
                                                     '',
                                                     '📈 Positive ROI calculation:',
-                                                    '• Price appreciation: ' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentPrice) + ' = ' + formatCurrency(sharePrice - currentPrice),
+                                                    '• Price appreciation: ' + formatCurrency(sharePrice) + ' - ' + formatCurrency(globalCurrentPrice) + ' = ' + formatCurrency(sharePrice - globalCurrentPrice),
                                                     '• Gross gain: ' + formatCurrency(grossGain),
                                                     '• After taxes: ' + formatCurrency(netGain),
                                                     '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100'
@@ -1862,8 +1948,8 @@
                             {
                                 label: 'Options Net Value',
                                 data: [],
-                                borderColor: '#007AFF',
-                                backgroundColor: 'rgba(0, 122, 255, 0.1)',
+                                borderColor: '#0a5264',
+                                backgroundColor: 'rgba(10, 82, 100, 0.1)',
                                 borderWidth: 3,
                                 tension: 0.4,
                                 pointRadius: 0,
@@ -1872,8 +1958,8 @@
                             {
                                 label: 'RSUs Net Value',
                                 data: [],
-                                borderColor: '#5856D6',
-                                backgroundColor: 'rgba(88, 86, 214, 0.1)',
+                                borderColor: '#084552',
+                                backgroundColor: 'rgba(8, 69, 82, 0.1)',
                                 borderWidth: 3,
                                 tension: 0.4,
                                 pointRadius: 0,
@@ -2073,9 +2159,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM Content Loaded - Initializing...');
             
-            // Set default vesting start date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('vestingStartDate').value = today;
+            // Set default vesting start date to June 24, 2022
+            document.getElementById('vestingStartDate').value = '2022-06-24';
             
             // Add event listeners for vesting inputs
             document.getElementById('vestingPeriod').addEventListener('input', updateCalculations);
@@ -2088,7 +2173,7 @@
                 const initialValue = parseFloat(slider.value);
                 console.log('Setting slider initial state, value:', initialValue);
                 slider.style.setProperty('--value', initialValue + '%');
-                slider.style.background = `linear-gradient(to right, #007AFF 0%, #007AFF ${initialValue}%, #5856D6 ${initialValue}%, #5856D6 100%)`;
+                slider.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${initialValue}%, #084552 ${initialValue}%, #084552 100%)`;
             }
             
             // Add a visual indicator that JavaScript is working
