@@ -143,7 +143,7 @@
         }
 
         .split-label.rsus {
-            color: #084552;
+            color: #4a9eff;
         }
 
         .slider-wrapper {
@@ -156,7 +156,7 @@
             height: 8px;
             -webkit-appearance: none;
             appearance: none;
-            background: linear-gradient(to right, #0a5264 0%, #0a5264 var(--value, 50%), #084552 var(--value, 50%), #084552 100%);
+            background: linear-gradient(to right, #0a5264 0%, #0a5264 var(--value, 50%), #4a9eff var(--value, 50%), #4a9eff 100%);
             border-radius: 8px;
             outline: none;
             cursor: pointer;
@@ -812,7 +812,7 @@
                         <div class="split-amount-label">Options Budget</div>
                     </div>
                     <div class="split-amount">
-                        <div class="split-amount-value" id="rsusAmount" style="color: #084552">$0</div>
+                        <div class="split-amount-value" id="rsusAmount" style="color: #4a9eff">$0</div>
                         <div class="split-amount-label">RSUs Budget</div>
                     </div>
                 </div>
@@ -859,7 +859,7 @@
                         <div class="result-label">Stock Options</div>
                     </div>
                     <div class="result-item">
-                        <div class="result-number" id="numRSUs" style="color: #084552">0</div>
+                        <div class="result-number" id="numRSUs" style="color: #4a9eff">0</div>
                         <div class="result-label">RSUs</div>
                     </div>
                 </div>
@@ -941,7 +941,7 @@
                     </div>
                 </div>
                 <div>
-                    <h3 style="font-size: 20px; margin-bottom: 16px; color: #084552;">RSUs Vesting</h3>
+                    <h3 style="font-size: 20px; margin-bottom: 16px; color: #4a9eff;">RSUs Vesting</h3>
                     <div style="overflow-x: auto; width: 100%;">
                         <div class="vesting-table-container">
                             <table class="vesting-table">
@@ -1028,7 +1028,7 @@
                     <strong>What this means:</strong><br>
                     • At the breakpoint price, both options and RSUs give you the same profit after taxes<br>
                     • If you think the stock will go <strong>above</strong> this price → Choose <span style="color: #0a5264; font-weight: 600;">Options</span><br>
-                    • If you think the stock will stay <strong>below</strong> this price → Choose <span style="color: #084552; font-weight: 600;">RSUs</span><br>
+                    • If you think the stock will stay <strong>below</strong> this price → Choose <span style="color: #4a9eff; font-weight: 600;">RSUs</span><br>
                     • The formula works because: (Share Price - Strike) × Options × (1 - Tax) = Share Price × RSUs × (1 - Tax)
                 </div>
             </div>
@@ -1052,7 +1052,7 @@
                     </span>
                 </div>
                 <div class="metric-card tooltip">
-                    <div class="metric-value" style="color: #084552;" id="rsusValueAtTarget">$0</div>
+                    <div class="metric-value" style="color: #4a9eff;" id="rsusValueAtTarget">$0</div>
                     <div class="metric-label">RSUs Value at Target Price</div>
                     <span class="tooltiptext">
                         <strong>RSUs Net Value Formula:</strong><br>
@@ -1209,7 +1209,7 @@
                     this.style.setProperty('--value', value + '%');
                     
                     // Alternative: Update background directly
-                    this.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${value}%, #084552 ${value}%, #084552 100%)`;
+                    this.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${value}%, #4a9eff ${value}%, #4a9eff 100%)`;
                     
                     // Force a repaint to ensure visual update
                     this.offsetHeight;
@@ -1222,7 +1222,7 @@
                     const value = parseFloat(this.value);
                     console.log('Slider change event:', value);
                     this.style.setProperty('--value', value + '%');
-                    this.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${value}%, #084552 ${value}%, #084552 100%)`;
+                    this.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${value}%, #4a9eff ${value}%, #4a9eff 100%)`;
                     updateCalculations();
                 });
             } else {
@@ -1457,7 +1457,7 @@
             const betterChoice = optionsCalc.netValue > rsusCalc.netValue ? 'Options' : 'RSUs';
             const betterElement = document.getElementById('betterChoice');
             betterElement.textContent = betterChoice;
-            betterElement.style.color = betterChoice === 'Options' ? '#0a5264' : '#084552';
+            betterElement.style.color = betterChoice === 'Options' ? '#0a5264' : '#4a9eff';
             
             // Calculate and display breakpoint
             const breakpoint = findBreakpoint(strikePrice, numOptions, numRSUs, taxRate);
@@ -1708,7 +1708,7 @@
                 `;
             } else {
                 explanation += `
-                    <p><strong style="color: #084552;">🛡️ RSUs are the better choice</strong> at your target price of ${formatCurrency(targetPrice)}.</p>
+                    <p><strong style="color: #4a9eff;">🛡️ RSUs are the better choice</strong> at your target price of ${formatCurrency(targetPrice)}.</p>
                     
                     <p><strong>Why RSUs Win:</strong></p>
                     <ul style="margin: 12px 0; padding-left: 20px;">
@@ -1764,8 +1764,8 @@
                             {
                                 label: 'RSUs ROI',
                                 data: [],
-                                borderColor: '#084552',
-                                backgroundColor: 'rgba(8, 69, 82, 0.1)',
+                                borderColor: '#4a9eff',
+                                backgroundColor: 'rgba(74, 158, 255, 0.1)',
                                 borderWidth: 3,
                                 tension: 0.4,
                                 pointRadius: 0,
@@ -1839,55 +1839,86 @@
                                         if (context.dataset.label === 'Breakpoint') return '';
                                         
                                         const roi = context.parsed.y;
-                                        const sharePrice = context.parsed.x;
+                                        // Get the actual share price from chart labels, not parsed.x which is just the index
+                                        const sharePrice = parseFloat(breakpointChart.data.labels[context.dataIndex]);
+                                        
+                                        console.log('Tooltip debug:', { 
+                                            dataIndex: context.dataIndex, 
+                                            parsedX: context.parsed.x, 
+                                            actualSharePrice: sharePrice,
+                                            label: breakpointChart.data.labels[context.dataIndex]
+                                        });
+                                        
+                                        // Get current values from inputs instead of global variables
+                                        const currentStrikePrice = parseFloat(document.getElementById('strikePrice').value) || 0;
+                                        const currentSharePrice = parseFloat(document.getElementById('currentSharePrice').value) || 0;
+                                        const currentTaxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+                                        const totalGrant = parseFormattedNumber(document.getElementById('totalGrant').value) || 0;
+                                        const splitPercent = parseFloat(document.getElementById('splitSlider').value) || 50;
+                                        
+                                        // Calculate current quantities
+                                        const optionsBudget = totalGrant * (splitPercent / 100);
+                                        const rsusBudget = totalGrant * ((100 - splitPercent) / 100);
+                                        const currentNumOptions = currentStrikePrice > 0 ? Math.floor(optionsBudget / currentStrikePrice) : 0;
+                                        const currentNumRSUs = currentSharePrice > 0 ? Math.floor(rsusBudget / currentSharePrice) : 0;
                                         
                                         if (context.dataset.label.includes('Options')) {
-                                            const investment = globalNumOptions * globalStrikePrice;
-                                            const intrinsicValue = Math.max(0, sharePrice - globalStrikePrice);
-                                            const grossGain = intrinsicValue * globalNumOptions;
-                                            const netGain = grossGain * (1 - globalTaxRate / 100);
+                                            const investment = currentNumOptions * currentStrikePrice;
+                                            const intrinsicValue = sharePrice - currentStrikePrice; // Remove Math.max to show negative values
+                                            const grossGain = Math.max(0, intrinsicValue) * currentNumOptions; // Only gains can be positive
+                                            const netGain = grossGain * (1 - currentTaxRate / 100);
                                             const totalValue = investment + netGain;
                                             
-                                            if (roi < 0) {
+                                            if (sharePrice < currentStrikePrice) {
+                                                // Out of the money - show negative scenario
                                                 return [
                                                     '',
                                                     '📉 Negative ROI because:',
-                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Strike price (' + formatCurrency(globalStrikePrice) + ')',
-                                                    '• Options are "out of the money"',
+                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Strike price (' + formatCurrency(currentStrikePrice) + ')',
+                                                    '• Intrinsic value: (' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentStrikePrice) + ') = ' + formatCurrency(intrinsicValue),
+                                                    '• Options are worthless (can\'t exercise below strike)',
                                                     '• Investment: ' + formatCurrency(investment),
-                                                    '• Current value: ' + formatCurrency(totalValue)
+                                                    '• Current value: $0',
+                                                    '• ROI: -100% (total loss)'
                                                 ];
                                             } else {
+                                                // In the money - show positive calculation
                                                 return [
                                                     '',
                                                     '📈 Positive ROI calculation:',
-                                                    '• Intrinsic value: (' + formatCurrency(sharePrice) + ' - ' + formatCurrency(globalStrikePrice) + ') × ' + globalNumOptions,
-                                                    '• Gross gain: ' + formatCurrency(grossGain),
-                                                    '• After taxes: ' + formatCurrency(netGain),
-                                                    '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100'
+                                                    '• Intrinsic value: (' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentStrikePrice) + ') = ' + formatCurrency(intrinsicValue),
+                                                    '• Total gain: ' + formatCurrency(intrinsicValue) + ' × ' + currentNumOptions.toLocaleString() + ' = ' + formatCurrency(grossGain),
+                                                    '• After taxes (' + currentTaxRate + '%): ' + formatCurrency(netGain),
+                                                    '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100 = ' + formatPercent(((netGain) / investment) * 100)
                                                 ];
                                             }
                                         } else {
-                                            const investment = globalNumRSUs * globalCurrentPrice;
-                                            const grossGain = (sharePrice - globalCurrentPrice) * globalNumRSUs;
-                                            const netGain = grossGain * (1 - globalTaxRate / 100);
+                                            const investment = currentNumRSUs * currentSharePrice;
+                                            const grossGain = (sharePrice - currentSharePrice) * currentNumRSUs;
+                                            const netGain = grossGain * (1 - currentTaxRate / 100);
+                                            const finalValue = investment + netGain;
                                             
-                                            if (roi < 0) {
+                                            if (sharePrice < currentSharePrice) {
+                                                // Stock declined
                                                 return [
                                                     '',
                                                     '📉 Negative ROI because:',
-                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Purchase price (' + formatCurrency(globalCurrentPrice) + ')',
-                                                    '• Stock value declined',
-                                                    '• Investment: ' + formatCurrency(investment)
+                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Purchase price (' + formatCurrency(currentSharePrice) + ')',
+                                                    '• Price decline: ' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentSharePrice) + ' = ' + formatCurrency(sharePrice - currentSharePrice) + ' per share',
+                                                    '• Total loss: ' + formatCurrency(sharePrice - currentSharePrice) + ' × ' + currentNumRSUs.toLocaleString() + ' = ' + formatCurrency(grossGain),
+                                                    '• Investment: ' + formatCurrency(investment),
+                                                    '• Current value: ' + formatCurrency(finalValue),
+                                                    '• ROI: ' + formatPercent((netGain / investment) * 100)
                                                 ];
                                             } else {
+                                                // Stock appreciated
                                                 return [
                                                     '',
                                                     '📈 Positive ROI calculation:',
-                                                    '• Price appreciation: ' + formatCurrency(sharePrice) + ' - ' + formatCurrency(globalCurrentPrice) + ' = ' + formatCurrency(sharePrice - globalCurrentPrice),
-                                                    '• Gross gain: ' + formatCurrency(grossGain),
-                                                    '• After taxes: ' + formatCurrency(netGain),
-                                                    '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100'
+                                                    '• Price appreciation: ' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentSharePrice) + ' = ' + formatCurrency(sharePrice - currentSharePrice) + ' per share',
+                                                    '• Total gain: ' + formatCurrency(sharePrice - currentSharePrice) + ' × ' + currentNumRSUs.toLocaleString() + ' = ' + formatCurrency(grossGain),
+                                                    '• After taxes (' + currentTaxRate + '%): ' + formatCurrency(netGain),
+                                                    '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100 = ' + formatPercent((netGain / investment) * 100)
                                                 ];
                                             }
                                         }
@@ -1958,8 +1989,8 @@
                             {
                                 label: 'RSUs Net Value',
                                 data: [],
-                                borderColor: '#084552',
-                                backgroundColor: 'rgba(8, 69, 82, 0.1)',
+                                borderColor: '#4a9eff',
+                                backgroundColor: 'rgba(74, 158, 255, 0.1)',
                                 borderWidth: 3,
                                 tension: 0.4,
                                 pointRadius: 0,
@@ -2173,7 +2204,7 @@
                 const initialValue = parseFloat(slider.value);
                 console.log('Setting slider initial state, value:', initialValue);
                 slider.style.setProperty('--value', initialValue + '%');
-                slider.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${initialValue}%, #084552 ${initialValue}%, #084552 100%)`;
+                slider.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${initialValue}%, #4a9eff ${initialValue}%, #4a9eff 100%)`;
             }
             
             // Add a visual indicator that JavaScript is working
