@@ -15,15 +15,7 @@
     <title>Waterfall Analysis Tool</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* General styles */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            line-height: 1.5;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            background-color: #f5f7fa;
-        }
+        /* General styles - body styles moved to navbar section */
         
         h1, h2, h3 {
             margin-top: 0;
@@ -208,9 +200,91 @@
         button.cancel:hover {
             background-color: #dc2626;
         }
+
+        /* Navigation Bar Styles */
+        .nav-bar {
+            background-color: #3b82f6;
+            color: white;
+            padding: 15px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 30px;
+            margin: 0;
+            border: none;
+        }
+
+        .nav-bar a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            gap: 12px;
+            font-size: 16px;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-bar a:hover {
+            opacity: 0.8;
+        }
+
+        .nav-bar .nav-title {
+            margin-left: auto;
+            font-weight: 600;
+            color: white;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-bar {
+                padding: 15px 20px;
+            }
+            
+            .nav-bar a {
+                font-size: 14px;
+                gap: 8px;
+            }
+            
+            .nav-bar .nav-title {
+                font-size: 14px;
+            }
+        }
+        /* Adjust body to account for fixed navbar */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            padding: 95px 20px 20px;
+            color: #333;
+            background-color: #f5f7fa;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 95px 15px 20px;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <a href="home.html">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+            </svg>
+            Home
+        </a>
+        <span class="nav-title">Waterfall Analysis Tool</span>
+    </nav>
+
     <h1>Waterfall Analysis Tool</h1>
     
     <div class="grid">
