@@ -165,193 +165,514 @@
             color: #64748b;
         }
         
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            width: 100%;
+        .tools-section {
             padding: 0 20px 40px;
-            max-width: 1600px;
+            max-width: 100%;
             margin: 0 auto;
         }
-        
-        .tool-card {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            transition: all 0.3s ease;
-            position: relative;
+
+        .tools-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 30px 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(226, 232, 240, 0.7);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
         }
-        
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--hover-shadow);
-            border-color: rgba(226, 232, 240, 0.3);
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
         }
-        
-        .tool-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-        }
-        
-        .waterfall-card::before {
-            background-color: var(--waterfall-color);
-        }
-        
-        .netflix-card::before {
-            background-color: var(--netflix-color);
-        }
-        
-        .vanilla-card::before {
-            background-color: var(--vanilla-color);
-        }
-        
-        .interest-card::before {
-            background-color: var(--interest-color);
-        }
-        
-        .budget-card::before {
-            background-color: #8B5CF6;
-        }
-        
-        .grant-card::before {
-            background-color: #0a5264;
-        }
-        
-        .tool-icon {
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #4a6cf7, #2ecc71);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 15px;
-            background-color: #f8fafc;
-            border-radius: 50%;
-            padding: 25px;
+            margin-right: 16px;
         }
-        
-        .tool-icon::after {
-            content: '';
-            position: absolute;
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            background-color: currentColor;
-            opacity: 0.08;
-            z-index: 0;
-        }
-        
-        .tool-icon svg {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .waterfall-icon {
-            color: var(--waterfall-color);
-        }
-        
-        .netflix-icon {
-            color: var(--netflix-color);
-        }
-        
-        .vanilla-icon {
-            color: var(--vanilla-color);
-        }
-        
-        .interest-icon {
-            color: var(--interest-color);
-        }
-        
-        .tool-content {
-            padding: 25px 25px 30px;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            min-width: 0;
-        }
-        
-        .tool-title {
-            font-size: 1.5rem;
+
+        .section-title {
+            font-size: 1.8rem;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 5px;
-            line-height: 1.3;
-            word-wrap: break-word;
-            hyphens: auto;
+            margin: 0;
         }
-        
-        .tool-subtitle {
+
+        .section-subtitle {
             font-size: 1rem;
             color: #64748b;
-            margin-bottom: 15px;
-            font-weight: 500;
+            margin: 5px 0 0 0;
         }
-        
-        .tool-description {
-            font-size: 0.95rem;
-            color: #64748b;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            flex-grow: 1;
-        }
-        
-        .tool-button {
-            display: inline-block;
-            background-color: #fff;
-            color: white;
-            padding: 12px 0;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            text-align: center;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border: 1px solid rgba(74, 108, 247, 0.2);
-            margin-top: auto;
+
+        .tools-table {
             width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: none;
+            table-layout: fixed;
         }
-        
-        .waterfall-card .tool-button {
-            background-color: var(--waterfall-color);
-            color: white;
+
+        .table-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 2px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .table-header th {
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            vertical-align: middle;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+        }
+
+        .table-header th:hover {
+            background: #e2e8f0;
+        }
+
+        .table-header th.sortable::after {
+            content: '↕';
+            position: absolute;
+            right: 8px;
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+
+        .table-header th.sort-asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        .table-header th.sort-desc::after {
+            content: '↓';
+            opacity: 1;
+        }
+
+        .table-header th:first-child {
+            width: 8%;
+            border-radius: 12px 0 0 12px;
+            text-align: center;
+            padding: 16px 8px;
+        }
+
+        .table-header th:nth-child(2) {
+            width: 22%;
+            padding: 16px 20px;
+        }
+
+        .table-header th:nth-child(3) {
+            width: 50%;
+            padding: 16px 20px;
+        }
+
+        .table-header th:last-child {
+            width: 20%;
+            text-align: center;
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+        }
+
+        .tool-row {
+            background: white;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 8px;
+        }
+
+        .tool-row:hover {
+            background: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-row td {
+            padding: 16px;
+            vertical-align: top;
             border: none;
         }
-        
-        .netflix-card .tool-button {
-            background-color: var(--netflix-color);
-            color: white;
-            border: none;
+
+        .tool-row td:first-child {
+            border-radius: 12px 0 0 12px;
+            width: 8%;
+            text-align: center;
+            vertical-align: middle;
+            padding: 16px 8px;
         }
-        
-        .vanilla-card .tool-button {
-            background-color: var(--vanilla-color);
-            color: white;
-            border: none;
+
+        .tool-row td:nth-child(2) {
+            width: 22%;
+            padding: 16px 20px;
+            vertical-align: top;
         }
-        
-        .interest-card .tool-button {
-            background-color: var(--interest-color);
-            color: white;
-            border: none;
+
+        .tool-row td:nth-child(3) {
+            width: 50%;
+            padding: 16px 20px;
+            vertical-align: top;
         }
-        
-        .tool-button:hover {
+
+        .tool-row td:last-child {
+            text-align: center;
+            border-radius: 0 12px 12px 0;
+            width: 20%;
+            vertical-align: middle;
+            padding: 16px 20px;
+        }
+
+        .tool-row td:last-child * {
+            visibility: visible !important;
+            display: inline-block !important;
+        }
+
+        .tool-indicator {
+            width: 6px;
+            height: 40px;
+            border-radius: 3px;
+            margin: 0 auto;
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-indicator::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            border-radius: 6px;
+            z-index: -1;
+        }
+
+        .tool-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+            line-height: 1.2;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool-name::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .waterfall .tool-name::before { background: var(--waterfall-color); }
+        .vanilla .tool-name::before { background: var(--vanilla-color); }
+        .netflix .tool-name::before { background: var(--netflix-color); }
+        .interest .tool-name::before { background: var(--interest-color); }
+        .budget .tool-name::before { background: #8B5CF6; }
+        .grant .tool-name::before { background: #0a5264; }
+        .converter .tool-name::before { background: #059669; }
+
+        .waterfall .tool-indicator { background: var(--waterfall-color); }
+        .vanilla .tool-indicator { background: var(--vanilla-color); }
+        .netflix .tool-indicator { background: var(--netflix-color); }
+        .interest .tool-indicator { background: var(--interest-color); }
+        .budget .tool-indicator { background: #8B5CF6; }
+        .grant .tool-indicator { background: #0a5264; }
+        .converter .tool-indicator { background: #059669; }
+
+        .tool-type {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 0;
+            line-height: 1.1;
+        }
+
+        .tool-description {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.4;
+            margin: 0;
+            text-align: left;
+        }
+
+        .tool-launch-btn {
+            background: #4a6cf7;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            min-width: 90px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0 auto;
+        }
+
+        .tool-launch-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
             opacity: 0.9;
-            transform: translateY(-2px);
         }
-        
+
+        .waterfall .tool-launch-btn { background: #4a6cf7; }
+        .vanilla .tool-launch-btn { background: #2ecc71; }
+        .netflix .tool-launch-btn { background: #e50914; }
+        .interest .tool-launch-btn { background: #0ea5e9; }
+        .budget .tool-launch-btn { background: #8B5CF6; }
+        .grant .tool-launch-btn { background: #0a5264; }
+        .waterfall .tool-launch-btn { 
+            background: var(--waterfall-color) !important; 
+        }
+        .vanilla .tool-launch-btn { 
+            background: var(--vanilla-color) !important; 
+        }
+        .netflix .tool-launch-btn { 
+            background: var(--netflix-color) !important; 
+        }
+        .interest .tool-launch-btn { 
+            background: var(--interest-color) !important; 
+        }
+        .budget .tool-launch-btn { 
+            background: #8B5CF6 !important; 
+        }
+        .grant .tool-launch-btn { 
+            background: #0a5264 !important; 
+        }
+        .converter .tool-launch-btn { 
+            background: #059669 !important; 
+        }
+
+        @media (max-width: 1200px) {
+            .tools-section {
+                padding: 0 20px 40px;
+            }
+            
+            .tools-container {
+                padding: 25px 20px;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tools-section {
+                padding: 0 15px 30px;
+            }
+
+            .tools-container {
+                padding: 20px 12px;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .section-header {
+                margin-bottom: 25px;
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .section-icon {
+                width: 40px;
+                height: 40px;
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
+            /* Hide table structure on mobile and use card layout */
+            .tools-table,
+            .table-header,
+            .tool-row {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .table-header {
+                display: none;
+            }
+
+            .tool-row {
+                background: white;
+                border-radius: 12px;
+                margin-bottom: 16px;
+                padding: 0;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                border: 1px solid #e2e8f0;
+                width: 100%;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+
+            .tool-row:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            }
+
+            .tool-row td {
+                display: block;
+                padding: 0;
+                border: none;
+                text-align: left;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .tool-row td:first-child {
+                padding: 16px 16px 0;
+            }
+
+            .tool-row td:nth-child(2) {
+                padding: 0 16px 12px;
+            }
+
+            .tool-row td:nth-child(3) {
+                padding: 0 16px 16px;
+            }
+
+            .tool-row td:last-child {
+                padding: 0 16px 20px;
+                text-align: left;
+            }
+
+            .tool-indicator {
+                width: 100%;
+                height: 4px;
+                border-radius: 2px 2px 0 0;
+                margin: 0;
+            }
+
+            .tool-name {
+                font-size: 1.1rem;
+                margin-bottom: 4px;
+            }
+
+            .tool-type {
+                font-size: 0.85rem;
+                margin-bottom: 0;
+            }
+
+            .tool-description {
+                font-size: 0.9rem;
+                line-height: 1.4;
+                margin-bottom: 0;
+                word-wrap: break-word;
+            }
+
+            .tool-launch-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                min-width: 100px;
+                display: inline-block;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tools-section {
+                padding: 0 10px 25px;
+            }
+
+            .tools-container {
+                padding: 16px 8px;
+                margin: 0;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .section-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .tool-row {
+                margin-bottom: 12px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .tool-row td:first-child {
+                padding: 12px 12px 0;
+            }
+
+            .tool-row td:nth-child(2) {
+                padding: 0 12px 10px;
+            }
+
+            .tool-row td:nth-child(3) {
+                padding: 0 12px 12px;
+            }
+
+            .tool-row td:last-child {
+                padding: 0 12px 16px;
+            }
+
+            .tool-name {
+                font-size: 1rem;
+            }
+
+            .tool-type {
+                font-size: 0.8rem;
+            }
+
+            .tool-description {
+                font-size: 0.85rem;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            .tool-launch-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+                min-width: 90px;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
         .footer {
             margin-top: auto;
             width: 100%;
@@ -389,144 +710,6 @@
             color: #94a3b8;
             font-size: 0.875rem;
         }
-        
-        @media (max-width: 1600px) {
-            .tools-grid {
-                grid-template-columns: repeat(3, 1fr);
-                padding: 0 20px 30px;
-                max-width: 100%;
-                gap: 20px;
-            }
-            
-            .tool-description {
-                font-size: 0.9rem;
-            }
-            
-            .tool-title {
-                font-size: 1.4rem;
-            }
-            
-            .netflix-card .tool-title {
-                font-size: 1.3rem;
-            }
-        }
-        
-        @media (max-width: 1400px) {
-            .tools-grid {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 0 20px 30px;
-            }
-            
-            .title {
-                font-size: 2.2rem;
-            }
-            
-            .tool-title {
-                font-size: 1.4rem;
-            }
-        }
-        
-        @media (max-width: 1200px) {
-            .tool-title {
-                font-size: 1.35rem;
-            }
-            
-            .netflix-card .tool-title {
-                font-size: 1.25rem;
-            }
-            
-            .tool-content {
-                padding: 20px 25px 25px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .header {
-                padding: 15px 20px 10px;
-                margin-bottom: 20px;
-            }
-            
-            .tools-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 0 20px 30px;
-            }
-            
-            .title {
-                font-size: 1.8rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-            }
-            
-            .header-logo {
-                width: 40px;
-                height: 40px;
-            }
-            
-            .tool-content {
-                padding: 20px 25px 25px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .title {
-                font-size: 2rem;
-            }
-            
-            .subtitle {
-                font-size: 1.1rem;
-            }
-            
-            .tool-icon {
-                height: 100px;
-            }
-            
-            .tool-content {
-                padding: 20px;
-            }
-        }
-        
-        .interest-card .tool-icon {
-            background-color: rgba(14, 165, 233, 0.1);
-            color: #0EA5E9;
-        }
-        
-        .interest-card .tool-button {
-            background-color: #0EA5E9;
-        }
-        
-        .budget-card .tool-icon {
-            background-color: rgba(139, 92, 246, 0.1);
-            color: #8B5CF6;
-        }
-        
-        .budget-card .tool-button {
-            background-color: #8B5CF6;
-        }
-        
-        .grant-card .tool-icon {
-            background-color: rgba(10, 82, 100, 0.1);
-            color: #0a5264;
-        }
-        
-        .grant-card .tool-button {
-            background-color: #0a5264;
-        }
-        
-        .converter-card::before {
-            background-color: #059669;
-        }
-        
-        .converter-card .tool-icon {
-            background-color: rgba(5, 150, 105, 0.1);
-            color: #059669;
-        }
-        
-        .converter-card .tool-button {
-            background-color: #059669;
-        }
     </style>
 </head>
 <body>
@@ -547,120 +730,126 @@
             </div>
         </header>
         
-        <div class="tools-grid">
-            <div class="tool-card waterfall-card">
-                <div class="tool-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="waterfall-icon">
-                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                    </svg>
-                </div>
-                <div class="tool-content">
-                    <h2 class="tool-title">Waterfall Analysis Tool</h2>
-                    <h3 class="tool-subtitle">Investment Distribution Calculator</h3>
-                    <p class="tool-description">Visualize how investment proceeds are distributed among different share classes during a company exit or liquidation event based on liquidation preferences and participation rights.</p>
-                    <a href="/waterfall" class="tool-button">Open Tool</a>
-                </div>
-            </div>
-            
-            <div class="tool-card vanilla-card">
-                <div class="tool-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vanilla-icon">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="16"></line>
-                        <line x1="8" y1="12" x2="16" y2="12"></line>
-                    </svg>
-                </div>
-                <div class="tool-content">
-                    <h2 class="tool-title">Vanilla Option Modeler</h2>
-                    <h3 class="tool-subtitle">Option Value Calculator</h3>
-                    <p class="tool-description">A financial modeling tool that helps you analyze vanilla options by calculating their value at different price points. Understand whether options are in-the-money or out-of-the-money, and visualize total value and net gain.</p>
-                    <a href="/vanilla" class="tool-button">Open Tool</a>
-                </div>
-            </div>
-            
-            <div class="tool-card netflix-card">
-                <div class="tool-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="netflix-icon">
-                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
-                        <line x1="7" y1="2" x2="7" y2="22"></line>
-                        <line x1="17" y1="2" x2="17" y2="22"></line>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <line x1="2" y1="7" x2="7" y2="7"></line>
-                        <line x1="2" y1="17" x2="7" y2="17"></line>
-                        <line x1="17" y1="17" x2="22" y2="17"></line>
-                        <line x1="17" y1="7" x2="22" y2="7"></line>
-                    </svg>
-                </div>
-                <div class="tool-content">
-                    <h2 class="tool-title">Netflix Options</h2>
-                    <h3 class="tool-subtitle">Stock Option Value Calculator</h3>
-                    <p class="tool-description">Model and compare Netflix's Supplemental Stock Option Plan to direct stock purchases. Analyze break-even points, potential returns, and visualize how options can outperform stock at different prices.</p>
-                    <a href="/netflix" class="tool-button">Open Tool</a>
-                </div>
-            </div>
-            
-            <div class="tool-card interest-card">
-                <div class="tool-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="interest-icon">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="3" y1="9" x2="21" y2="9"></line>
-                        <line x1="9" y1="3" x2="9" y2="21"></line>
-                    </svg>
-                </div>
-                <div class="tool-content">
-                    <h2 class="tool-title">Interest Rate Calculator</h2>
-                    <h3 class="tool-subtitle">Investment Growth Modeler</h3>
-                    <p class="tool-description">Calculate how your investments grow over time with this interactive tool. Compare simple and compound interest with various compounding frequencies, and visualize the impact of regular deposits on your investment growth.</p>
-                    <a href="/interest-calculator" class="tool-button">Open Tool</a>
-                </div>
-            </div>
+        <div class="tools-section">
+            <div class="tools-container">
 
-            <div class="tool-card budget-card">
-                <div class="tool-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="budget-icon">
-                        <rect x="2" y="5" width="20" height="14" rx="2" ry="2"></rect>
-                        <line x1="2" y1="10" x2="22" y2="10"></line>
-                    </svg>
-                </div>
-                <div class="tool-content">
-                    <h2 class="tool-title">Budget & Finances Modeler</h2>
-                    <h3 class="tool-subtitle">Smart Budget Planning Tool</h3>
-                    <p class="tool-description">Plan your budget with flexible allocation rules and see how your savings can grow over time.</p>
-                    <a href="/budget-calculator" class="tool-button">Open Tool</a>
-                </div>
-            </div>
-
-            <div class="tool-card grant-card">
-                <div class="tool-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="grant-icon">
-                        <path d="M12 2C13.1046 2 14 2.89543 14 4V6H16C17.1046 6 18 6.89543 18 8V10C19.1046 10 20 10.8954 20 12V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V12C4 10.8954 4.89543 10 6 10V8C6 6.89543 6.89543 6 8 6H10V4C10 2.89543 10.8954 2 12 2Z"></path>
-                        <path d="M12 14L15 11M12 14L9 11M12 14V18"></path>
-                    </svg>
-                </div>
-                <div class="tool-content">
-                    <h2 class="tool-title">Grant Calculator</h2>
-                    <h3 class="tool-subtitle">Calculate the potential value of your stock options and RSUs</h3>
-                    <p class="tool-description">Estimate the value of your equity compensation, including both stock options and RSUs, with modern, intuitive analysis.</p>
-                    <a href="/grant-calculator" class="tool-button">Open Tool</a>
-                </div>
-            </div>
-
-            <div class="tool-card converter-card">
-                <div class="tool-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="converter-icon">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                </div>
-                <div class="tool-content">
-                    <h2 class="tool-title">Share Registry Converter</h2>
-                    <h3 class="tool-subtitle">Cap Table Data Transformation Tool</h3>
-                    <p class="tool-description">Convert cap table exports between different share registry platforms. Transform certificate ledger data into standardized import formats with automatic field mapping and validation.</p>
-                    <a href="share-registry-converter.html" class="tool-button">Open Tool</a>
-                </div>
+                <table class="tools-table">
+                    <thead class="table-header">
+                        <tr>
+                            <th></th>
+                            <th class="sortable" data-column="tool">Tool</th>
+                            <th class="sortable" data-column="description">Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="tool-row waterfall">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Waterfall Analysis Tool</h3>
+                                <p class="tool-type">Investment Distribution Calculator</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Visualize how investment proceeds are distributed among different share classes during a company exit or liquidation event based on liquidation preferences and participation rights.</p>
+                            </td>
+                            <td>
+                                <a href="waterfall_analysis.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row vanilla">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Vanilla Option Modeler</h3>
+                                <p class="tool-type">Option Value Calculator</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Analyze vanilla options by calculating their value at different price points. Understand whether options are in-the-money or out-of-the-money, and visualize total value and net gain.</p>
+                            </td>
+                            <td>
+                                <a href="vanilla.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row netflix">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Netflix Options</h3>
+                                <p class="tool-type">Stock Option Value Calculator</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Model and compare Netflix's Supplemental Stock Option Plan to direct stock purchases. Analyze break-even points, potential returns, and visualize how options can outperform stock at different prices.</p>
+                            </td>
+                            <td>
+                                <a href="netflix.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row interest">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Interest Rate Calculator</h3>
+                                <p class="tool-type">Investment Growth Modeler</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Calculate how your investments grow over time with this interactive tool. Compare simple and compound interest with various compounding frequencies, and visualize the impact of regular deposits on your investment growth.</p>
+                            </td>
+                            <td>
+                                <a href="interest-calculator.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row budget">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Budget & Finances Modeler</h3>
+                                <p class="tool-type">Smart Budget Planning Tool</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Plan your budget with flexible allocation rules and see how your savings can grow over time.</p>
+                            </td>
+                            <td>
+                                <a href="budget-calculator.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row grant">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Grant Calculator</h3>
+                                <p class="tool-type">Equity Compensation Calculator</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Estimate the value of your equity compensation, including both stock options and RSUs, with modern, intuitive analysis.</p>
+                            </td>
+                            <td>
+                                <a href="grant-calculator.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row converter">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Share Registry Converter</h3>
+                                <p class="tool-type">Cap Table Data Transformation Tool</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Convert cap table exports between different share registry platforms. Transform certificate ledger data into standardized import formats with automatic field mapping and validation.</p>
+                            </td>
+                            <td>
+                                <a href="share-registry-converter.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -674,8 +863,72 @@
     <!-- Yikes AI Chatbot Widget -->
     <script src="js/chatbotWidget.js"></script>
     <script>
-        // Initialize chatbot with Groq API key
+        // Table sorting functionality
         document.addEventListener('DOMContentLoaded', function() {
+            const table = document.querySelector('.tools-table');
+            const headers = table.querySelectorAll('th.sortable');
+            const tbody = table.querySelector('tbody');
+            
+            console.log('Sorting initialized:', headers.length, 'sortable headers found');
+            
+            headers.forEach(header => {
+                header.addEventListener('click', function() {
+                    console.log('Header clicked:', this.dataset.column);
+                    
+                    const column = this.dataset.column;
+                    const isAscending = !this.classList.contains('sort-asc');
+                    
+                    // Remove sort classes from all headers
+                    headers.forEach(h => {
+                        h.classList.remove('sort-asc', 'sort-desc');
+                    });
+                    
+                    // Add appropriate sort class
+                    if (isAscending) {
+                        this.classList.add('sort-asc');
+                    } else {
+                        this.classList.add('sort-desc');
+                    }
+                    
+                    // Get all rows
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    console.log('Rows found:', rows.length);
+                    
+                    // Sort the rows
+                    rows.sort((rowA, rowB) => {
+                        let textA, textB;
+                        
+                        if (column === 'tool') {
+                            textA = rowA.querySelector('.tool-name').textContent.trim().toLowerCase();
+                            textB = rowB.querySelector('.tool-name').textContent.trim().toLowerCase();
+                        } else if (column === 'description') {
+                            textA = rowA.querySelector('.tool-description').textContent.trim().toLowerCase();
+                            textB = rowB.querySelector('.tool-description').textContent.trim().toLowerCase();
+                        }
+                        
+                        console.log('Comparing:', textA, 'vs', textB);
+                        
+                        if (isAscending) {
+                            return textA.localeCompare(textB);
+                        } else {
+                            return textB.localeCompare(textA);
+                        }
+                    });
+                    
+                    // Clear and re-append sorted rows
+                    while (tbody.firstChild) {
+                        tbody.removeChild(tbody.firstChild);
+                    }
+                    
+                    rows.forEach(row => {
+                        tbody.appendChild(row);
+                    });
+                    
+                    console.log('Sorting complete');
+                });
+            });
+
+            // Initialize chatbot with Groq API key
             if (window.YikesAIChatbot && !document.querySelector('.gs-chatbot-widget')) {
                 window.yikesAIChatbot = new YikesAIChatbot({
                     apiKey: 'AIzaSyB4ix_spZPsxIw_A3T6X0y6dc33fCmkvqk',
