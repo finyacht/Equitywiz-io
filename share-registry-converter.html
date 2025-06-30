@@ -4,7 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Share Registry Data Converter | Equity-Wiz.io</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script>
+        // Fallback for XLSX library if primary CDN fails
+        if (typeof XLSX === 'undefined') {
+            document.write('<script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        // Final fallback check
+        window.addEventListener('load', function() {
+            if (typeof XLSX === 'undefined') {
+                console.error('XLSX library failed to load from all CDN sources');
+                document.getElementById('status').innerHTML = 'Error: Excel processing library failed to load. Please check your internet connection and try refreshing the page.';
+                document.getElementById('status').className = 'status error';
+                document.getElementById('status').style.display = 'block';
+            }
+        });
+    </script>
     <style>
         :root {
             --primary-color: #059669;
@@ -15,7 +32,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #047857 0%, #065f46 100%);
@@ -43,16 +60,6 @@
             position: relative;
             width: 100%;
         }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #10b981, transparent);
-        }
         
         .header h1 {
             font-size: 2.5rem;
@@ -79,12 +86,11 @@
 
         .section-title {
             font-size: 1.5rem;
-            font-weight: 600;
-            color: #1a202c;
+            font-weight: 700;
+            color: #2d3748;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
         }
 
         .section-icon {
@@ -95,29 +101,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
         }
 
         .upload-area {
             border: 3px dashed #cbd5e0;
             border-radius: 16px;
-            padding: 60px 40px;
+            padding: 60px 20px;
             text-align: center;
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .upload-area::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-            transition: left 0.5s;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
         }
 
         .upload-area:hover {
@@ -127,10 +122,6 @@
             box-shadow: 0 10px 25px rgba(5, 150, 105, 0.15);
         }
 
-        .upload-area:hover::before {
-            left: 100%;
-        }
-        
         .upload-area.dragover {
             border-color: #059669;
             background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
@@ -146,14 +137,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: float 3s ease-in-out infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
         .file-input {
             display: none;
         }
@@ -174,54 +159,15 @@
             background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 16px 32px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            margin: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-
-        .button:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .button:disabled {
-            background: #e2e8f0;
-            color: #a0aec0;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .button.secondary {
-            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-        }
-
-        .button.csv {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            margin: 10px;
         }
         
         .status {
@@ -280,31 +226,26 @@
         
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
             margin: 30px 0;
         }
         
-        .stat-card {
+        .stat-item {
             background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            padding: 24px;
-            border-radius: 16px;
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
             border: 1px solid #e2e8f0;
-            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-        
         .stat-number {
             font-size: 2.5rem;
             font-weight: 700;
             background: linear-gradient(135deg, #059669 0%, #047857 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 8px;
         }
         
@@ -328,6 +269,11 @@
         .preview-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
         .preview-table th {
@@ -337,35 +283,24 @@
             text-align: left;
             font-weight: 600;
             font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .preview-table td {
-            padding: 12px;
-            border-bottom: 1px solid #f7fafc;
-            font-size: 0.9rem;
-            color: #4a5568;
         }
         
-        .preview-table tr:hover {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        .preview-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
         }
-
+        
         .preview-table tr:last-child td {
             border-bottom: none;
         }
-
-        .more-rows {
-            padding: 20px;
-            text-align: center;
-            color: #718096;
-            font-style: italic;
-            background: #f7fafc;
-            border-top: 1px solid #e2e8f0;
+        
+        .preview-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        .preview-table tr:hover {
+            background: #f1f5f9;
         }
 
         .pagination-container {
@@ -447,7 +382,6 @@
         }
 
         .loading {
-            display: inline-block;
             width: 20px;
             height: 20px;
             border: 2px solid #e2e8f0;
@@ -909,6 +843,12 @@
             }
             
             async handleFile(file) {
+                // Check if XLSX library is available
+                if (typeof XLSX === 'undefined') {
+                    this.showStatus('Error: Excel processing library not available. Please refresh the page and try again.', 'error');
+                    return;
+                }
+                
                 this.showStatus('Reading and analyzing file...', 'info');
                 
                 try {
@@ -1171,26 +1111,24 @@
                 const statsDiv = document.getElementById('stats');
                 
                 // Calculate statistics
-                const totalShares = this.convertedData.reduce((sum, record) => 
-                    sum + this.parseNumber(record['Number of Shares']), 0);
                 const uniqueShareholders = new Set(this.convertedData.map(r => r['Stakeholder Name'])).size;
+                const totalShares = this.convertedData.reduce((sum, r) => sum + (r['Number of Shares'] || 0), 0);
                 const shareClasses = new Set(this.convertedData.map(r => r['Share Class'])).size;
-                const certificatedCount = this.convertedData.filter(r => r['Certificated Share Issuance'] === 'Yes').length;
                 
                 statsDiv.innerHTML = `
-                    <div class="stat-card">
+                    <div class="stat-item">
                         <div class="stat-number">${this.convertedData.length}</div>
                         <div class="stat-label">Total Records</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-item">
                         <div class="stat-number">${uniqueShareholders}</div>
                         <div class="stat-label">Unique Shareholders</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-item">
                         <div class="stat-number">${totalShares.toLocaleString()}</div>
                         <div class="stat-label">Total Shares</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-item">
                         <div class="stat-number">${shareClasses}</div>
                         <div class="stat-label">Share Classes</div>
                     </div>
@@ -1201,11 +1139,6 @@
                 this.updateTableDisplay();
                 
                 preview.style.display = 'block';
-                
-                // Smooth scroll to preview
-                setTimeout(() => {
-                    preview.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
             }
             
             updateTableDisplay() {
@@ -1276,6 +1209,12 @@
             downloadConverted() {
                 if (!this.convertedData || this.convertedData.length === 0) {
                     this.showStatus('No data to download', 'error');
+                    return;
+                }
+                
+                // Check if XLSX library is available
+                if (typeof XLSX === 'undefined') {
+                    this.showStatus('Error: Excel processing library not available. Please refresh the page and try again.', 'error');
                     return;
                 }
                 
