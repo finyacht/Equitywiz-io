@@ -31,6 +31,11 @@ exports.handler = async (event, context) => {
     // Get the API key from environment variables
     const apiKey = process.env.GEMINI_API_KEY;
     
+    console.log('Function called - checking environment variables...');
+    console.log('Available env keys containing GEMINI:', Object.keys(process.env).filter(key => key.includes('GEMINI')));
+    console.log('API key exists:', !!apiKey);
+    console.log('API key length:', apiKey ? apiKey.length : 0);
+    
     if (!apiKey) {
       console.error('GEMINI_API_KEY environment variable not set');
       return {
@@ -38,7 +43,11 @@ exports.handler = async (event, context) => {
         headers,
         body: JSON.stringify({ 
           error: 'Server configuration error',
-          details: 'API key not configured'
+          details: 'API key not configured',
+          debug: {
+            envKeysWithGemini: Object.keys(process.env).filter(key => key.includes('GEMINI')),
+            allEnvKeysCount: Object.keys(process.env).length
+          }
         })
       };
     }
@@ -111,6 +120,7 @@ Please provide a comprehensive, helpful response with specific actionable steps.
 
   } catch (error) {
     console.error('Gemini API Error:', error);
+    console.error('Error stack:', error.stack);
     
     return {
       statusCode: 500,
@@ -118,7 +128,13 @@ Please provide a comprehensive, helpful response with specific actionable steps.
       body: JSON.stringify({ 
         error: 'Failed to get AI response',
         details: error.message,
-        fallback: true
+        errorName: error.name,
+        stack: error.stack,
+        fallback: true,
+        debug: {
+          nodeVersion: process.version,
+          timestamp: new Date().toISOString()
+        }
       })
     };
   }
