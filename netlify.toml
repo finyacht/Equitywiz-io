@@ -57,6 +57,10 @@
 [context.branch-deploy]
   environment = { NODE_ENV = "development" }
 
+# Functions configuration
+[functions]
+  directory = "netlify/functions"
+
 # Custom headers for security
 [[headers]]
   for = "/*"
@@ -65,4 +69,4 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'" 
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.netlify.app https://*.netlify.com" 
