@@ -14,8 +14,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Waterfall Analysis Tool</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+    <!-- D3.js with multiple CDN fallbacks -->
+    <script>
+        function loadD3Script() {
+            return new Promise((resolve, reject) => {
+                // Try primary CDN first
+                const script1 = document.createElement('script');
+                script1.src = 'https://d3js.org/d3.v7.min.js';
+                script1.onload = () => {
+                    console.log('D3.js loaded from d3js.org');
+                    resolve();
+                };
+                script1.onerror = () => {
+                    console.log('Trying fallback CDN for D3.js...');
+                    // Fallback to jsDelivr
+                    const script2 = document.createElement('script');
+                    script2.src = 'https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js';
+                    script2.onload = () => {
+                        console.log('D3.js loaded from jsDelivr');
+                        resolve();
+                    };
+                    script2.onerror = () => {
+                        console.log('Trying second fallback CDN for D3.js...');
+                        // Second fallback to unpkg
+                        const script3 = document.createElement('script');
+                        script3.src = 'https://unpkg.com/d3@7/dist/d3.min.js';
+                        script3.onload = () => {
+                            console.log('D3.js loaded from unpkg');
+                            resolve();
+                        };
+                        script3.onerror = () => {
+                            console.error('Failed to load D3.js from all CDNs');
+                            reject(new Error('D3.js failed to load'));
+                        };
+                        document.head.appendChild(script3);
+                    };
+                    document.head.appendChild(script2);
+                };
+                document.head.appendChild(script1);
+            });
+        }
+
+        function loadD3SankeyScript() {
+            return new Promise((resolve, reject) => {
+                // Try primary CDN first
+                const script1 = document.createElement('script');
+                script1.src = 'https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js';
+                script1.onload = () => {
+                    console.log('D3-Sankey loaded from unpkg');
+                    resolve();
+                };
+                script1.onerror = () => {
+                    console.log('Trying fallback CDN for D3-Sankey...');
+                    // Fallback to jsDelivr
+                    const script2 = document.createElement('script');
+                    script2.src = 'https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js';
+                    script2.onload = () => {
+                        console.log('D3-Sankey loaded from jsDelivr');
+                        resolve();
+                    };
+                    script2.onerror = () => {
+                        console.error('Failed to load D3-Sankey from all CDNs');
+                        reject(new Error('D3-Sankey failed to load'));
+                    };
+                    document.head.appendChild(script2);
+                };
+                document.head.appendChild(script1);
+            });
+        }
+
+        // Load scripts sequentially
+        window.d3LoadPromise = loadD3Script().then(() => {
+            return loadD3SankeyScript();
+        });
+    </script>
     <style>
         /* General styles - body styles moved to navbar section */
         
@@ -585,8 +657,19 @@
                 }, 250); // Debounce resize events
             });
             
-            // Load default data
+            // Load default data and wait for D3 if needed
             resetToDefault();
+            
+            // Ensure D3 is loaded before initial render
+            if (window.d3LoadPromise) {
+                window.d3LoadPromise.then(() => {
+                    console.log('D3 fully loaded, updating waterfall analysis...');
+                    // Small delay to ensure DOM is ready
+                    setTimeout(updateWaterfallAnalysis, 200);
+                }).catch((error) => {
+                    console.error('D3 failed to load during init:', error);
+                });
+            }
         }
         
         // Update exit amount
@@ -1497,6 +1580,51 @@
 
         // Render Sankey Diagram
         function renderSankeyDiagram(waterfallSteps, summaryData) {
+            // Check if D3 is available
+            if (typeof d3 === 'undefined' || typeof d3.sankey === 'undefined') {
+                console.log('D3.js or D3-Sankey not yet loaded, waiting...');
+                
+                // Show loading message
+                const sankeyContainer = document.querySelector('.sankey-container');
+                sankeyContainer.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; font-size: 14px;">
+                        <div>
+                            <div style="margin-bottom: 10px;">Loading Sankey diagram...</div>
+                            <div style="width: 200px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden;">
+                                <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%); animation: loading 1.5s ease-in-out infinite;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <style>
+                        @keyframes loading {
+                            0% { transform: translateX(-100%); }
+                            100% { transform: translateX(100%); }
+                        }
+                    </style>
+                `;
+                
+                // Wait for D3 libraries to load
+                if (window.d3LoadPromise) {
+                    window.d3LoadPromise.then(() => {
+                        console.log('D3 libraries loaded, rendering Sankey...');
+                        setTimeout(() => renderSankeyDiagram(waterfallSteps, summaryData), 100);
+                    }).catch((error) => {
+                        console.error('Failed to load D3 libraries:', error);
+                        showSankeyError();
+                    });
+                } else {
+                    // Fallback: try again after a short delay
+                    setTimeout(() => {
+                        if (typeof d3 !== 'undefined' && typeof d3.sankey !== 'undefined') {
+                            renderSankeyDiagram(waterfallSteps, summaryData);
+                        } else {
+                            showSankeyError();
+                        }
+                    }, 2000);
+                }
+                return;
+            }
+            
             // Clear existing diagram
             d3.select("#sankeyDiagram").selectAll("*").remove();
             
@@ -1874,6 +2002,22 @@
             window.addEventListener('beforeunload', () => {
                 tooltip.remove();
             });
+        }
+
+        // Show error message when Sankey diagram fails to load
+        function showSankeyError() {
+            const sankeyContainer = document.querySelector('.sankey-container');
+            sankeyContainer.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ef4444; font-size: 14px; text-align: center;">
+                    <div>
+                        <div style="margin-bottom: 10px;">⚠️ Sankey diagram unavailable</div>
+                        <div style="font-size: 12px; color: #666;">D3.js libraries failed to load. The other charts and analysis are still functional.</div>
+                        <button onclick="location.reload()" style="margin-top: 10px; padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            `;
         }
 
         // Initialize the application when the page loads
