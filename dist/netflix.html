@@ -1,8 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-RT0B6NXFG6');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <!-- CSP handled by netlify.toml for better control -->
     <title>Netflix Supplemental Stock Option Plan Modeler</title>
     <!-- Load Chart.js with all required modules -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
@@ -268,10 +279,14 @@
         @media (max-width: 480px) {
             .result-grid {
                 grid-template-columns: 1fr;
+                gap: 12px;
             }
             
             .result-card {
                 padding: 12px;
+                min-height: 100px;
+                width: 100%;
+                box-sizing: border-box;
             }
             
             .chart-card h3 {
@@ -281,6 +296,57 @@
             
             .chart-description {
                 font-size: 12px;
+            }
+            
+            .result-value {
+                font-size: 1.5rem;
+            }
+            
+            .result-label {
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Tablet and medium screens */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .result-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .result-card {
+                padding: 16px;
+                min-height: 120px;
+            }
+            
+            .result-value {
+                font-size: 1.6rem;
+            }
+        }
+        
+        /* Large tablets and small desktops */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .result-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 18px;
+            }
+            
+            .result-card {
+                padding: 18px;
+                min-height: 140px;
+            }
+        }
+        
+        /* Large screens */
+        @media (min-width: 1025px) {
+            .result-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+            
+            .result-card {
+                padding: 20px;
+                min-height: 160px;
             }
         }
         
@@ -1582,6 +1648,89 @@
                 }
             }
         });
+    </script>
+    <!-- Chatbot Widget CSS Override -->
+    <style>
+        .gs-chatbot-widget {
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            z-index: 999999 !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .gs-chatbot-widget * {
+            visibility: visible !important;
+        }
+    </style>
+    <!-- Chatbot Widget -->
+    <script src="js/chatbotWidget.js"></script>
+    <script>
+        // Enhanced chatbot initialization with multiple retry attempts
+        let chatbotInitAttempts = 0;
+        const maxAttempts = 10;
+        
+        function initChatbot() {
+            chatbotInitAttempts++;
+            console.log(`🔧 Netflix chatbot init attempt ${chatbotInitAttempts}/${maxAttempts}`);
+            console.log('🔧 YikesAIChatbot available:', !!window.YikesAIChatbot);
+            
+            if (window.YikesAIChatbot) {
+                try {
+                    // Remove existing widget if any
+                    const existingWidgets = document.querySelectorAll('.gs-chatbot-widget');
+                    existingWidgets.forEach(widget => widget.remove());
+                    
+                    // Create new instance
+                    window.yikesAIChatbot = new YikesAIChatbot({
+                        apiKey: 'AIzaSyB4ix_spZPsxIw_A3T6X0y6dc33fCmkvqk',
+                        position: 'bottom-right'
+                    });
+                    
+                    console.log('✅ Netflix chatbot initialized successfully');
+                    
+                    // Verify widget is visible
+                    setTimeout(() => {
+                        const widget = document.querySelector('.gs-chatbot-widget');
+                        if (widget) {
+                            console.log('✅ Netflix chatbot widget found in DOM');
+                            widget.style.display = 'block';
+                            widget.style.visibility = 'visible';
+                        } else {
+                            console.log('❌ Netflix chatbot widget not found in DOM');
+                        }
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('❌ Error initializing Netflix chatbot:', error);
+                    if (chatbotInitAttempts < maxAttempts) {
+                        setTimeout(initChatbot, 1000);
+                    }
+                }
+            } else {
+                console.log('🔧 YikesAIChatbot class not found');
+                if (chatbotInitAttempts < maxAttempts) {
+                    setTimeout(initChatbot, 500);
+                }
+            }
+        }
+        
+        // Multiple initialization triggers
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initChatbot);
+        } else {
+            initChatbot();
+        }
+        
+        // Additional fallback attempts
+        setTimeout(initChatbot, 1000);
+        setTimeout(initChatbot, 3000);
+        setTimeout(initChatbot, 5000);
+        
+        // Window load fallback
+        window.addEventListener('load', initChatbot);
     </script>
 </body>
 </html> 
