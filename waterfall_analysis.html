@@ -83,10 +83,23 @@
             });
         }
 
-        // Load scripts sequentially
+        // Load scripts sequentially with better error handling
         window.d3LoadPromise = loadD3Script().then(() => {
             return loadD3SankeyScript();
+        }).catch(error => {
+            console.error('Failed to load D3 libraries:', error);
+            // Mark as failed so we can show error immediately
+            window.d3LoadFailed = true;
+            throw error;
         });
+
+        // Add a timeout fallback
+        setTimeout(() => {
+            if (typeof d3 === 'undefined' || typeof d3.sankey === 'undefined') {
+                console.error('D3 libraries failed to load within timeout');
+                window.d3LoadFailed = true;
+            }
+        }, 10000); // 10 second timeout
     </script>
     <style>
         /* General styles - body styles moved to navbar section */
@@ -1580,6 +1593,12 @@
 
         // Render Sankey Diagram
         function renderSankeyDiagram(waterfallSteps, summaryData) {
+            // Check if loading already failed
+            if (window.d3LoadFailed) {
+                showSankeyError();
+                return;
+            }
+            
             // Check if D3 is available
             if (typeof d3 === 'undefined' || typeof d3.sankey === 'undefined') {
                 console.log('D3.js or D3-Sankey not yet loaded, waiting...');
@@ -1613,14 +1632,25 @@
                         showSankeyError();
                     });
                 } else {
-                    // Fallback: try again after a short delay
+                    // Fallback: try again after a short delay with timeout
                     setTimeout(() => {
                         if (typeof d3 !== 'undefined' && typeof d3.sankey !== 'undefined') {
                             renderSankeyDiagram(waterfallSteps, summaryData);
+                        } else if (!window.d3LoadFailed) {
+                            console.log('Still waiting for D3, trying once more...');
+                            setTimeout(() => {
+                                if (typeof d3 !== 'undefined' && typeof d3.sankey !== 'undefined') {
+                                    renderSankeyDiagram(waterfallSteps, summaryData);
+                                } else {
+                                    console.error('D3 loading timeout exceeded');
+                                    window.d3LoadFailed = true;
+                                    showSankeyError();
+                                }
+                            }, 3000);
                         } else {
                             showSankeyError();
                         }
-                    }, 2000);
+                    }, 1500);
                 }
                 return;
             }
@@ -2011,9 +2041,17 @@
                 <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ef4444; font-size: 14px; text-align: center;">
                     <div>
                         <div style="margin-bottom: 10px;">⚠️ Sankey diagram unavailable</div>
-                        <div style="font-size: 12px; color: #666;">D3.js libraries failed to load. The other charts and analysis are still functional.</div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 10px;">
+                            D3.js libraries failed to load. This may be due to:<br>
+                            • Content Security Policy restrictions<br>
+                            • Network connectivity issues<br>
+                            • CDN availability problems
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 15px;">
+                            The other charts and waterfall analysis are still fully functional.
+                        </div>
                         <button onclick="location.reload()" style="margin-top: 10px; padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">
-                            Retry
+                            🔄 Retry Page
                         </button>
                     </div>
                 </div>
