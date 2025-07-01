@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-RT0B6NXFG6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equity Grant Calculator</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 56px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .header p {
+            font-size: 21px;
+            color: #86868b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 16px;
+        }
+
+        .step-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1d1d1f;
+        }
+
+        .amount-input-wrapper {
+            margin-bottom: 32px;
+        }
+
+        .amount-input-wrapper label {
+            display: block;
+            font-size: 17px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 12px;
+        }
+
+        .amount-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 24px;
+            font-weight: 500;
+            border: 2px solid #e5e5e7;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .amount-input:focus {
+            outline: none;
+            border-color: #0a5264;
+            background: white;
+            transform: scale(1.02);
+        }
+
+        .split-section {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+
+        .split-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .split-label {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .split-label.options {
+            color: #0a5264;
+        }
+
+        .split-label.rsus {
+            color: #4a9eff;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .split-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(to right, #0a5264 0%, #0a5264 var(--value, 50%), #4a9eff var(--value, 50%), #4a9eff 100%);
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.1s ease;
+        }
+
+        .split-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .split-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .split-amounts {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .split-amount {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .split-amount:hover {
+            transform: translateY(-2px);
+        }
+
+        .split-amount-value {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .split-amount-label {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .price-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 17px;
+            border: 2px solid #e5e5e7;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #0a5264;
+            box-shadow: 0 0 0 3px rgba(10, 82, 100, 0.1);
+        }
+
+        .helper-text {
+            margin-top: 8px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .calculation-result {
+            background: linear-gradient(135deg, #e8f3ff 0%, #f3e8ff 100%);
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 32px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .result-item {
+            text-align: center;
+        }
+
+        .result-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-label {
+            font-size: 18px;
+            font-weight: 500;
+            color: #86868b;
+        }
+
+        .formula-explanation {
+            background: #f5f5f7;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            border-left: 4px solid #007AFF;
+        }
+
+        .formula-explanation h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #007AFF;
+        }
+
+        .formula {
+            font-family: 'SF Mono', monospace;
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 14px;
+            color: #1d1d1f;
+            overflow-x: auto;
+        }
+
+        .collapsible-section {
+            background: #f5f5f7;
+            border-radius: 12px;
+            margin: 24px 0;
+            border-left: 4px solid #007AFF;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 16px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #007AFF;
+            transition: background-color 0.2s ease;
+        }
+
+        .collapsible-header:hover {
+            background: #ebebed;
+        }
+
+        .collapsible-content {
+            padding: 0 24px 24px 24px;
+            transition: all 0.3s ease;
+        }
+
+        .collapse-icon {
+            transition: transform 0.3s ease;
+            font-size: 12px;
+        }
+
+        .collapse-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* Tooltip styles */
+        .tooltip-trigger {
+            cursor: help;
+            color: #007AFF;
+            margin-left: 8px;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .tooltip-trigger:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            max-width: 250px;
+            white-space: normal;
+            width: max-content;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tooltip-trigger:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 115%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin: 20px 0;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container canvas {
+            max-height: 360px !important;
+        }
+
+        .vesting-table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .vesting-table th,
+        .vesting-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .vesting-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #1d1d1f;
+            white-space: nowrap;
+        }
+
+        .vesting-table tbody tr:hover {
+            background: #f8f9ff;
+        }
+
+        .vesting-table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.vested {
+            background: #34C759;
+            color: white;
+        }
+
+        .status-badge.unvested {
+            background: #0a5264;
+            color: white;
+        }
+
+        .tax-input-section {
+            background: #e8f3ff;
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+
+        .breakpoint-info {
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .breakpoint-value {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .breakpoint-label {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .nav-home {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-home:hover {
+            transform: translateY(-2px);
+        }
+
+        .nav-home svg {
+            margin-right: 8px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .info-box {
+            background: #e8f3ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #0a5264;
+        }
+
+        .info-box p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #1d1d1f;
+        }
+
+        .vesting-config {
+            background: #f1f3f4;
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+        }
+
+        .vesting-config h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #0a5264;
+        }
+
+        .vesting-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: #0a5264;
+            font-weight: 600;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+            padding: 12px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+        }
+
+        .explanation-section {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 32px;
+            margin: 30px 0;
+            border-left: 4px solid #34C759;
+        }
+
+        .explanation-section h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #34C759;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 2px solid #0a5264;
+            background: white;
+            color: #0a5264;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background: #0a5264;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination button:disabled:hover {
+            background: white;
+            color: #0a5264;
+        }
+
+        .pagination span {
+            font-weight: 500;
+            color: #86868b;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 36px;
+            }
+            
+            .card {
+                padding: 24px;
+            }
+            
+            .price-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .split-amounts {
+                flex-direction: column;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .vesting-table {
+                font-size: 12px;
+            }
+            
+            .vesting-table th,
+            .vesting-table td {
+                padding: 8px 4px;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        .choice-section {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+            border-left: 4px solid #0a5264;
+        }
+
+        .choice-section h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #0a5264;
+        }
+
+        .comparison-section {
+            background: #f8f9ff;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+            border-left: 4px solid #0a5264;
+        }
+
+        .comparison-section h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #0a5264;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="nav-home">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+            Back to Home
+        </a>
+
+        <div class="header">
+            <h1>Equity Grant Calculator</h1>
+            <p>Calculate your optimal equity allocation strategy with detailed breakpoint analysis</p>
+        </div>
+
+        <!-- Step 1: Allocation -->
+        <div class="card">
+            <div class="step-indicator">
+                <div class="step-number">1</div>
+                <div class="step-title">Allocate Your Investment</div>
+            </div>
+            
+            <div class="amount-input-wrapper">
+                <label for="totalGrant">Total amount to invest in equity</label>
+                <input type="text" id="totalGrant" class="amount-input" placeholder="$1,500,000" value="1,500,000">
+            </div>
+
+            <div class="amount-input-wrapper">
+                <label for="valueDelivered">
+                    Value Delivered 
+                    <span class="tooltip-trigger" data-tooltip="Enter the total value you've already realized from past option exercises and stock sales. This helps calculate your complete equity compensation picture.">ℹ️</span>
+                </label>
+                <input type="text" id="valueDelivered" class="amount-input" placeholder="$3,000,000" value="3,000,000" min="0">
+            </div>
+
+            <div class="split-section">
+                <div class="split-labels">
+                    <span class="split-label options">Options: <span id="optionsPercent">0%</span></span>
+                    <span class="split-label rsus">RSUs: <span id="rsusPercent">0%</span></span>
+                </div>
+                <div class="slider-wrapper">
+                    <input type="range" id="splitSlider" class="split-slider" min="0" max="100" value="50" style="--value: 50%">
+                </div>
+                <div class="split-amounts">
+                    <div class="split-amount">
+                        <div class="split-amount-value" id="optionsAmount" style="color: #0a5264">$0</div>
+                        <div class="split-amount-label">Options Budget</div>
+                    </div>
+                    <div class="split-amount">
+                        <div class="split-amount-value" id="rsusAmount" style="color: #4a9eff">$0</div>
+                        <div class="split-amount-label">RSUs Budget</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Calculate Equity Quantities & Growth Parameters -->
+        <div class="card">
+            <div class="step-indicator">
+                <div class="step-number">2</div>
+                <div class="step-title">Calculate Equity Quantities & Growth Parameters</div>
+            </div>
+
+            <div class="price-inputs">
+                <div class="input-group">
+                    <label for="strikePrice">Option Strike Price</label>
+                    <input type="number" id="strikePrice" class="input-field" placeholder="$200" value="200" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="currentSharePrice">Current Share Price</label>
+                    <input type="number" id="currentSharePrice" class="input-field" placeholder="$500" value="500" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="appreciation">Expected Share Price Appreciation (%)</label>
+                    <input type="number" id="appreciation" class="input-field" placeholder="50" value="50" min="0">
+                    <div class="helper-text">
+                        <span id="targetPriceHelper" style="color: #28a745; font-weight: 600;">Target: $0</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="taxRate">Total Tax Rate (%)</label>
+                    <input type="number" id="taxRate" class="input-field" placeholder="35" value="35" min="0" max="100">
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p><strong>Note:</strong> For Options, you pay the strike price per option. For RSUs, you pay the current share price per unit.</p>
+            </div>
+
+            <div class="calculation-result">
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-number" id="numOptions" style="color: #0a5264">0</div>
+                        <div class="result-label">Stock Options</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-number" id="numRSUs" style="color: #4a9eff">0</div>
+                        <div class="result-label">RSUs</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="collapsible-section">
+                <div class="collapsible-header" onclick="toggleCollapsible('formulaExplanation')">
+                    <span>📊 How we calculate quantities</span>
+                    <span class="collapse-icon" id="formulaExplanationIcon">▼</span>
+                </div>
+                <div class="collapsible-content" id="formulaExplanation" style="display: none;">
+                    <div class="formula">Number of Options = Options Budget ÷ Strike Price</div>
+                    <div class="formula">Number of RSUs = RSUs Budget ÷ Current Share Price</div>
+                    <div class="formula">Target Price = Current Price × (1 + Appreciation %)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Vesting Schedule -->
+        <div class="card">
+            <div class="step-indicator">
+                <div class="step-number">3</div>
+                <div class="step-title">Vesting Schedule Analysis</div>
+            </div>
+
+            <div class="vesting-config">
+                <h4>Configure Vesting Schedule</h4>
+                <div class="vesting-inputs">
+                    <div class="input-group">
+                        <label for="vestingStartDate">Vesting Start Date</label>
+                        <input type="date" id="vestingStartDate" class="input-field" value="" onchange="updateCalculations()">
+                    </div>
+                    <div class="input-group">
+                        <label for="vestingPeriod">Total Vesting Period (Years)</label>
+                        <input type="number" id="vestingPeriod" class="input-field" value="4" min="1" max="10" step="0.5">
+                    </div>
+                    <div class="input-group">
+                        <label for="cliffPeriod">Cliff Period (Years)</label>
+                        <input type="number" id="cliffPeriod" class="input-field" value="1" min="0" max="5" step="0.25">
+                    </div>
+                    <div class="input-group">
+                        <label for="vestingFrequency">Vesting Frequency</label>
+                        <select id="vestingFrequency" class="input-field">
+                            <option value="annual" selected>Annual</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: block; width: 100%;">
+                <div style="margin-bottom: 40px;">
+                    <h3 style="font-size: 20px; margin-bottom: 16px; color: #0a5264;">Options Vesting</h3>
+                    <div style="overflow-x: auto; width: 100%;">
+                        <div class="vesting-table-container">
+                            <table class="vesting-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tranche</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Quantity</th>
+                                        <th>Cumulative</th>
+                                        <th>%</th>
+                                        <th>Value at Target</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="optionsVestingTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="pagination" id="optionsPagination" style="display: none;">
+                        <button id="optionsPrev" onclick="changeOptionsPage(-1)">Previous</button>
+                        <span id="optionsPageInfo">Page 1 of 1</span>
+                        <button id="optionsNext" onclick="changeOptionsPage(1)">Next</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="font-size: 20px; margin-bottom: 16px; color: #4a9eff;">RSUs Vesting</h3>
+                    <div style="overflow-x: auto; width: 100%;">
+                        <div class="vesting-table-container">
+                            <table class="vesting-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tranche</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Quantity</th>
+                                        <th>Cumulative</th>
+                                        <th>%</th>
+                                        <th>Value at Target</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rsusVestingTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="pagination" id="rsusPagination" style="display: none;">
+                        <button id="rsusPrev" onclick="changeRSUsPage(-1)">Previous</button>
+                        <span id="rsusPageInfo">Page 1 of 1</span>
+                        <button id="rsusNext" onclick="changeRSUsPage(1)">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="formula-explanation" style="margin-top: 32px;" id="vestingScheduleDescription">
+                <h4>Vesting Schedule:</h4>
+                <div class="formula" id="vestingCliffDescription">Year 1: 25% cliff vesting (nothing vests until 12 months)</div>
+                <div class="formula" id="vestingRegularDescription">Years 2-4: 25% per year (regular vesting)</div>
+                <div class="formula" id="vestingTotalDescription">Total vesting period: 4 years</div>
+            </div>
+        </div>
+
+        <!-- Step 4: Breakpoint Analysis -->
+        <div class="card">
+            <div class="step-indicator">
+                <div class="step-number">4</div>
+                <div class="step-title">Breakpoint Analysis</div>
+            </div>
+
+            <div class="breakpoint-info">
+                <div class="breakpoint-value" id="breakpointPrice">$0</div>
+                <div class="breakpoint-label">Breakpoint Share Price</div>
+                <p style="margin-top: 16px; font-size: 16px; opacity: 0.9;">At this price, Options and RSUs provide equal net value after taxes</p>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="breakpointChart"></canvas>
+            </div>
+
+            <div class="formula-explanation">
+                <h4>Breakpoint Calculation:</h4>
+                <div class="formula">
+                    <span class="tooltip">Breakpoint Price
+                        <span class="tooltiptext">
+                            The share price where Options and RSUs have equal net value. Above this price, Options are better. Below this price, RSUs are better.
+                        </span>
+                    </span> = 
+                    (<span class="tooltip">Strike Price
+                        <span class="tooltiptext">
+                            The price you pay to exercise each option
+                        </span>
+                    </span> × 
+                    <span class="tooltip">Number of Options
+                        <span class="tooltiptext">
+                            Total options you can buy with your budget
+                        </span>
+                    </span>) ÷ 
+                    (<span class="tooltip">Number of Options
+                        <span class="tooltiptext">
+                            Total options you can buy
+                        </span>
+                    </span> - 
+                    <span class="tooltip">Number of RSUs
+                        <span class="tooltiptext">
+                            Total RSUs you can buy with your budget
+                        </span>
+                    </span>)
+                </div>
+                <div style="margin-top: 16px; padding: 16px; background: #e8f3ff; border-radius: 8px; font-size: 14px;">
+                    <strong>What this means:</strong><br>
+                    • At the breakpoint price, both options and RSUs give you the same profit after taxes<br>
+                    • If you think the stock will go <strong>above</strong> this price → Choose <span style="color: #0a5264; font-weight: 600;">Options</span><br>
+                    • If you think the stock will stay <strong>below</strong> this price → Choose <span style="color: #4a9eff; font-weight: 600;">RSUs</span><br>
+                    • The formula works because: (Share Price - Strike) × Options × (1 - Tax) = Share Price × RSUs × (1 - Tax)
+                </div>
+            </div>
+
+            <div class="chart-container" style="margin-top: 30px;">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card tooltip">
+                    <div class="metric-value" style="color: #0a5264;" id="optionsValueAtTarget">$0</div>
+                    <div class="metric-label">Options Value at Target Price</div>
+                    <span class="tooltiptext">
+                        <strong>Options Net Value Formula:</strong><br>
+                        = (Target Price - Strike Price) × Number of Options × (1 - Tax Rate)<br><br>
+                        <strong>Breakdown:</strong><br>
+                        • Intrinsic Value = Max(0, Target Price - Strike Price)<br>
+                        • Gross Value = Intrinsic Value × Number of Options<br>
+                        • Net Value = Gross Value × (1 - Tax Rate)<br>
+                        • Only profitable if Target Price > Strike Price
+                    </span>
+                </div>
+                <div class="metric-card tooltip">
+                    <div class="metric-value" style="color: #4a9eff;" id="rsusValueAtTarget">$0</div>
+                    <div class="metric-label">RSUs Value at Target Price</div>
+                    <span class="tooltiptext">
+                        <strong>RSUs Net Value Formula:</strong><br>
+                        = Target Price × Number of RSUs × (1 - Tax Rate)<br><br>
+                        <strong>Breakdown:</strong><br>
+                        • Gross Value = Target Price × Number of RSUs<br>
+                        • Net Value = Gross Value × (1 - Tax Rate)<br>
+                        • RSUs have value at any price above $0<br>
+                        • No strike price or exercise cost
+                    </span>
+                </div>
+                <div class="metric-card tooltip">
+                    <div class="metric-value" style="color: #34C759;" id="betterChoice">-</div>
+                    <div class="metric-label">Better Choice at Target</div>
+                    <span class="tooltiptext">
+                        <strong>Comparison Logic:</strong><br>
+                        • Compares net values after taxes<br>
+                        • Options Win: When target price > breakpoint price<br>
+                        • RSUs Win: When target price < breakpoint price<br><br>
+                        <strong>Decision factors:</strong><br>
+                        • Risk tolerance • Growth expectations<br>
+                        • Tax implications • Liquidity needs
+                    </span>
+                </div>
+                <div class="metric-card tooltip">
+                    <div class="metric-value" style="color: #FF3B30;" id="totalTaxes">$0</div>
+                    <div class="metric-label">Total Tax Impact</div>
+                    <span class="tooltiptext" id="totalTaxesTooltip">
+                        <strong>Total Tax Breakdown:</strong><br>
+                        = Options Taxes + RSUs Taxes<br><br>
+                        <strong>📊 Current Breakdown:</strong><br>
+                        • Options Taxes: <span id="optionsTaxAmount">$0</span><br>
+                        • RSUs Taxes: <span id="rsusTaxAmount">$0</span><br>
+                        • Total: <span id="totalTaxAmount">$0</span><br><br>
+                        <strong>📋 Formulas:</strong><br>
+                        • Options: (Target Price - Strike Price) × Options × Tax Rate<br>
+                        • RSUs: Target Price × RSUs × Tax Rate
+                    </span>
+                </div>
+                <div class="metric-card tooltip">
+                    <div class="metric-value" style="color: #0a5264;" id="totalGainsDelivered">$0</div>
+                    <div class="metric-label">Total Gains Delivered</div>
+                    <span class="tooltiptext">
+                        <strong>Total Lifetime Equity Value:</strong><br>
+                        = Value Delivered + Options Value + RSUs Value<br><br>
+                        <strong>📊 Breakdown:</strong><br>
+                        • Past Gains: <span id="pastGainsAmount">$0</span><br>
+                        • Future Options: <span id="futureOptionsAmount">$0</span><br>
+                        • Future RSUs: <span id="futureRSUsAmount">$0</span><br>
+                        • Total: <span id="totalGainsAmount">$0</span><br><br>
+                        <strong>💡 Purpose:</strong><br>
+                        Shows your complete equity compensation picture including both realized and projected gains.
+                    </span>
+                </div>
+            </div>
+
+            <div class="explanation-section">
+                <h4>Why This Choice is Better</h4>
+                <div id="choiceExplanation">
+                    <p>Enter your parameters above to see a detailed analysis of which option is better for your situation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Chart.js with all required modules -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script>
+        // Global variables
+        let breakpointChart, comparisonChart;
+        let optionsVestingData = [];
+        let rsusVestingData = [];
+        let optionsCurrentPage = 1;
+        let rsusCurrentPage = 1;
+        const itemsPerPage = 10;
+        
+        // Global variables for chart tooltips
+        let globalNumOptions = 0;
+        let globalNumRSUs = 0;
+        let globalStrikePrice = 0;
+        let globalCurrentPrice = 0;
+        let globalTaxRate = 0;
+        
+        // Initialize the calculator
+        function init() {
+            setupEventListeners();
+            updateCalculations();
+            createCharts();
+        }
+
+        // Format number with commas for display
+        function formatNumberWithCommas(value) {
+            // Remove all non-numeric characters except decimal point
+            const numStr = value.toString().replace(/[^\d.]/g, '');
+            const num = parseFloat(numStr);
+            if (isNaN(num)) return '';
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+
+        // Parse number from formatted string
+        function parseFormattedNumber(value) {
+            const numStr = value.toString().replace(/[^\d.]/g, '');
+            const num = parseFloat(numStr);
+            return isNaN(num) ? 0 : num;
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // All input fields except the slider and amount fields
+            const inputs = document.querySelectorAll('input:not(#splitSlider):not(#totalGrant):not(#valueDelivered)');
+            inputs.forEach(input => {
+                input.addEventListener('input', updateCalculations);
+            });
+
+            // Special handling for amount input fields with comma formatting
+            const amountFields = ['totalGrant', 'valueDelivered'];
+            amountFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', function() {
+                        const cursorPos = this.selectionStart;
+                        const oldLength = this.value.length;
+                        const cleanValue = parseFormattedNumber(this.value);
+                        this.value = formatNumberWithCommas(cleanValue);
+                        
+                        // Restore cursor position accounting for comma changes
+                        const newLength = this.value.length;
+                        const newPos = cursorPos + (newLength - oldLength);
+                        this.setSelectionRange(newPos, newPos);
+                        
+                        updateCalculations();
+                    });
+                    
+                    field.addEventListener('blur', function() {
+                        const cleanValue = parseFormattedNumber(this.value);
+                        this.value = formatNumberWithCommas(cleanValue);
+                    });
+                }
+            });
+
+            // Special handling for the slider
+            const slider = document.getElementById('splitSlider');
+            if (slider) {
+                console.log('Slider found, initial value:', slider.value);
+                
+                // Set initial CSS property
+                slider.style.setProperty('--value', slider.value + '%');
+                
+                slider.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    console.log('Slider changed to:', value);
+                    
+                    // Update CSS custom property for gradient
+                    this.style.setProperty('--value', value + '%');
+                    
+                    // Alternative: Update background directly
+                    this.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${value}%, #4a9eff ${value}%, #4a9eff 100%)`;
+                    
+                    // Force a repaint to ensure visual update
+                    this.offsetHeight;
+                    
+                    updateCalculations();
+                });
+                
+                // Also listen for 'change' event for better compatibility
+                slider.addEventListener('change', function() {
+                    const value = parseFloat(this.value);
+                    console.log('Slider change event:', value);
+                    this.style.setProperty('--value', value + '%');
+                    this.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${value}%, #4a9eff ${value}%, #4a9eff 100%)`;
+                    updateCalculations();
+                });
+            } else {
+                console.error('Slider not found!');
+            }
+        }
+
+        // Format currency
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        // Format number with commas
+        function formatNumber(value) {
+            return new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        // Format percentage
+        function formatPercent(value) {
+            return value.toFixed(1) + '%';
+        }
+
+        // Toggle collapsible sections
+        function toggleCollapsible(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(id + 'Icon');
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                icon.textContent = '▲';
+                icon.classList.add('rotated');
+            } else {
+                content.style.display = 'none';
+                icon.textContent = '▼';
+                icon.classList.remove('rotated');
+            }
+        }
+
+        // Calculate options value
+        function calculateOptionsValue(sharePrice, strikePrice, numOptions, taxRate) {
+            const intrinsicValue = Math.max(0, sharePrice - strikePrice);
+            const grossValue = intrinsicValue * numOptions;
+            const taxes = grossValue * (taxRate / 100);
+            const netValue = grossValue - taxes;
+            
+            return {
+                grossValue,
+                netValue,
+                taxes,
+                intrinsicValue,
+                inTheMoney: sharePrice > strikePrice
+            };
+        }
+
+        // Calculate RSUs value
+        function calculateRSUsValue(sharePrice, numUnits, taxRate) {
+            const grossValue = sharePrice * numUnits;
+            const taxes = grossValue * (taxRate / 100);
+            const netValue = grossValue - taxes;
+            
+            return {
+                grossValue,
+                netValue,
+                taxes
+            };
+        }
+
+        // Find breakpoint where options net value equals RSUs net value
+        function findBreakpoint(strikePrice, numOptions, numRSUs, taxRate) {
+            // At breakpoint: (P - K) * O * (1 - T) = P * R * (1 - T)
+            // Simplifying: (P - K) * O = P * R
+            // P * O - K * O = P * R
+            // P * O - P * R = K * O
+            // P * (O - R) = K * O
+            // P = K * O / (O - R)
+            
+            if (numOptions === numRSUs) {
+                return null; // No breakpoint if quantities are equal
+            }
+            
+            const breakpoint = (strikePrice * numOptions) / (numOptions - numRSUs);
+            return breakpoint > 0 ? breakpoint : null;
+        }
+
+        // Update all calculations
+        function updateCalculations() {
+            console.log('updateCalculations called');
+            
+            // Get input values
+            const totalGrant = parseFormattedNumber(document.getElementById('totalGrant').value) || 0;
+            const valueDelivered = parseFormattedNumber(document.getElementById('valueDelivered').value) || 0;
+            const splitPercent = parseFloat(document.getElementById('splitSlider').value) || 50;
+            const currentSharePrice = parseFloat(document.getElementById('currentSharePrice').value) || 0;
+            const strikePrice = parseFloat(document.getElementById('strikePrice').value) || 0;
+            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+            const appreciation = parseFloat(document.getElementById('appreciation').value) || 0;
+            
+            console.log('Input values:', { totalGrant, splitPercent, currentSharePrice, strikePrice, taxRate, appreciation });
+            
+            // Update global variables for chart tooltips
+            globalStrikePrice = strikePrice;
+            globalCurrentPrice = currentSharePrice;
+            globalTaxRate = taxRate;
+            
+            // Calculate split amounts
+            const optionsBudget = totalGrant * (splitPercent / 100);
+            const rsusBudget = totalGrant * ((100 - splitPercent) / 100);
+            
+            // Update UI - split display
+            console.log('Updating split display - Options:', splitPercent, '%, RSUs:', (100 - splitPercent), '%');
+            
+            const optionsPercentEl = document.getElementById('optionsPercent');
+            const rsusPercentEl = document.getElementById('rsusPercent');
+            const optionsAmountEl = document.getElementById('optionsAmount');
+            const rsusAmountEl = document.getElementById('rsusAmount');
+            
+            if (optionsPercentEl) {
+                optionsPercentEl.textContent = formatPercent(splitPercent);
+                console.log('Updated optionsPercent to:', formatPercent(splitPercent));
+            } else {
+                console.error('optionsPercent element not found!');
+            }
+            
+            if (rsusPercentEl) {
+                rsusPercentEl.textContent = formatPercent(100 - splitPercent);
+                console.log('Updated rsusPercent to:', formatPercent(100 - splitPercent));
+            } else {
+                console.error('rsusPercent element not found!');
+            }
+            
+            if (optionsAmountEl) {
+                optionsAmountEl.textContent = formatCurrency(optionsBudget);
+                console.log('Updated optionsAmount to:', formatCurrency(optionsBudget));
+            } else {
+                console.error('optionsAmount element not found!');
+            }
+            
+            if (rsusAmountEl) {
+                rsusAmountEl.textContent = formatCurrency(rsusBudget);
+                console.log('Updated rsusAmount to:', formatCurrency(rsusBudget));
+            } else {
+                console.error('rsusAmount element not found!');
+            }
+            
+            // Calculate quantities
+            const numOptions = strikePrice > 0 ? Math.floor(optionsBudget / strikePrice) : 0;
+            const numRSUs = currentSharePrice > 0 ? Math.floor(rsusBudget / currentSharePrice) : 0;
+            
+            // Update global variables for chart tooltips
+            globalNumOptions = numOptions;
+            globalNumRSUs = numRSUs;
+            
+            console.log('Calculated quantities:', { numOptions, numRSUs });
+            
+            // Update big display numbers
+            document.getElementById('numOptions').textContent = formatNumber(numOptions);
+            document.getElementById('numRSUs').textContent = formatNumber(numRSUs);
+            
+            // Calculate target price
+            const targetPrice = currentSharePrice * (1 + appreciation / 100);
+            
+            // Update target price helper text
+            document.getElementById('targetPriceHelper').textContent = `Target: ${formatCurrency(targetPrice)}`;
+            
+            // Calculate values at target price
+            const optionsCalc = calculateOptionsValue(targetPrice, strikePrice, numOptions, taxRate);
+            const rsusCalc = calculateRSUsValue(targetPrice, numRSUs, taxRate);
+            
+            console.log('Calculated values:', { optionsCalc, rsusCalc, targetPrice });
+            
+            // Update value displays
+            document.getElementById('optionsValueAtTarget').textContent = formatCurrency(optionsCalc.netValue);
+            document.getElementById('rsusValueAtTarget').textContent = formatCurrency(rsusCalc.netValue);
+            document.getElementById('totalTaxes').textContent = formatCurrency(optionsCalc.taxes + rsusCalc.taxes);
+            
+            // Update Options value tooltip with actual numbers
+            const optionsTooltip = document.querySelector('#optionsValueAtTarget').parentElement.querySelector('.tooltiptext');
+            if (optionsTooltip) {
+                optionsTooltip.innerHTML = `
+                    <strong>Options Net Value Calculation:</strong><br>
+                    = (${formatCurrency(targetPrice)} - ${formatCurrency(strikePrice)}) × ${formatNumber(numOptions)} × (1 - ${taxRate}%)<br><br>
+                    <strong>📊 Step-by-step:</strong><br>
+                    • Intrinsic Value = Max(0, ${formatCurrency(targetPrice)} - ${formatCurrency(strikePrice)}) = ${formatCurrency(optionsCalc.intrinsicValue)}<br>
+                    • Gross Value = ${formatCurrency(optionsCalc.intrinsicValue)} × ${formatNumber(numOptions)} = ${formatCurrency(optionsCalc.grossValue)}<br>
+                    • Taxes = ${formatCurrency(optionsCalc.grossValue)} × ${taxRate}% = ${formatCurrency(optionsCalc.taxes)}<br>
+                    • Net Value = ${formatCurrency(optionsCalc.grossValue)} - ${formatCurrency(optionsCalc.taxes)} = ${formatCurrency(optionsCalc.netValue)}<br><br>
+                    <strong>💡 Status:</strong> ${optionsCalc.inTheMoney ? '✅ In the money' : '❌ Out of the money'}
+                `;
+            }
+            
+            // Update RSUs value tooltip with actual numbers
+            const rsusTooltip = document.querySelector('#rsusValueAtTarget').parentElement.querySelector('.tooltiptext');
+            if (rsusTooltip) {
+                rsusTooltip.innerHTML = `
+                    <strong>RSUs Net Value Calculation:</strong><br>
+                    = ${formatCurrency(targetPrice)} × ${formatNumber(numRSUs)} × (1 - ${taxRate}%)<br><br>
+                    <strong>📊 Step-by-step:</strong><br>
+                    • Gross Value = ${formatCurrency(targetPrice)} × ${formatNumber(numRSUs)} = ${formatCurrency(rsusCalc.grossValue)}<br>
+                    • Taxes = ${formatCurrency(rsusCalc.grossValue)} × ${taxRate}% = ${formatCurrency(rsusCalc.taxes)}<br>
+                    • Net Value = ${formatCurrency(rsusCalc.grossValue)} - ${formatCurrency(rsusCalc.taxes)} = ${formatCurrency(rsusCalc.netValue)}<br><br>
+                    <strong>💡 Benefits:</strong><br>
+                    • No strike price or exercise cost<br>
+                    • Always have value above $0<br>
+                    • Simpler tax treatment
+                `;
+            }
+            
+            // Update tax breakdown in tooltip
+            document.getElementById('optionsTaxAmount').textContent = formatCurrency(optionsCalc.taxes);
+            document.getElementById('rsusTaxAmount').textContent = formatCurrency(rsusCalc.taxes);
+            document.getElementById('totalTaxAmount').textContent = formatCurrency(optionsCalc.taxes + rsusCalc.taxes);
+            
+            // Calculate and update Total Gains Delivered
+            const totalGainsDelivered = valueDelivered + optionsCalc.netValue + rsusCalc.netValue;
+            document.getElementById('totalGainsDelivered').textContent = formatCurrency(totalGainsDelivered);
+            
+            // Update Total Gains Delivered breakdown in tooltip
+            document.getElementById('pastGainsAmount').textContent = formatCurrency(valueDelivered);
+            document.getElementById('futureOptionsAmount').textContent = formatCurrency(optionsCalc.netValue);
+            document.getElementById('futureRSUsAmount').textContent = formatCurrency(rsusCalc.netValue);
+            document.getElementById('totalGainsAmount').textContent = formatCurrency(totalGainsDelivered);
+            
+            // Determine better choice
+            const betterChoice = optionsCalc.netValue > rsusCalc.netValue ? 'Options' : 'RSUs';
+            const betterElement = document.getElementById('betterChoice');
+            betterElement.textContent = betterChoice;
+            betterElement.style.color = betterChoice === 'Options' ? '#0a5264' : '#4a9eff';
+            
+            // Calculate and display breakpoint
+            const breakpoint = findBreakpoint(strikePrice, numOptions, numRSUs, taxRate);
+            
+            console.log('Breakpoint:', breakpoint);
+            
+            // Update detailed explanation
+            updateChoiceExplanation(betterChoice, optionsCalc, rsusCalc, targetPrice, currentSharePrice, breakpoint, appreciation);
+            if (breakpoint && breakpoint > 0 && breakpoint < 10000) {
+                document.getElementById('breakpointPrice').textContent = formatCurrency(breakpoint);
+            } else {
+                document.getElementById('breakpointPrice').textContent = 'N/A';
+            }
+            
+            // Update vesting tables
+            updateVestingTables(numOptions, numRSUs, targetPrice, strikePrice, taxRate);
+            
+            // Update charts
+            updateCharts(currentSharePrice, strikePrice, numOptions, numRSUs, taxRate, breakpoint, targetPrice);
+        }
+
+        // Generate vesting schedule based on configuration
+        function generateVestingSchedule(totalQuantity, vestingPeriod, cliffPeriod, frequency, startDate) {
+            const schedule = [];
+            if (totalQuantity <= 0 || vestingPeriod <= 0) return schedule;
+            
+            const vestingStartDate = startDate ? new Date(startDate) : new Date();
+            let currentDate = new Date(vestingStartDate);
+            
+            // Ensure cliff period doesn't exceed vesting period
+            cliffPeriod = Math.min(cliffPeriod, vestingPeriod);
+            
+            // Calculate intervals based on frequency
+            const monthsPerInterval = frequency === 'annual' ? 12 : frequency === 'quarterly' ? 3 : 1;
+            const totalIntervals = Math.floor((vestingPeriod * 12) / monthsPerInterval);
+            
+            // Calculate cliff vesting amount
+            const cliffIntervals = Math.floor((cliffPeriod * 12) / monthsPerInterval);
+            const cliffQuantity = cliffIntervals > 0 ? Math.floor((totalQuantity * cliffPeriod) / vestingPeriod) : 0;
+            const remainingQuantity = totalQuantity - cliffQuantity;
+            const regularIntervals = totalIntervals - cliffIntervals;
+            const regularQuantityPerInterval = regularIntervals > 0 ? Math.floor(remainingQuantity / regularIntervals) : 0;
+            
+            let cumulativeQuantity = 0;
+            let intervalCounter = 0;
+            
+            // Add cliff vesting if applicable
+            if (cliffQuantity > 0) {
+                currentDate.setMonth(currentDate.getMonth() + (cliffPeriod * 12));
+                const vestingDate = new Date(currentDate);
+                const isVested = vestingDate <= new Date();
+                cumulativeQuantity += cliffQuantity;
+                schedule.push({
+                    tranche: ++intervalCounter,
+                    date: vestingDate,
+                    type: 'Cliff',
+                    quantity: cliffQuantity,
+                    cumulative: cumulativeQuantity,
+                    percentage: (cumulativeQuantity / totalQuantity) * 100,
+                    status: isVested ? 'Vested' : 'Unvested'
+                });
+            }
+            
+            // Add regular vesting
+            for (let i = 0; i < regularIntervals; i++) {
+                currentDate.setMonth(currentDate.getMonth() + monthsPerInterval);
+                const vestingDate = new Date(currentDate);
+                const isVested = vestingDate <= new Date();
+                const quantity = i === regularIntervals - 1 ? 
+                    totalQuantity - cumulativeQuantity : // Last interval gets remainder
+                    regularQuantityPerInterval;
+                    
+                if (quantity > 0) {
+                    cumulativeQuantity += quantity;
+                    schedule.push({
+                        tranche: ++intervalCounter,
+                        date: vestingDate,
+                        type: 'Regular',
+                        quantity: quantity,
+                        cumulative: cumulativeQuantity,
+                        percentage: (cumulativeQuantity / totalQuantity) * 100,
+                        status: isVested ? 'Vested' : 'Unvested'
+                    });
+                }
+            }
+            
+            return schedule;
+        }
+
+        // Format date for display
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // Update vesting schedule description
+        function updateVestingDescription(vestingPeriod, cliffPeriod, vestingFrequency) {
+            const cliffPercent = cliffPeriod > 0 ? ((cliffPeriod / vestingPeriod) * 100).toFixed(0) : 0;
+            const regularPercent = cliffPeriod > 0 ? (((vestingPeriod - cliffPeriod) / vestingPeriod) * 100).toFixed(0) : 100;
+            const frequencyText = vestingFrequency === 'annual' ? 'annually' : 
+                                vestingFrequency === 'quarterly' ? 'quarterly' : 'monthly';
+            
+            if (cliffPeriod > 0) {
+                document.getElementById('vestingCliffDescription').textContent = 
+                    `Year${cliffPeriod > 1 ? 's' : ''} 1${cliffPeriod > 1 ? `-${cliffPeriod}` : ''}: ${cliffPercent}% cliff vesting (nothing vests until ${cliffPeriod * 12} months)`;
+                document.getElementById('vestingRegularDescription').textContent = 
+                    `Year${vestingPeriod > cliffPeriod + 1 ? 's' : ''} ${cliffPeriod + 1}${vestingPeriod > cliffPeriod + 1 ? `-${vestingPeriod}` : ''}: ${regularPercent}% vesting ${frequencyText}`;
+            } else {
+                document.getElementById('vestingCliffDescription').textContent = 
+                    `No cliff period - vesting starts immediately`;
+                document.getElementById('vestingRegularDescription').textContent = 
+                    `Years 1-${vestingPeriod}: 100% vesting ${frequencyText}`;
+            }
+            
+            document.getElementById('vestingTotalDescription').textContent = 
+                `Total vesting period: ${vestingPeriod} year${vestingPeriod > 1 ? 's' : ''}`;
+        }
+
+        // Update vesting tables with pagination
+        function updateVestingTables(numOptions, numRSUs, targetPrice, strikePrice, taxRate) {
+            console.log('updateVestingTables called with:', { numOptions, numRSUs, targetPrice, strikePrice, taxRate });
+            
+            const vestingPeriod = parseFloat(document.getElementById('vestingPeriod').value) || 4;
+            const cliffPeriod = parseFloat(document.getElementById('cliffPeriod').value) || 1;
+            const vestingFrequency = document.getElementById('vestingFrequency').value || 'quarterly';
+            const vestingStartDate = document.getElementById('vestingStartDate').value;
+            
+            console.log('Vesting config:', { vestingPeriod, cliffPeriod, vestingFrequency, vestingStartDate });
+            
+            // Update vesting description
+            updateVestingDescription(vestingPeriod, cliffPeriod, vestingFrequency);
+            
+            // Generate vesting schedules
+            optionsVestingData = generateVestingSchedule(numOptions, vestingPeriod, cliffPeriod, vestingFrequency, vestingStartDate);
+            rsusVestingData = generateVestingSchedule(numRSUs, vestingPeriod, cliffPeriod, vestingFrequency, vestingStartDate);
+            
+            console.log('Generated vesting data:', { optionsVestingData: optionsVestingData.length, rsusVestingData: rsusVestingData.length });
+            
+            // Calculate values for each entry
+            optionsVestingData.forEach(entry => {
+                const value = calculateOptionsValue(targetPrice, strikePrice, entry.quantity, taxRate);
+                entry.netValue = value.netValue;
+            });
+            
+            rsusVestingData.forEach(entry => {
+                const value = calculateRSUsValue(targetPrice, entry.quantity, taxRate);
+                entry.netValue = value.netValue;
+            });
+            
+            // Reset to first page
+            optionsCurrentPage = 1;
+            rsusCurrentPage = 1;
+            
+            // Display tables
+            displayVestingPage('options');
+            displayVestingPage('rsus');
+        }
+
+        // Display specific page of vesting data
+        function displayVestingPage(type) {
+            const data = type === 'options' ? optionsVestingData : rsusVestingData;
+            const currentPage = type === 'options' ? optionsCurrentPage : rsusCurrentPage;
+            const tableId = type === 'options' ? 'optionsVestingTable' : 'rsusVestingTable';
+            const paginationId = type === 'options' ? 'optionsPagination' : 'rsusPagination';
+            const pageInfoId = type === 'options' ? 'optionsPageInfo' : 'rsusPageInfo';
+            const prevBtnId = type === 'options' ? 'optionsPrev' : 'rsusPrev';
+            const nextBtnId = type === 'options' ? 'optionsNext' : 'rsusNext';
+            
+            const table = document.getElementById(tableId);
+            const pagination = document.getElementById(paginationId);
+            
+            // Clear table
+            table.innerHTML = '';
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(data.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, data.length);
+            const pageData = data.slice(startIndex, endIndex);
+            
+            // Add rows
+            pageData.forEach(entry => {
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td>${entry.tranche}</td>
+                    <td>${formatDate(entry.date)}</td>
+                    <td>${entry.type}</td>
+                    <td><span class="status-badge ${entry.status.toLowerCase()}">${entry.status}</span></td>
+                    <td>${formatNumber(entry.quantity)}</td>
+                    <td>${formatNumber(entry.cumulative)}</td>
+                    <td>${entry.percentage.toFixed(1)}%</td>
+                    <td>${formatCurrency(entry.netValue)}</td>
+                `;
+            });
+            
+            // Handle pagination visibility and controls
+            if (totalPages > 1) {
+                pagination.style.display = 'flex';
+                document.getElementById(pageInfoId).textContent = `Page ${currentPage} of ${totalPages}`;
+                document.getElementById(prevBtnId).disabled = currentPage === 1;
+                document.getElementById(nextBtnId).disabled = currentPage === totalPages;
+            } else {
+                pagination.style.display = 'none';
+            }
+        }
+
+        // Pagination functions
+        function changeOptionsPage(direction) {
+            const totalPages = Math.ceil(optionsVestingData.length / itemsPerPage);
+            optionsCurrentPage = Math.max(1, Math.min(totalPages, optionsCurrentPage + direction));
+            displayVestingPage('options');
+        }
+
+        function changeRSUsPage(direction) {
+            const totalPages = Math.ceil(rsusVestingData.length / itemsPerPage);
+            rsusCurrentPage = Math.max(1, Math.min(totalPages, rsusCurrentPage + direction));
+            displayVestingPage('rsus');
+        }
+
+        // Update choice explanation
+        function updateChoiceExplanation(betterChoice, optionsCalc, rsusCalc, targetPrice, currentSharePrice, breakpoint, appreciation) {
+            const explanationDiv = document.getElementById('choiceExplanation');
+            const valueDiff = Math.abs(optionsCalc.netValue - rsusCalc.netValue);
+            const percentDiff = ((valueDiff / Math.max(optionsCalc.netValue, rsusCalc.netValue)) * 100).toFixed(1);
+            
+            let explanation = `<div style="font-size: 16px; line-height: 1.6;">`;
+            
+            if (betterChoice === 'Options') {
+                explanation += `
+                    <p><strong style="color: #0a5264;">📈 Options are the better choice</strong> at your target price of ${formatCurrency(targetPrice)}.</p>
+                    
+                    <p><strong>Why Options Win:</strong></p>
+                    <ul style="margin: 12px 0; padding-left: 20px;">
+                        <li><strong>Higher Upside:</strong> Options give you ${formatCurrency(optionsCalc.netValue)} vs RSUs at ${formatCurrency(rsusCalc.netValue)} (${percentDiff}% more value)</li>
+                        <li><strong>Leverage Effect:</strong> You get ${appreciation.toFixed(1)}x stock appreciation above the strike price</li>
+                        <li><strong>Target Above Breakpoint:</strong> Your target (${formatCurrency(targetPrice)}) is above the breakpoint (${formatCurrency(breakpoint)})</li>
+                    </ul>
+                    
+                    <p><strong>Risks to Consider:</strong></p>
+                    <ul style="margin: 12px 0; padding-left: 20px;">
+                        <li>If stock price stays below ${formatCurrency(breakpoint)}, RSUs would be better</li>
+                        <li>Options become worthless if stock price falls below ${formatCurrency(optionsCalc.strikePrice)}</li>
+                        <li>Tax complexity with exercise timing decisions</li>
+                    </ul>
+                `;
+            } else {
+                explanation += `
+                    <p><strong style="color: #4a9eff;">🛡️ RSUs are the better choice</strong> at your target price of ${formatCurrency(targetPrice)}.</p>
+                    
+                    <p><strong>Why RSUs Win:</strong></p>
+                    <ul style="margin: 12px 0; padding-left: 20px;">
+                        <li><strong>Higher Value:</strong> RSUs give you ${formatCurrency(rsusCalc.netValue)} vs Options at ${formatCurrency(optionsCalc.netValue)} (${percentDiff}% more value)</li>
+                        <li><strong>Guaranteed Value:</strong> RSUs have value as long as stock price > $0</li>
+                        <li><strong>Target Below Breakpoint:</strong> Your target (${formatCurrency(targetPrice)}) is below the breakpoint (${formatCurrency(breakpoint)})</li>
+                        <li><strong>Simplicity:</strong> No exercise decisions or upfront costs</li>
+                    </ul>
+                    
+                    <p><strong>What You're Missing:</strong></p>
+                    <ul style="margin: 12px 0; padding-left: 20px;">
+                        <li>If stock price goes above ${formatCurrency(breakpoint)}, Options would be better</li>
+                        <li>Less upside leverage compared to Options</li>
+                    </ul>
+                `;
+            }
+            
+            explanation += `
+                <div style="background: #f0f7ff; padding: 16px; border-radius: 8px; margin: 16px 0;">
+                    <strong>💡 Key Insight:</strong> The breakpoint price of <strong>${formatCurrency(breakpoint)}</strong> is where both options have equal value. 
+                    Your belief about whether the stock will trade above or below this price should drive your decision.
+                </div>
+            `;
+            
+            explanation += `</div>`;
+            explanationDiv.innerHTML = explanation;
+        }
+
+        // Create charts
+        function createCharts() {
+            console.log('createCharts called');
+            
+            try {
+                // Breakpoint chart (ROI comparison)
+                const breakCtx = document.getElementById('breakpointChart').getContext('2d');
+                console.log('Breakpoint chart context:', breakCtx);
+                
+                breakpointChart = new Chart(breakCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Options ROI',
+                                data: [],
+                                borderColor: '#0a5264',
+                                backgroundColor: 'rgba(10, 82, 100, 0.1)',
+                                borderWidth: 3,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'RSUs ROI',
+                                data: [],
+                                borderColor: '#4a9eff',
+                                backgroundColor: 'rgba(74, 158, 255, 0.1)',
+                                borderWidth: 3,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'Breakpoint',
+                                data: [],
+                                borderColor: '#FF3B30',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                pointRadius: 8,
+                                pointBackgroundColor: '#FF3B30',
+                                pointBorderColor: 'white',
+                                pointBorderWidth: 3,
+                                showLine: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Return on Investment Analysis',
+                                font: {
+                                    size: 18,
+                                    weight: 600
+                                },
+                                padding: 20
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    font: {
+                                        size: 14
+                                    },
+                                    filter: function(item) {
+                                        return item.text !== 'Breakpoint';
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: {
+                                    size: 14
+                                },
+                                bodyFont: {
+                                    size: 13
+                                },
+                                callbacks: {
+                                    label: function(context) {
+                                        if (context.dataset.label === 'Breakpoint') {
+                                            return 'Breakpoint: ' + formatCurrency(context.parsed.x);
+                                        }
+                                        const roi = context.parsed.y;
+                                        const label = context.dataset.label + ': ' + formatPercent(roi);
+                                        return label;
+                                    },
+                                    afterLabel: function(context) {
+                                        if (context.dataset.label === 'Breakpoint') return '';
+                                        
+                                        const roi = context.parsed.y;
+                                        // Get the actual share price from chart labels, not parsed.x which is just the index
+                                        const sharePrice = parseFloat(breakpointChart.data.labels[context.dataIndex]);
+                                        
+                                        console.log('Tooltip debug:', { 
+                                            dataIndex: context.dataIndex, 
+                                            parsedX: context.parsed.x, 
+                                            actualSharePrice: sharePrice,
+                                            label: breakpointChart.data.labels[context.dataIndex]
+                                        });
+                                        
+                                        // Get current values from inputs instead of global variables
+                                        const currentStrikePrice = parseFloat(document.getElementById('strikePrice').value) || 0;
+                                        const currentSharePrice = parseFloat(document.getElementById('currentSharePrice').value) || 0;
+                                        const currentTaxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+                                        const totalGrant = parseFormattedNumber(document.getElementById('totalGrant').value) || 0;
+                                        const splitPercent = parseFloat(document.getElementById('splitSlider').value) || 50;
+                                        
+                                        // Calculate current quantities
+                                        const optionsBudget = totalGrant * (splitPercent / 100);
+                                        const rsusBudget = totalGrant * ((100 - splitPercent) / 100);
+                                        const currentNumOptions = currentStrikePrice > 0 ? Math.floor(optionsBudget / currentStrikePrice) : 0;
+                                        const currentNumRSUs = currentSharePrice > 0 ? Math.floor(rsusBudget / currentSharePrice) : 0;
+                                        
+                                        if (context.dataset.label.includes('Options')) {
+                                            const investment = currentNumOptions * currentStrikePrice;
+                                            const intrinsicValue = sharePrice - currentStrikePrice; // Remove Math.max to show negative values
+                                            const grossGain = Math.max(0, intrinsicValue) * currentNumOptions; // Only gains can be positive
+                                            const netGain = grossGain * (1 - currentTaxRate / 100);
+                                            const totalValue = investment + netGain;
+                                            
+                                            if (sharePrice < currentStrikePrice) {
+                                                // Out of the money - show negative scenario
+                                                return [
+                                                    '',
+                                                    '📉 Negative ROI because:',
+                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Strike price (' + formatCurrency(currentStrikePrice) + ')',
+                                                    '• Intrinsic value: (' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentStrikePrice) + ') = ' + formatCurrency(intrinsicValue),
+                                                    '• Options are worthless (can\'t exercise below strike)',
+                                                    '• Investment: ' + formatCurrency(investment),
+                                                    '• Current value: $0',
+                                                    '• ROI: -100% (total loss)'
+                                                ];
+                                            } else {
+                                                // In the money - show positive calculation
+                                                return [
+                                                    '',
+                                                    '📈 Positive ROI calculation:',
+                                                    '• Intrinsic value: (' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentStrikePrice) + ') = ' + formatCurrency(intrinsicValue),
+                                                    '• Total gain: ' + formatCurrency(intrinsicValue) + ' × ' + currentNumOptions.toLocaleString() + ' = ' + formatCurrency(grossGain),
+                                                    '• After taxes (' + currentTaxRate + '%): ' + formatCurrency(netGain),
+                                                    '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100 = ' + formatPercent(((netGain) / investment) * 100)
+                                                ];
+                                            }
+                                        } else {
+                                            const investment = currentNumRSUs * currentSharePrice;
+                                            const grossGain = (sharePrice - currentSharePrice) * currentNumRSUs;
+                                            const netGain = grossGain * (1 - currentTaxRate / 100);
+                                            const finalValue = investment + netGain;
+                                            
+                                            if (sharePrice < currentSharePrice) {
+                                                // Stock declined
+                                                return [
+                                                    '',
+                                                    '📉 Negative ROI because:',
+                                                    '• Share price (' + formatCurrency(sharePrice) + ') < Purchase price (' + formatCurrency(currentSharePrice) + ')',
+                                                    '• Price decline: ' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentSharePrice) + ' = ' + formatCurrency(sharePrice - currentSharePrice) + ' per share',
+                                                    '• Total loss: ' + formatCurrency(sharePrice - currentSharePrice) + ' × ' + currentNumRSUs.toLocaleString() + ' = ' + formatCurrency(grossGain),
+                                                    '• Investment: ' + formatCurrency(investment),
+                                                    '• Current value: ' + formatCurrency(finalValue),
+                                                    '• ROI: ' + formatPercent((netGain / investment) * 100)
+                                                ];
+                                            } else {
+                                                // Stock appreciated
+                                                return [
+                                                    '',
+                                                    '📈 Positive ROI calculation:',
+                                                    '• Price appreciation: ' + formatCurrency(sharePrice) + ' - ' + formatCurrency(currentSharePrice) + ' = ' + formatCurrency(sharePrice - currentSharePrice) + ' per share',
+                                                    '• Total gain: ' + formatCurrency(sharePrice - currentSharePrice) + ' × ' + currentNumRSUs.toLocaleString() + ' = ' + formatCurrency(grossGain),
+                                                    '• After taxes (' + currentTaxRate + '%): ' + formatCurrency(netGain),
+                                                    '• ROI: (' + formatCurrency(netGain) + ' ÷ ' + formatCurrency(investment) + ') × 100 = ' + formatPercent((netGain / investment) * 100)
+                                                ];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Share Price ($)',
+                                    font: {
+                                        size: 14,
+                                        weight: 500
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    callback: function(value, index) {
+                                        return '$' + this.getLabelForValue(value);
+                                    }
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Return on Investment (%)',
+                                    font: {
+                                        size: 14,
+                                        weight: 500
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return formatPercent(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Comparison chart (Net value comparison)
+                const compCtx = document.getElementById('comparisonChart').getContext('2d');
+                console.log('Comparison chart context:', compCtx);
+                
+                comparisonChart = new Chart(compCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'Options Net Value',
+                                data: [],
+                                borderColor: '#0a5264',
+                                backgroundColor: 'rgba(10, 82, 100, 0.1)',
+                                borderWidth: 3,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'RSUs Net Value',
+                                data: [],
+                                borderColor: '#4a9eff',
+                                backgroundColor: 'rgba(74, 158, 255, 0.1)',
+                                borderWidth: 3,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Net Value Comparison Over Share Price Range',
+                                font: {
+                                    size: 18,
+                                    weight: 600
+                                },
+                                padding: 20
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: {
+                                    size: 14
+                                },
+                                bodyFont: {
+                                    size: 13
+                                },
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Share Price ($)',
+                                    font: {
+                                        size: 14,
+                                        weight: 500
+                                    }
+                                },
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    callback: function(value, index) {
+                                        return '$' + this.getLabelForValue(value);
+                                    }
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Net Value ($)',
+                                    font: {
+                                        size: 14,
+                                        weight: 500
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                console.log('Charts created successfully');
+                
+                // Force an immediate update with current data
+                setTimeout(() => {
+                    console.log('Forcing initial chart update');
+                    updateCalculations();
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error creating charts:', error);
+            }
+        }
+
+        // Update charts with new data
+        function updateCharts(currentPrice, strikePrice, numOptions, numRSUs, taxRate, breakpoint, targetPrice) {
+            console.log('updateCharts called with:', { currentPrice, strikePrice, numOptions, numRSUs, taxRate, breakpoint, targetPrice });
+            
+            // Provide fallback values if inputs are missing
+            currentPrice = currentPrice || 50;
+            strikePrice = strikePrice || 45;
+            numOptions = numOptions || 1000;
+            numRSUs = numRSUs || 500;
+            taxRate = taxRate || 35;
+            targetPrice = targetPrice || currentPrice * 1.5;
+            
+            console.log('Using values:', { currentPrice, strikePrice, numOptions, numRSUs, taxRate, targetPrice });
+            
+            try {
+                // Generate price range
+                const minPrice = Math.max(1, Math.min(currentPrice, strikePrice) * 0.5);
+                const maxPrice = Math.max(currentPrice, strikePrice, targetPrice) * 1.5;
+                const pricePoints = [];
+                const optionsNetValues = [];
+                const rsusNetValues = [];
+                const optionsROI = [];
+                const rsusROI = [];
+                const priceLabels = [];
+                
+                // Calculate initial investments
+                const optionsInvestment = numOptions * strikePrice;
+                const rsusInvestment = numRSUs * currentPrice;
+                
+                // Generate 30 data points for better performance
+                for (let i = 0; i <= 30; i++) {
+                    const price = minPrice + (maxPrice - minPrice) * (i / 30);
+                    pricePoints.push(price);
+                    priceLabels.push(Math.round(price));
+                    
+                    // Calculate values at this price
+                    const optionsCalc = calculateOptionsValue(price, strikePrice, numOptions, taxRate);
+                    const rsusCalc = calculateRSUsValue(price, numRSUs, taxRate);
+                    
+                    optionsNetValues.push(optionsCalc.netValue);
+                    rsusNetValues.push(rsusCalc.netValue);
+                    
+                    // Calculate ROI
+                    const optionsROIValue = optionsInvestment > 0 ? ((optionsCalc.netValue - optionsInvestment) / optionsInvestment) * 100 : 0;
+                    const rsusROIValue = rsusInvestment > 0 ? ((rsusCalc.netValue - rsusInvestment) / rsusInvestment) * 100 : 0;
+                    
+                    optionsROI.push(optionsROIValue);
+                    rsusROI.push(rsusROIValue);
+                }
+                
+                console.log('Chart data generated:', { priceLabels: priceLabels.length, optionsROI: optionsROI.length });
+                
+                // Update breakpoint chart
+                if (breakpointChart) {
+                    console.log('Updating breakpoint chart');
+                    breakpointChart.data.labels = priceLabels;
+                    breakpointChart.data.datasets[0].data = optionsROI;
+                    breakpointChart.data.datasets[1].data = rsusROI;
+                    
+                    // Add breakpoint marker if it exists
+                    if (breakpoint && breakpoint > minPrice && breakpoint < maxPrice) {
+                        const bpOptionsCalc = calculateOptionsValue(breakpoint, strikePrice, numOptions, taxRate);
+                        const bpROI = optionsInvestment > 0 ? ((bpOptionsCalc.netValue - optionsInvestment) / optionsInvestment) * 100 : 0;
+                        
+                        breakpointChart.data.datasets[2].data = [{x: breakpoint, y: bpROI}];
+                    } else {
+                        breakpointChart.data.datasets[2].data = [];
+                    }
+                    
+                    breakpointChart.update('active');
+                } else {
+                    console.log('Breakpoint chart not found');
+                }
+                
+                // Update comparison chart
+                if (comparisonChart) {
+                    console.log('Updating comparison chart');
+                    comparisonChart.data.labels = priceLabels;
+                    comparisonChart.data.datasets[0].data = optionsNetValues;
+                    comparisonChart.data.datasets[1].data = rsusNetValues;
+                    comparisonChart.update('active');
+                } else {
+                    console.log('Comparison chart not found');
+                }
+            } catch (error) {
+                console.error('Error updating charts:', error);
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM Content Loaded - Initializing...');
+            
+            // Set default vesting start date to June 24, 2022
+            document.getElementById('vestingStartDate').value = '2022-06-24';
+            
+            // Add event listeners for vesting inputs
+            document.getElementById('vestingPeriod').addEventListener('input', updateCalculations);
+            document.getElementById('cliffPeriod').addEventListener('input', updateCalculations);
+            document.getElementById('vestingFrequency').addEventListener('change', updateCalculations);
+            
+            // Ensure slider is set to its default value and trigger initial calculation
+            const slider = document.getElementById('splitSlider');
+            if (slider) {
+                const initialValue = parseFloat(slider.value);
+                console.log('Setting slider initial state, value:', initialValue);
+                slider.style.setProperty('--value', initialValue + '%');
+                slider.style.background = `linear-gradient(to right, #0a5264 0%, #0a5264 ${initialValue}%, #4a9eff ${initialValue}%, #4a9eff 100%)`;
+            }
+            
+            // Add a visual indicator that JavaScript is working
+            console.log('🚀 JavaScript loaded successfully! Slider should now work.');
+            
+            init();
+        });
+    </script>
+</body>
+</html>

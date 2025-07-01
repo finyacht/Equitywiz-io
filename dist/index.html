@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <!-- CSP handled by netlify.toml for better control -->
     <!-- Meta refresh removed to prevent automatic redirection -->
     <title>Waterfall Analysis Tool</title>
     <!-- Load Chart.js with all required modules -->
@@ -451,5 +453,18 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Excel Export Script -->
     <script src="/js/excelExport.js"></script>
+    <!-- Chatbot Widget -->
+    <script src="js/chatbotWidget.js"></script>
+    <script>
+        // Initialize chatbot with API key
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.yikesAIChatbot) {
+                window.yikesAIChatbot = new YikesAIChatbot({
+                    apiKey: 'AIzaSyB4ix_spZPsxIw_A3T6X0y6dc33fCmkvqk',
+                    position: 'bottom-left'
+                });
+            }
+        });
+    </script>
 </body>
 </html> 

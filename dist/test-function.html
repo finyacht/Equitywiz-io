@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🧪 Netlify Function Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #1a1a1a; color: white; }
+        .test-container { max-width: 600px; margin: 0 auto; }
+        button { padding: 12px 20px; margin: 10px; background: #4f46e5; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #3730a3; }
+        .result { background: #2d2d2d; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4f46e5; }
+        .error { border-left-color: #ef4444; }
+        .success { border-left-color: #10b981; }
+        textarea { width: 100%; height: 100px; background: #2d2d2d; color: white; border: 1px solid #444; border-radius: 6px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Netlify Function Debug Tool</h1>
+        
+        <h3>Step 1: Check Function Exists</h3>
+        <button onclick="checkFunctionExists()">🔍 Check Function URL</button>
+        <div id="existence-result"></div>
+        
+        <h3>Step 2: Test Function with Simple Message</h3>
+        <button onclick="testSimpleMessage()">🧪 Test Simple Message</button>
+        <div id="simple-result"></div>
+        
+        <h3>Step 3: Custom Test Message</h3>
+        <textarea id="custom-message" placeholder="Enter your test message here...">How do I add shares to my cap table?</textarea>
+        <br>
+        <button onclick="testCustomMessage()">🚀 Test Custom Message</button>
+        <div id="custom-result"></div>
+        
+        <h3>Debug Info</h3>
+        <div id="debug-info"></div>
+    </div>
+
+    <script>
+        // Display current environment info
+        document.getElementById('debug-info').innerHTML = `
+            <div class="result">
+                <strong>Current URL:</strong> ${window.location.href}<br>
+                <strong>Expected Function URL:</strong> ${window.location.origin}/.netlify/functions/gemini-chat<br>
+                <strong>User Agent:</strong> ${navigator.userAgent}
+            </div>
+        `;
+
+        async function checkFunctionExists() {
+            const resultDiv = document.getElementById('existence-result');
+            const functionUrl = '/.netlify/functions/gemini-chat';
+            
+            try {
+                resultDiv.innerHTML = '<div class="result">🔄 Checking function existence...</div>';
+                
+                const response = await fetch(functionUrl, {
+                    method: 'GET', // Should return 405 Method Not Allowed if function exists
+                });
+                
+                if (response.status === 405) {
+                    resultDiv.innerHTML = '<div class="result success">✅ Function exists! (Got expected 405 Method Not Allowed)</div>';
+                } else if (response.status === 404) {
+                    resultDiv.innerHTML = '<div class="result error">❌ Function NOT found (404). Check deployment.</div>';
+                } else {
+                    resultDiv.innerHTML = `<div class="result">🤔 Unexpected status: ${response.status}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error checking function: ${error.message}</div>`;
+            }
+        }
+
+        async function testSimpleMessage() {
+            const resultDiv = document.getElementById('simple-result');
+            const functionUrl = '/.netlify/functions/gemini-chat';
+            
+            try {
+                resultDiv.innerHTML = '<div class="result">🔄 Testing simple message...</div>';
+                
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: 'Hello, this is a test message'
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+                
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(responseText);
+                        resultDiv.innerHTML = `
+                            <div class="result success">
+                                ✅ Function works!<br>
+                                <strong>Status:</strong> ${response.status}<br>
+                                <strong>Response:</strong> ${data.response ? 'AI Response received' : 'No response field'}<br>
+                                <strong>Source:</strong> ${data.source || 'Unknown'}
+                            </div>
+                        `;
+                    } catch (parseError) {
+                        resultDiv.innerHTML = `
+                            <div class="result error">
+                                ❌ Function responded but invalid JSON<br>
+                                <strong>Status:</strong> ${response.status}<br>
+                                <strong>Raw Response:</strong> ${responseText}
+                            </div>
+                        `;
+                    }
+                } else {
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        resultDiv.innerHTML = `
+                            <div class="result error">
+                                ❌ Function error<br>
+                                <strong>Status:</strong> ${response.status}<br>
+                                <strong>Error:</strong> ${errorData.error || 'Unknown'}<br>
+                                <strong>Details:</strong> ${errorData.details || 'None'}
+                            </div>
+                        `;
+                    } catch (parseError) {
+                        resultDiv.innerHTML = `
+                            <div class="result error">
+                                ❌ Function error (unparseable)<br>
+                                <strong>Status:</strong> ${response.status}<br>
+                                <strong>Raw Response:</strong> ${responseText}
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Network error: ${error.message}</div>`;
+            }
+        }
+
+        async function testCustomMessage() {
+            const resultDiv = document.getElementById('custom-result');
+            const message = document.getElementById('custom-message').value.trim();
+            const functionUrl = '/.netlify/functions/gemini-chat';
+            
+            if (!message) {
+                resultDiv.innerHTML = '<div class="result error">❌ Please enter a test message</div>';
+                return;
+            }
+            
+            try {
+                resultDiv.innerHTML = '<div class="result">🔄 Testing custom message...</div>';
+                
+                const response = await fetch(functionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                });
+                
+                const responseText = await response.text();
+                
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(responseText);
+                        resultDiv.innerHTML = `
+                            <div class="result success">
+                                ✅ Custom message successful!<br>
+                                <strong>Your Message:</strong> ${message}<br>
+                                <strong>AI Response Preview:</strong> ${data.response ? data.response.substring(0, 200) + '...' : 'No response'}<br>
+                                <strong>Full Response Length:</strong> ${data.response ? data.response.length : 0} characters
+                            </div>
+                        `;
+                    } catch (parseError) {
+                        resultDiv.innerHTML = `
+                            <div class="result error">
+                                ❌ Response parsing failed<br>
+                                <strong>Raw Response:</strong> ${responseText}
+                            </div>
+                        `;
+                    }
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            ❌ Custom message failed<br>
+                            <strong>Status:</strong> ${response.status}<br>
+                            <strong>Response:</strong> ${responseText}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">❌ Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html> 
