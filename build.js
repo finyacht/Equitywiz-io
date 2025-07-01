@@ -112,4 +112,35 @@ if (fs.existsSync(jsDir)) {
     console.log('JS directory not found');
 }
 
+// Copy Netlify functions
+const netlifyDir = path.join(__dirname, 'netlify');
+const distNetlifyDir = path.join(distDir, 'netlify');
+
+if (fs.existsSync(netlifyDir)) {
+    if (!fs.existsSync(distNetlifyDir)) {
+        fs.mkdirSync(distNetlifyDir, { recursive: true });
+        console.log('Created netlify directory in dist');
+    }
+    
+    const functionsDir = path.join(netlifyDir, 'functions');
+    const distFunctionsDir = path.join(distNetlifyDir, 'functions');
+    
+    if (fs.existsSync(functionsDir)) {
+        if (!fs.existsSync(distFunctionsDir)) {
+            fs.mkdirSync(distFunctionsDir, { recursive: true });
+            console.log('Created netlify/functions directory in dist');
+        }
+        
+        const functionFiles = fs.readdirSync(functionsDir);
+        functionFiles.forEach(file => {
+            fs.copyFileSync(path.join(functionsDir, file), path.join(distFunctionsDir, file));
+        });
+        console.log(`Copied ${functionFiles.length} Netlify function files`);
+    } else {
+        console.log('Netlify functions directory not found');
+    }
+} else {
+    console.log('Netlify directory not found');
+}
+
 console.log('Build completed successfully!'); 
