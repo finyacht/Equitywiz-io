@@ -100,6 +100,15 @@ app.get('/chatbot-demo.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'chatbot-demo.html'));
 });
 
+// Route for the Neon Cycles Game
+app.get('/neon-cycles', (req, res) => {
+  res.sendFile(path.join(__dirname, 'neon-cycles.html'));
+});
+
+app.get('/neon-cycles.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'neon-cycles.html'));
+});
+
 // Gemini API Proxy Route
 app.post('/api/gemini-chat', async (req, res) => {
   try {
