@@ -2,6 +2,19 @@
   publish = "dist"
   command = "npm run netlify-build"
 
+# API Endpoints - Must be first for priority
+[[redirects]]
+  from = "/api/gemini-chat"
+  to = "/.netlify/functions/gemini-chat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
 # Redirect rules for specific pages - ensure root domain always shows home page
 [[redirects]]
   from = "/"

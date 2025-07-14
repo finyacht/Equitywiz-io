@@ -1,7 +1,7 @@
 const https = require('https');
 
-exports.handler = async (event, context) => {
-  // Set CORS headers for all responses
+exports.handler = async function(event, context) {
+  // Handle CORS
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -9,176 +9,164 @@ exports.handler = async (event, context) => {
     'Content-Type': 'application/json'
   };
 
-  // Handle preflight OPTIONS request
   if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
+    return { statusCode: 200, headers, body: '' };
   }
 
-  // Only allow POST requests
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
+    return { 
+      statusCode: 405, 
       headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({ error: 'Method Not Allowed' })
     };
   }
 
+  // Get API key from environment
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return { 
+      statusCode: 500, 
+      headers,
+      body: JSON.stringify({ error: 'Gemini API key not configured' })
+    };
+  }
+
+  let requestBody;
   try {
-    // Get the API key from environment variables
-    const apiKey = process.env.GEMINI_API_KEY;
+    requestBody = JSON.parse(event.body);
+  } catch (error) {
+    return { 
+      statusCode: 400, 
+      headers,
+      body: JSON.stringify({ error: 'Invalid JSON in request body' })
+    };
+  }
+
+  console.log('🤖 Netlify Function: Received request');
+  console.log('🔑 API Key present:', !!apiKey);
+
+  // Handle both chatbot and neon-cycles request formats
+  let geminiRequestBody;
+  
+  if (requestBody.message) {
+    // Neon Cycles / Game format
+    const { message, history = [] } = requestBody;
     
-    console.log('Function called - checking environment variables...');
-    console.log('Available env keys containing GEMINI:', Object.keys(process.env).filter(key => key.includes('GEMINI')));
-    console.log('API key exists:', !!apiKey);
-    console.log('API key length:', apiKey ? apiKey.length : 0);
+    // Build conversation for Gemini
+    let conversationText = `You are Yikes AI, a specialized assistant for equity and cap table management based on comprehensive platform user guides.
+
+**YOUR KNOWLEDGE SOURCE:**
+You are trained on comprehensive user guides covering:
+- Cap Table & Compliance Management
+- Stakeholder Management & Participant Portals
+- Share Transactions & Equity Grant Administration
+- Vesting Schedules & Plan Management
+- Option Exercise & Release Processes
+- Round Modeling & Convertible Instruments
+- Warrant Management & Board Approvals
+- Document Management & Compliance Reporting
+- Company Overview & Administrative Functions
+
+**CRITICAL RESPONSE REQUIREMENTS:**
+1. NEVER limit to 3 steps - provide COMPLETE workflows (6-12 action points as needed)
+2. Use bullet points (•) NOT numbered steps
+3. Each action point should be on a new line
+4. Include ALL necessary actions for complete workflow
+5. Be thorough and comprehensive - don't skip important actions
+6. End with a practical tip using 💡
+
+**RESPONSE FORMAT:**
+• [First action with specific details]
+
+• [Second action with platform specifics]
+
+• [Third action continuing the workflow]
+
+• [Fourth action with more details]
+
+• [Fifth action as needed]
+
+• [Continue with as many actions as required for complete workflow]
+
+• [Final action to complete the process]
+
+💡 Tip: [Practical advice for best results]
+
+IMPORTANT: Always provide comprehensive workflows with 6-12+ action points. Never stop at just 3 actions.\n\n`;
     
-    if (!apiKey) {
-      console.error('GEMINI_API_KEY environment variable not set');
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ 
-          error: 'Server configuration error',
-          details: 'API key not configured',
-          debug: {
-            envKeysWithGemini: Object.keys(process.env).filter(key => key.includes('GEMINI')),
-            allEnvKeysCount: Object.keys(process.env).length
-          }
-        })
-      };
-    }
-
-    // Parse the request body
-    const { message } = JSON.parse(event.body);
+    // Add conversation history
+    const recentHistory = history.slice(-6);
+    recentHistory.forEach(msg => {
+      if (msg.role === 'user') {
+        conversationText += `User: ${msg.content}\n`;
+      } else if (msg.role === 'assistant') {
+        conversationText += `Assistant: ${msg.content}\n`;
+      }
+    });
     
-    if (!message) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Message is required' })
-      };
-    }
-
-    // Create the prompt for Gemini
-    const prompt = `You are Yikes AI, an expert assistant for equity and cap table management.
-
-Question: ${message}
-
-Please provide a comprehensive, helpful response with specific actionable steps. Use bullet points (•) for lists and include practical tips where relevant. Focus on equity management, cap tables, stock options, vesting, funding rounds, and related financial instruments.`;
-
-    // Prepare the request to Gemini API
-    const geminiRequestBody = JSON.stringify({
+    conversationText += `User: ${message}\nAssistant:`;
+    
+    geminiRequestBody = {
       contents: [{
-        parts: [{
-          text: prompt
-        }]
+        parts: [{ text: conversationText }]
       }],
       generationConfig: {
         temperature: 0.7,
-        topK: 20,
-        topP: 0.8,
-        maxOutputTokens: 1024,
-      },
-      safetySettings: [
-        {
-          category: "HARM_CATEGORY_HARASSMENT",
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        },
-        {
-          category: "HARM_CATEGORY_HATE_SPEECH", 
-          threshold: "BLOCK_MEDIUM_AND_ABOVE"
-        }
-      ]
-    });
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024
+      }
+    };
+  } else {
+    // Chatbot format - pass through as-is
+    geminiRequestBody = requestBody;
+  }
 
-    // Make request to Gemini API
-    const geminiResponse = await makeGeminiRequest(apiKey, geminiRequestBody);
+  try {
+    console.log('📤 Calling Gemini API...');
     
-    // Parse and validate the response
-    if (geminiResponse.candidates && 
-        geminiResponse.candidates[0] && 
-        geminiResponse.candidates[0].content && 
-        geminiResponse.candidates[0].content.parts[0]) {
-      
-      const aiResponse = geminiResponse.candidates[0].content.parts[0].text;
-      
-      return {
-        statusCode: 200,
+    // Use dynamic import for fetch
+    const { default: fetch } = await import('node-fetch');
+    
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(geminiRequestBody)
+      }
+    );
+
+    console.log('📥 Gemini API response status:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Gemini API Error:', errorText);
+      return { 
+        statusCode: response.status, 
         headers,
-        body: JSON.stringify({ 
-          response: aiResponse,
-          source: 'gemini-ai'
-        })
+        body: JSON.stringify({ error: `Gemini API error: ${errorText}` })
       };
-    } else {
-      throw new Error('Invalid response format from Gemini API');
     }
 
-  } catch (error) {
-    console.error('Gemini API Error:', error);
-    console.error('Error stack:', error.stack);
-    
+    const data = await response.json();
+    console.log('✅ Gemini API Success');
+
     return {
-      statusCode: 500,
+      statusCode: 200,
+      headers,
+      body: JSON.stringify(data)
+    };
+
+  } catch (error) {
+    console.error('💥 Function Error:', error);
+    return { 
+      statusCode: 500, 
       headers,
       body: JSON.stringify({ 
-        error: 'Failed to get AI response',
-        details: error.message,
-        errorName: error.name,
-        stack: error.stack,
-        fallback: true,
-        debug: {
-          nodeVersion: process.version,
-          timestamp: new Date().toISOString()
-        }
+        error: 'Internal server error', 
+        details: error.message 
       })
     };
   }
-};
-
-// Helper function to make HTTPS request to Gemini API
-function makeGeminiRequest(apiKey, requestBody) {
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'generativelanguage.googleapis.com',
-      path: `/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(requestBody)
-      }
-    };
-
-    const req = https.request(options, (res) => {
-      let data = '';
-
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-
-      res.on('end', () => {
-        try {
-          const response = JSON.parse(data);
-          if (res.statusCode === 200) {
-            resolve(response);
-          } else {
-            reject(new Error(`Gemini API error: ${res.statusCode} - ${response.error?.message || 'Unknown error'}`));
-          }
-        } catch (parseError) {
-          reject(new Error(`Failed to parse Gemini API response: ${parseError.message}`));
-        }
-      });
-    });
-
-    req.on('error', (error) => {
-      reject(new Error(`Request failed: ${error.message}`));
-    });
-
-    req.write(requestBody);
-    req.end();
-  });
-} 
+}; 
