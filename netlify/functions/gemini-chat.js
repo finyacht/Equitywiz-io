@@ -152,11 +152,30 @@ IMPORTANT: Always provide comprehensive workflows with 6-12+ action points. Neve
     const data = await response.json();
     console.log('✅ Gemini API Success');
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify(data)
-    };
+    // Check if this is a chatbot request (expects specific format)
+    if (requestBody.message && !requestBody.contents) {
+      // Chatbot format - extract the text and return in expected format
+      if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+        const responseText = data.candidates[0].content.parts[0].text;
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ 
+            response: responseText,
+            source: 'gemini-ai' 
+          })
+        };
+      } else {
+        throw new Error('Invalid response format from Gemini API');
+      }
+    } else {
+      // Neon Cycles / other formats - return raw Gemini response
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify(data)
+      };
+    }
 
   } catch (error) {
     console.error('💥 Function Error:', error);
