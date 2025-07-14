@@ -114,12 +114,16 @@ app.post('/api/gemini-chat', async (req, res) => {
   try {
     const { message, history, apiKey } = req.body;
     
-    if (!apiKey) {
-      return res.status(400).json({ error: 'API key is required' });
+    // Use provided API key or fall back to environment variable
+    const activeApiKey = apiKey || process.env.GEMINI_API_KEY;
+    
+    if (!activeApiKey) {
+      return res.status(400).json({ error: 'API key not available' });
     }
 
     console.log('🤖 Gemini Proxy: Received request with message:', message);
-    console.log('🔑 Gemini Proxy: API Key present:', !!apiKey);
+    console.log('🔑 Gemini Proxy: API Key present:', !!activeApiKey);
+    console.log('🌍 Gemini Proxy: Using environment key:', !apiKey && !!process.env.GEMINI_API_KEY);
 
     // Build conversation for Gemini (simplified format)
     let conversationText = `You are Yikes AI, a specialized assistant for equity and cap table management based on comprehensive platform user guides.
@@ -194,7 +198,7 @@ IMPORTANT: Always provide comprehensive workflows with 6-12+ action points. Neve
 
     console.log('📤 Gemini Proxy: Sending request to Gemini API');
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${activeApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
