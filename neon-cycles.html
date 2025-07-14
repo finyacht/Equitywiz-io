@@ -871,8 +871,9 @@
         let aiAvailable = false;      // Whether AI API is actually working
         let botPersonalities = [];    // AI-generated bot personalities
         let gameAnalysis = [];        // Real-time game analysis
-        let lastAiDecision = 0;       // Throttle AI API calls
-        
+                let lastAiDecision = 0;       // Throttle AI API calls
+        let pendingAIDecisions = new Map(); // Track pending AI decisions per bot
+
         // Players array (including AI)
         let players = [];
         let trails = [];
@@ -1135,6 +1136,25 @@
             ];
         }
 
+        // Non-blocking AI Decision Request
+        function requestAIDecision(player, gameState) {
+            if (!aiAvailable) return;
+            
+            // Create pending decision tracker
+            const pendingDecision = { resolved: false, decision: null };
+            pendingAIDecisions.set(player.id, pendingDecision);
+            
+            // Make async AI decision without blocking
+            getAIDecision(player, gameState).then(decision => {
+                pendingDecision.decision = decision;
+                pendingDecision.resolved = true;
+            }).catch(error => {
+                console.log('AI decision failed for player', player.id);
+                pendingDecision.resolved = true;
+                pendingDecision.decision = null;
+            });
+        }
+
         // AI-Enhanced Bot Decision Making
         async function getAIDecision(player, gameState) {
             if (!aiAvailable || gameTimer - lastAiDecision < 30) {
@@ -1282,6 +1302,7 @@
             gameTimer = 0;
             trails = [];
             lastAiDecision = 0;
+            pendingAIDecisions.clear(); // Clear any pending AI decisions
             
             // Generate AI personalities if available
             console.log('🤖 Generating bot personalities...');
@@ -1352,7 +1373,7 @@
             gameLoop();
         }
         
-        async function gameLoop() {
+        function gameLoop() {
             if (!gameRunning) return;
             
             gameTimer++;
@@ -1364,8 +1385,8 @@
             // Draw grid
             drawGrid();
             
-            // Update players (now async)
-            await updatePlayers();
+            // Update players (non-blocking)
+            updatePlayers();
             
             // Draw trails
             drawTrails();
@@ -1407,15 +1428,15 @@
                 document.getElementById('timeAlive').textContent = timeAlive;
             }
             
-            // Generate AI commentary periodically
+            // Generate AI commentary periodically (non-blocking)
             if (aiAvailable && Math.random() < 0.01) { // 1% chance per frame
-                generateAICommentary();
+                generateAICommentary(); // Already async, doesn't block
             }
             
             setTimeout(() => gameLoop(), 1000 / speedSettings[gameSpeed]);
         }
         
-        async function updatePlayers() {
+        function updatePlayers() {
             for (const player of players) {
                 if (!player.alive) continue;
                 
@@ -1429,8 +1450,8 @@
                         keys['ArrowRight'] = false;
                     }
                 } else {
-                    // AI logic (now async)
-                    await updateAI(player);
+                    // AI logic (non-blocking)
+                    updateAI(player);
                 }
                 
                 // Move player
@@ -1477,7 +1498,7 @@
             }
         }
         
-        async function updateAI(player) {
+        function updateAI(player) {
             const settings = difficultySettings[difficulty];
             
             // Only make decisions at intervals
@@ -1491,8 +1512,31 @@
                 right: checkDangerAfterTurn(player, 'right', lookAhead)
             };
 
-            // Try AI decision first if available
-            if (aiAvailable && gameTimer - player.aiDecisionCooldown > 60) {
+            // Check if we have a pending AI decision that's ready
+            if (pendingAIDecisions.has(player.id)) {
+                const pendingDecision = pendingAIDecisions.get(player.id);
+                if (pendingDecision.resolved) {
+                    const aiDecision = pendingDecision.decision;
+                    pendingAIDecisions.delete(player.id);
+                    
+                    if (aiDecision && aiDecision !== 'continue') {
+                        if (aiDecision === 'left' && !dangers.left) {
+                            turnPlayer(player, 'left');
+                            player.lastTurn = gameTimer;
+                            return;
+                        } else if (aiDecision === 'right' && !dangers.right) {
+                            turnPlayer(player, 'right');
+                            player.lastTurn = gameTimer;
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Start new AI decision if available and not already pending
+            if (aiAvailable && !pendingAIDecisions.has(player.id) && 
+                gameTimer - (player.aiDecisionCooldown || 0) > 60) {
+                
                 const gameState = {
                     alivePlayers: players.filter(p => p.alive).length,
                     forwardDanger: dangers.forward,
@@ -1500,20 +1544,9 @@
                     rightDanger: dangers.right
                 };
                 
-                const aiDecision = await getAIDecision(player, gameState);
-                if (aiDecision && aiDecision !== 'continue') {
-                    if (aiDecision === 'left' && !dangers.left) {
-                        turnPlayer(player, 'left');
-                        player.lastTurn = gameTimer;
-                        player.aiDecisionCooldown = gameTimer;
-                        return;
-                    } else if (aiDecision === 'right' && !dangers.right) {
-                        turnPlayer(player, 'right');
-                        player.lastTurn = gameTimer;
-                        player.aiDecisionCooldown = gameTimer;
-                        return;
-                    }
-                }
+                // Start non-blocking AI decision
+                requestAIDecision(player, gameState);
+                player.aiDecisionCooldown = gameTimer;
             }
             
             // Count safe spaces in each direction
