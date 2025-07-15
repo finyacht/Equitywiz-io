@@ -12,7 +12,7 @@ try {
 }
 
 const app = express();
-const port = 3000; // Changed from 4000 to 3000
+const port = 3001; // Using 3001 to avoid conflicts
 
 // Add middleware to parse JSON bodies
 app.use(express.json());
@@ -107,6 +107,15 @@ app.get('/neon-cycles', (req, res) => {
 
 app.get('/neon-cycles.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'neon-cycles.html'));
+});
+
+// Route for the ESPP Calculator
+app.get('/espp-calculator', (req, res) => {
+  res.sendFile(path.join(__dirname, 'espp-calculator.html'));
+});
+
+app.get('/espp-calculator.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'espp-calculator.html'));
 });
 
 // Gemini API Proxy Route
