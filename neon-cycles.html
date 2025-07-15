@@ -911,8 +911,8 @@
                             <button class="color-btn" data-color="1" style="border-color: #f0f; color: #f0f;" title="Magenta">🏍️</button>
                             <button class="color-btn" data-color="2" style="border-color: #ff0; color: #ff0;" title="Yellow">🏍️</button>
                             <button class="color-btn" data-color="3" style="border-color: #0f0; color: #0f0;" title="Green">🏍️</button>
-                        </div>
-                    </div>
+            </div>
+            </div>
                     
                     <div class="mode-section">
                         <label>Game Mode:</label>
@@ -920,7 +920,7 @@
                             <button class="mode-btn" onclick="setGameMode('easy')">🎯 CASUAL</button>
                             <button class="mode-btn selected" onclick="setGameMode('balanced')">⚡ BALANCED</button>
                             <button class="mode-btn" onclick="setGameMode('intense')">🔥 INTENSE</button>
-                        </div>
+            </div>
                     </div>
                 </div>
                 
@@ -1027,7 +1027,7 @@
         let gameAnalysis = [];        // Real-time game analysis
                 let lastAiDecision = 0;       // Throttle AI API calls
         let pendingAIDecisions = new Map(); // Track pending AI decisions per bot
-
+        
         // Players array (including AI)
         let players = [];
         let trails = [];
@@ -1117,7 +1117,7 @@
                 botCount = parseInt(this.dataset.bots);
             });
         });
-
+        
         // Color selection
         document.querySelectorAll('.color-btn').forEach(btn => {
             btn.addEventListener('click', function() {
