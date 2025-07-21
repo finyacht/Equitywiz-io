@@ -650,6 +650,241 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+        /* Checkbox Styling */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #0a5264;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            color: #555;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Modern Price Card Styling */
+        .price-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .price-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .grant-price-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid #0a5264;
+        }
+
+        .price-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .price-card-header h4 {
+            margin: 0;
+            color: #0a5264;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .price-input-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .price-range-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .modern-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 100%);
+            outline: none;
+            -webkit-appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        .modern-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a5264 0%, #0891b2 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(10, 82, 100, 0.3);
+            border: 3px solid #ffffff;
+        }
+
+        .modern-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(10, 82, 100, 0.4);
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .price-input-container {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0 12px;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .price-input-container:focus-within {
+            border-color: #0a5264;
+            box-shadow: 0 0 0 3px rgba(10, 82, 100, 0.1);
+        }
+
+        .currency-symbol {
+            color: #6b7280;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .price-input {
+            border: none;
+            outline: none;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0a5264;
+            background: transparent;
+            width: 100%;
+        }
+
+        /* Purchase Periods Section */
+        .purchase-periods-section {
+            margin-top: 25px;
+        }
+
+        .section-subtitle {
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+        }
+
+        .purchase-periods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .purchase-period-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .purchase-period-card:hover {
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .period-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .period-title {
+            color: #0a5264;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .period-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .compact-slider {
+            width: 120px;
+            height: 4px;
+            border-radius: 2px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .compact-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #0a5264;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .compact-input-container {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 0 8px;
+            min-width: 80px;
+        }
+
+        .compact-input-container .currency-symbol {
+            font-size: 12px;
+            margin-right: 3px;
+        }
+
+        .compact-price-input {
+            border: none;
+            outline: none;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0a5264;
+            background: transparent;
+            width: 100%;
+        }
+
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -790,41 +1025,54 @@
                         <option value="24" selected>24 months</option>
                     </select>
                 </div>
+
+                <div class="input-group">
+                    <div class="label-with-tooltip">
+                        <label for="lookbackProvision">Lookback Provision</label>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">When enabled, uses the lower of grant price or purchase price. When disabled, uses only current purchase price and hides the grant price field.</div>
+                        </div>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="lookbackProvision" checked>
+                        <label for="lookbackProvision" class="checkbox-label">Enable Lookback Provision</label>
+                    </div>
+                </div>
             </div>
 
             <!-- Stock Prices Section -->
             <h3 class="section-title" style="margin-top: 30px; font-size: 20px;">Stock Prices</h3>
-            <div class="price-sliders">
-                <div class="slider-group">
-                    <div class="label-with-tooltip">
-                        <label for="grantPrice">Stock Price at Grant</label>
-                        <div class="tooltip">
-                            <div class="tooltip-icon">?</div>
-                            <div class="tooltip-content">Stock price at the beginning of the offering period (used for lookback provision)</div>
-                        </div>
-                    </div>
-                    <div class="slider-container">
-                        <span>$50</span>
-                        <input type="range" id="grantPrice" min="50" max="300" value="100" step="5" class="slider">
-                        <span>$300</span>
-                        <input type="number" id="grantPriceManual" class="manual-input" value="100" min="10" max="1000" step="1">
+            
+            <!-- Grant Price Card (only shown when lookback is enabled) -->
+            <div class="price-card grant-price-card" id="grantPriceSection">
+                <div class="price-card-header">
+                    <h4>Grant Price</h4>
+                    <div class="tooltip">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-content">Stock price at the beginning of the offering period (used for lookback provision)</div>
                     </div>
                 </div>
-                
-                <div class="slider-group">
-                    <div class="label-with-tooltip">
-                        <label for="purchasePrice">Stock Price at Purchase</label>
-                        <div class="tooltip">
-                            <div class="tooltip-icon">?</div>
-                            <div class="tooltip-content">Stock price at the end of the purchase period when shares are bought</div>
+                <div class="price-input-row">
+                    <div class="price-range-container">
+                        <input type="range" id="grantPrice" min="50" max="300" value="100" step="5" class="modern-slider">
+                        <div class="range-labels">
+                            <span>$50</span>
+                            <span>$300</span>
                         </div>
                     </div>
-                    <div class="slider-container">
-                        <span>$50</span>
-                        <input type="range" id="purchasePrice" min="50" max="300" value="150" step="5" class="slider">
-                        <span>$300</span>
-                        <input type="number" id="purchasePriceManual" class="manual-input" value="150" min="10" max="1000" step="1">
+                    <div class="price-input-container">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="grantPriceManual" class="price-input" value="100" min="10" max="1000" step="1">
                     </div>
+                </div>
+            </div>
+            
+            <!-- Purchase Periods Grid -->
+            <div class="purchase-periods-section">
+                <h4 class="section-subtitle">Purchase Period Prices</h4>
+                <div class="purchase-periods-grid" id="purchasePriceContainer">
+                    <!-- Purchase price cards will be dynamically generated here -->
                 </div>
             </div>
 
@@ -844,7 +1092,7 @@
                                 <div class="tooltip-content">Current stock price if selling today (for tax scenario analysis)</div>
                             </div>
                         </div>
-                        <input type="number" id="currentSalePrice" value="180" min="0" step="0.01">
+                        <input type="number" id="currentSalePrice" value="240" min="0" step="0.01">
                     </div>
 
                     <div class="input-group">
@@ -873,45 +1121,79 @@
         </div>
 
         <div class="card results" id="results">
-            <h2 class="section-title">Calculation Results</h2>
+            <h2 class="section-title">ESPP Analysis Results</h2>
             
-            <!-- Primary Results -->
+            <!-- Streamlined Results -->
             <div class="results-grid">
+                <!-- Investment Input -->
                 <div class="result-card">
                     <div class="result-label">Total Contribution</div>
-                    <div class="result-value" id="totalContribution">$0</div>
+                    <div class="result-value hover-explanation" id="totalContribution" data-explanation="Total Contribution Across Offering Period:
+
+This is the total amount you'll contribute across ALL purchase periods in the offering period.
+
+Calculation: Monthly Contribution × Purchase Period Length × Number of Purchase Periods
+
+This represents your total cash investment over the full offering cycle.">$0</div>
+                </div>
+                
+                <!-- What You Get -->
+                <div class="result-card">
+                    <div class="result-label">Total Shares Purchased</div>
+                    <div class="result-value" id="totalSharesPurchased">0</div>
                 </div>
                 
                 <div class="result-card">
-                    <div class="result-label">Shares Purchased</div>
-                    <div class="result-value" id="sharesPurchased">0</div>
+                    <div class="result-label">Average Price Per Share</div>
+                    <div class="result-value hover-explanation" id="averagePricePerShare" data-explanation="Average Price Per Share:
+
+Calculation: Total Contribution ÷ Total Shares Purchased
+
+This gives you the weighted average price you paid across all purchase periods, factoring in different prices and share quantities per period.">$0</div>
+                </div>
+                
+                <!-- Current Position -->
+                <div class="result-card">
+                    <div class="result-label">Total Current Value</div>
+                    <div class="result-value profit" id="totalCurrentValue">$0</div>
                 </div>
                 
                 <div class="result-card">
-                    <div class="result-label">Instant Profit</div>
-                    <div class="result-value profit hover-explanation" id="instantProfit" data-explanation="Instant Profit Calculation:
+                    <div class="result-label">Total Profit</div>
+                    <div class="result-value profit hover-explanation" id="totalProfit" data-explanation="Total Profit:
 
-This represents the immediate gain you would realize if you sold shares right at the purchase date.
+Calculation: Total Current Value - Total Contribution
 
-Calculation: (Market Price - Discounted Purchase Price) × Number of Shares
-
-This profit exists because you bought shares at a discount to the current market price. It's the immediate value creation from the ESPP benefit.">$0</div>
+This is your absolute dollar gain if you sold all shares at the current sale price. It represents the total value created by your ESPP participation across all periods.">$0</div>
                 </div>
                 
+                <!-- Performance Metrics -->
                 <div class="result-card">
                     <div class="result-label">Return on Investment</div>
-                    <div class="result-value return" id="roi">0%</div>
-                </div>
-            </div>
+                    <div class="result-value return hover-explanation" id="roi" data-explanation="Return on Investment (ROI):
 
-            <!-- Contribution Analysis -->
-            <h3 class="section-title">Contribution Analysis</h3>
-            <div class="results-grid">
-                <div class="result-card">
-                    <div class="result-label">Annual Contribution</div>
-                    <div class="result-value" id="annualContribution">$0</div>
+Calculation: (Total Profit ÷ Total Contribution) × 100
+
+This percentage shows your overall return across the entire offering period. It factors in all purchase periods, different prices, and the current sale price.">0%</div>
                 </div>
                 
+                <!-- Conditional Lookback Advantage -->
+                <div class="result-card" id="lookbackAdvantageCard">
+                    <div class="result-label">Lookback Advantage</div>
+                    <div class="result-value profit hover-explanation" id="lookbackAdvantage" data-explanation="Total Lookback Advantage across ALL purchase periods:
+
+This is the total additional profit you gain by having lookback provision enabled across all purchase periods in your offering period.
+
+Calculation:
+• For each period: Calculate profit WITH lookback vs WITHOUT lookback
+• Sum the differences across all periods
+• WITH lookback: Uses lower of (Grant Price, Market Price) + discount
+• WITHOUT lookback: Uses only Market Price + discount
+
+The larger the difference between grant price and market prices, the greater your advantage!">$0</div>
+                </div>
+                
+                <!-- Compliance -->
                 <div class="result-card">
                     <div class="result-label">Remaining IRS Limit</div>
                     <div class="result-value hover-explanation" id="remainingLimit" data-explanation="Annual IRS Limit: $25,000 maximum per year
@@ -919,40 +1201,6 @@ This profit exists because you bought shares at a discount to the current market
 This shows how much of your annual contribution limit remains available for ESPP purchases. The IRS Section 423 sets this federal limit to ensure tax-qualified treatment.
 
 Your current annual contribution based on salary and percentage leaves this much room for additional ESPP participation.">$0</div>
-                </div>
-
-                <div class="result-card">
-                    <div class="result-label">Purchase Price per Share</div>
-                    <div class="result-value hover-explanation" id="actualPurchasePrice" data-explanation="Actual Purchase Price with Lookback:
-
-Step 1: Compare grant price vs. purchase price
-Step 2: Take the LOWER of the two prices
-Step 3: Apply the discount percentage to that lower price
-
-Example: Grant at $100, Purchase at $150
-Lookback uses $100 (lower price)
-With 15% discount: $100 × 0.85 = $85 per share
-
-This is the price you actually pay for each share.">$0</div>
-                </div>
-
-                <div class="result-card">
-                    <div class="result-label">Guaranteed Min Return</div>
-                    <div class="result-value return hover-explanation" id="guaranteedReturn" data-explanation="Guaranteed minimum return even if stock price stays flat. Formula: Discount % ÷ (100% - Discount %). Higher discount = higher guaranteed return.">17.6%</div>
-                </div>
-            </div>
-
-            <!-- Key Scenarios -->
-            <h3 class="section-title">Key Scenarios</h3>
-            <div class="scenarios">
-                <div class="scenario-card">
-                    <div class="scenario-title">Annualized Return</div>
-                    <div class="scenario-value return hover-explanation" id="annualizedReturn" data-explanation="Return rate if this pattern repeated annually">0%</div>
-                </div>
-                
-                <div class="scenario-card">
-                    <div class="scenario-title">Lookback Advantage</div>
-                    <div class="scenario-value profit hover-explanation" id="lookbackAdvantage" data-explanation="Lookback Advantage: Uses lower of grant price or purchase price. Saves money when stock rises during offering period. Dynamic calculation based on your inputs.">$0</div>
                 </div>
             </div>
 
@@ -1008,6 +1256,88 @@ This is the price you actually pay for each share.">$0</div>
     <script>
         let periodsChart = null;
 
+        // Function to generate dynamic purchase price fields
+        function generatePurchasePriceFields() {
+            const offeringPeriod = parseInt(document.getElementById('offeringPeriod').value) || 24;
+            const purchasePeriod = parseInt(document.getElementById('period').value) || 6;
+            const numberOfPurchases = Math.max(1, offeringPeriod / purchasePeriod);
+            
+            const container = document.getElementById('purchasePriceContainer');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= numberOfPurchases; i++) {
+                const monthNumber = i * purchasePeriod;
+                const defaultValue = 150 + (i-1)*10;
+                
+                const periodCard = document.createElement('div');
+                periodCard.className = 'purchase-period-card';
+                
+                periodCard.innerHTML = `
+                    <div class="period-header">
+                        <h5 class="period-title">Month ${monthNumber}</h5>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">Stock price at the end of purchase period ${i} when shares are bought</div>
+                        </div>
+                    </div>
+                    <div class="period-controls">
+                        <input type="range" id="purchasePrice${i}" min="50" max="300" value="${defaultValue}" step="5" class="compact-slider">
+                        <div class="compact-input-container">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" id="purchasePrice${i}Manual" class="compact-price-input" value="${defaultValue}" min="10" max="1000" step="1">
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(periodCard);
+            }
+            
+            // Add event listeners for new purchase price fields
+            setupPurchasePriceEventListeners(numberOfPurchases);
+            calculateESPP();
+        }
+
+        // Setup event listeners for purchase price sliders
+        function setupPurchasePriceEventListeners(numberOfPurchases) {
+            for (let i = 1; i <= numberOfPurchases; i++) {
+                const slider = document.getElementById(`purchasePrice${i}`);
+                const manual = document.getElementById(`purchasePrice${i}Manual`);
+                
+                slider.addEventListener('input', function() {
+                    manual.value = this.value;
+                    calculateESPP();
+                });
+                
+                manual.addEventListener('input', function() {
+                    const value = parseFloat(this.value) || 0;
+                    if (value > slider.max) {
+                        const newMax = Math.ceil(value * 1.2);
+                        slider.max = newMax;
+                    }
+                    if (value < slider.min && value > 0) {
+                        const newMin = Math.floor(value * 0.8);
+                        slider.min = newMin;
+                    }
+                    if (value >= slider.min && value <= slider.max) {
+                        slider.value = value;
+                    }
+                    calculateESPP();
+                });
+            }
+        }
+
+        // Function to toggle grant price section visibility based on lookback provision
+        function toggleGrantPriceSection() {
+            const lookbackEnabled = document.getElementById('lookbackProvision').checked;
+            const grantPriceSection = document.getElementById('grantPriceSection');
+            
+            if (lookbackEnabled) {
+                grantPriceSection.style.display = 'block';
+            } else {
+                grantPriceSection.style.display = 'none';
+            }
+        }
+
         // Format numbers with proper locale
         const formatCurrency = (amount) => {
             return new Intl.NumberFormat('en-US', {
@@ -1037,15 +1367,26 @@ This is the price you actually pay for each share.">$0</div>
         function updateDynamicTooltips(data) {
             // Update lookback advantage tooltip
             const lookbackElement = document.getElementById('lookbackAdvantage');
-            const withoutLookback = (data.purchasePrice * (1 - data.discount)).toFixed(2);
-            const withLookback = (data.lowerPrice * (1 - data.discount)).toFixed(2);
-            const savingsPerShare = (withoutLookback - withLookback).toFixed(2);
             
-            lookbackElement.setAttribute('data-explanation', 
-                `Math: Shares × (Purchase Price without lookback - Actual purchase price)<br>` +
-                `Without lookback: $${withoutLookback} (${data.purchasePrice} × ${(1-data.discount).toFixed(2)})<br>` +
-                `With lookback: $${withLookback} (${data.lowerPrice} × ${(1-data.discount).toFixed(2)})<br>` +
-                `Savings per share: $${savingsPerShare}`);
+            if (data.lookbackEnabled) {
+                lookbackElement.setAttribute('data-explanation', 
+                    `Total Lookback Advantage across ALL purchase periods:
+    
+    This is the total additional profit you gain by having lookback provision enabled across all purchase periods in your offering period.
+    
+    Calculation:
+    • For each period: Calculate profit WITH lookback vs WITHOUT lookback
+    • Sum the differences across all periods
+    • WITH lookback: Uses lower of (Grant Price, Market Price) + discount
+    • WITHOUT lookback: Uses only Market Price + discount
+    
+    The larger the difference between grant price and market prices, the greater your advantage!`);
+            } else {
+                lookbackElement.setAttribute('data-explanation', 
+                    `Lookback provision is disabled. Purchase price is based only on the current market price at purchase date with discount applied.
+    
+    No lookback advantage since the plan doesn't use grant date pricing.`);
+            }
 
             // Update tax tooltips
             const qualifyingElement = document.getElementById('qualifyingTax');
@@ -1055,17 +1396,29 @@ This is the price you actually pay for each share.">$0</div>
             const appreciationPerShare = Math.max(0, data.currentSalePrice - data.lowerPrice).toFixed(2);
             const totalGainPerShare = (data.currentSalePrice - data.actualPurchasePrice).toFixed(2);
             
+            // Calculate detailed math for tooltips (using corrected total figures)
+            const totalShares = data.totalShares || data.sharesPurchased;
+            const totalGain = totalShares * data.currentSalePrice - (totalShares * data.actualPurchasePrice);
+            const totalDiscountAmount = totalShares * (data.lowerPrice - data.actualPurchasePrice);
+            const totalAppreciationAmount = Math.max(0, totalShares * (data.currentSalePrice - data.lowerPrice));
+            
             qualifyingElement.setAttribute('data-explanation',
-                `Math: (Discount Amount × 25% Ordinary Rate) + (Appreciation × 15% Capital Gains)<br>` +
-                `Discount: $${discountPerShare}/share × ${data.sharesPurchased.toFixed(0)} shares = ${formatCurrency(discountPerShare * data.sharesPurchased)}<br>` +
-                `Appreciation: $${appreciationPerShare}/share × ${data.sharesPurchased.toFixed(0)} shares = ${formatCurrency(appreciationPerShare * data.sharesPurchased)}<br>` +
-                `Tax: (${formatCurrency(discountPerShare * data.sharesPurchased)} × 0.25) + (${formatCurrency(appreciationPerShare * data.sharesPurchased)} × 0.15) = ${formatCurrency(data.qualifyingTax)}`);
+                `Math: (Total Discount × ${(data.ordinaryTaxRate*100).toFixed(0)}% Ordinary) + (Total Appreciation × ${(data.capitalGainsTaxRate*100).toFixed(0)}% Capital Gains)
+
+Across ALL ${Math.ceil(totalShares/data.sharesPurchased)} purchase periods:
+• Total Shares: ${totalShares.toFixed(1)} shares
+• Total Discount: ${formatCurrency(totalDiscountAmount)} (taxed as ordinary income)
+• Total Appreciation: ${formatCurrency(totalAppreciationAmount)} (taxed as capital gains)
+• Tax: (${formatCurrency(totalDiscountAmount)} × ${(data.ordinaryTaxRate*100).toFixed(0)}%) + (${formatCurrency(totalAppreciationAmount)} × ${(data.capitalGainsTaxRate*100).toFixed(0)}%) = ${formatCurrency(data.qualifyingTax)}`);
             
             disqualifyingElement.setAttribute('data-explanation',
-                `Math: Total Gain × 25% Ordinary Income Rate<br>` +
-                `Gain: $${totalGainPerShare}/share × ${data.sharesPurchased.toFixed(0)} shares = ${formatCurrency(totalGainPerShare * data.sharesPurchased)}<br>` +
-                `Tax: ${formatCurrency(totalGainPerShare * data.sharesPurchased)} × 0.25 = ${formatCurrency(data.disqualifyingTax)}<br>` +
-                `Higher tax because all gain is ordinary income`);
+                `Math: Total Gain × ${(data.ordinaryTaxRate*100).toFixed(0)}% Ordinary Income Rate
+
+Across ALL ${Math.ceil(totalShares/data.sharesPurchased)} purchase periods:
+• Total Shares: ${totalShares.toFixed(1)} shares  
+• Total Gain: ${formatCurrency(totalGain)} (${formatCurrency(data.currentSalePrice)} sale price - average purchase price)
+• Tax: ${formatCurrency(totalGain)} × ${(data.ordinaryTaxRate*100).toFixed(0)}% = ${formatCurrency(data.disqualifyingTax)}
+Higher tax because ALL gain is ordinary income`);
         }
 
 
@@ -1075,65 +1428,161 @@ This is the price you actually pay for each share.">$0</div>
             const salary = parseFloat(document.getElementById('salary').value) || 0;
             const contributionRate = parseFloat(document.getElementById('contribution').value) / 100 || 0;
             const grantPrice = parseFloat(document.getElementById('grantPrice').value) || 0;
-            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
             const discount = parseFloat(document.getElementById('discount').value) / 100 || 0;
             const period = parseInt(document.getElementById('period').value) || 6;
             const offeringPeriod = parseInt(document.getElementById('offeringPeriod').value) || 24;
-            const currentSalePrice = parseFloat(document.getElementById('currentSalePrice').value) || 0;
+            const currentSalePrice = parseFloat(document.getElementById('currentSalePrice').value) || 240;
+            const lookbackEnabled = document.getElementById('lookbackProvision').checked;
+
+            // Calculate number of purchase periods and get their prices
+            const numberOfPurchases = Math.max(1, offeringPeriod / period);
+            const purchasePrices = [];
+            for (let i = 1; i <= numberOfPurchases; i++) {
+                const priceElement = document.getElementById(`purchasePrice${i}`);
+                if (priceElement) {
+                    purchasePrices.push(parseFloat(priceElement.value) || 0);
+                } else {
+                    purchasePrices.push(150); // Default fallback
+                }
+            }
 
             // Calculate contributions
             const monthlyContribution = (salary * contributionRate) / 12;
-            const totalContribution = monthlyContribution * period;
+            const periodContribution = monthlyContribution * period;
             const annualContribution = monthlyContribution * 12;
             const remainingLimit = Math.max(0, 25000 - annualContribution);
             
-            // ESPP Core Calculation with Lookback Provision
-            const lowerPrice = Math.min(grantPrice, purchasePrice);
-            const actualPurchasePrice = lowerPrice * (1 - discount);
-            const sharesPurchased = totalContribution / actualPurchasePrice;
-            const instantProfit = sharesPurchased * (purchasePrice - actualPurchasePrice);
-            const roi = (instantProfit / totalContribution) * 100;
+            // For display, use the first purchase period as the primary example
+            const primaryPurchasePrice = purchasePrices[0] || 150;
+            
+            // Calculate actual purchase price based on lookback setting
+            let actualPurchasePrice;
+            let lowerPrice;
+            if (lookbackEnabled) {
+                lowerPrice = Math.min(grantPrice, primaryPurchasePrice);
+                actualPurchasePrice = lowerPrice * (1 - discount);
+            } else {
+                lowerPrice = primaryPurchasePrice;
+                actualPurchasePrice = primaryPurchasePrice * (1 - discount);
+            }
+            
+            const sharesPurchased = periodContribution / actualPurchasePrice;
+            const instantProfit = sharesPurchased * (primaryPurchasePrice - actualPurchasePrice);
+            const roi = (instantProfit / periodContribution) * 100;
             
             // Guaranteed minimum return calculation
             const guaranteedReturn = (discount / (1 - discount)) * 100;
             
-            // Lookback advantage
-            const wouldPayWithoutLookback = purchasePrice * (1 - discount);
-            const lookbackSavings = sharesPurchased * Math.max(0, wouldPayWithoutLookback - actualPurchasePrice);
+            // Calculate total lookback advantage across ALL purchase periods
+            let lookbackSavings = 0;
+            if (lookbackEnabled) {
+                // Calculate total advantage across all periods
+                for (let i = 1; i <= numberOfPurchases; i++) {
+                    const periodPrice = purchasePrices[i-1] || 150;
+                    
+                    // With lookback: use lower of grant or purchase price
+                    const withLookbackPrice = Math.min(grantPrice, periodPrice);
+                    const withLookbackPurchasePrice = withLookbackPrice * (1 - discount);
+                    
+                    // Without lookback: use only purchase price
+                    const withoutLookbackPurchasePrice = periodPrice * (1 - discount);
+                    
+                    // Calculate shares bought in this period
+                    const sharesWithLookback = periodContribution / withLookbackPurchasePrice;
+                    const sharesWithoutLookback = periodContribution / withoutLookbackPurchasePrice;
+                    
+                    // Use current sale price for profit calculation
+                    
+                    // Calculate profits
+                    const profitWithLookback = (sharesWithLookback * currentSalePrice) - periodContribution;
+                    const profitWithoutLookback = (sharesWithoutLookback * currentSalePrice) - periodContribution;
+                    
+                    // Add to total lookback advantage
+                    lookbackSavings += Math.max(0, profitWithLookback - profitWithoutLookback);
+                }
+            }
             
             // Calculate annualized return
             const periodsPerYear = 12 / period;
             const annualizedReturn = (Math.pow(1 + (roi / 100), periodsPerYear) - 1) * 100;
             
-            // Tax calculations (use dynamic rates from sliders)
+            // Tax calculations across ALL purchase periods
             const ordinaryTaxRate = parseFloat(document.getElementById('ordinaryTaxRate').value) / 100 || 0.25;
             const capitalGainsTaxRate = parseFloat(document.getElementById('capitalGainsTaxRate').value) / 100 || 0.15;
             
-            const disqualifyingGain = Math.max(0, (currentSalePrice - actualPurchasePrice) * sharesPurchased);
-            const disqualifyingTax = disqualifyingGain * ordinaryTaxRate;
+            let totalDisqualifyingTax = 0;
+            let totalQualifyingTax = 0;
+            let totalShares = 0;
             
-            const discountAmount = (lowerPrice - actualPurchasePrice) * sharesPurchased;
-            const appreciationGain = Math.max(0, (currentSalePrice - lowerPrice) * sharesPurchased);
-            const qualifyingTax = (discountAmount * ordinaryTaxRate) + (appreciationGain * capitalGainsTaxRate);
+            // Calculate tax for each purchase period
+            for (let i = 1; i <= numberOfPurchases; i++) {
+                const periodPrice = purchasePrices[i-1] || 150;
+                
+                // Calculate purchase price based on lookback setting
+                let periodLowerPrice, periodPurchasePrice;
+                if (lookbackEnabled) {
+                    periodLowerPrice = Math.min(grantPrice, periodPrice);
+                    periodPurchasePrice = periodLowerPrice * (1 - discount);
+                } else {
+                    periodLowerPrice = periodPrice;
+                    periodPurchasePrice = periodPrice * (1 - discount);
+                }
+                
+                const periodShares = periodContribution / periodPurchasePrice;
+                totalShares += periodShares;
+                
+                // Disqualifying disposition: All gain is ordinary income
+                const periodDisqualifyingGain = Math.max(0, (currentSalePrice - periodPurchasePrice) * periodShares);
+                totalDisqualifyingTax += periodDisqualifyingGain * ordinaryTaxRate;
+                
+                // Qualifying disposition: Discount as ordinary income, appreciation as capital gains
+                const periodDiscountAmount = (periodLowerPrice - periodPurchasePrice) * periodShares;
+                const periodAppreciationGain = Math.max(0, (currentSalePrice - periodLowerPrice) * periodShares);
+                totalQualifyingTax += (periodDiscountAmount * ordinaryTaxRate) + (periodAppreciationGain * capitalGainsTaxRate);
+            }
+            
+            const disqualifyingTax = totalDisqualifyingTax;
+            const qualifyingTax = totalQualifyingTax;
             
             // Prepare data for tooltip updates
             const calculationData = {
-                grantPrice, purchasePrice, lowerPrice, actualPurchasePrice, sharesPurchased,
-                currentSalePrice, discount, qualifyingTax, disqualifyingTax
+                grantPrice, 
+                purchasePrice: primaryPurchasePrice, 
+                lowerPrice, 
+                actualPurchasePrice, 
+                sharesPurchased,
+                currentSalePrice, 
+                discount, 
+                qualifyingTax, 
+                disqualifyingTax,
+                lookbackEnabled,
+                ordinaryTaxRate,
+                capitalGainsTaxRate,
+                totalShares
             };
 
-            // Update all display values
-            document.getElementById('totalContribution').textContent = formatCurrency(totalContribution);
-            document.getElementById('sharesPurchased').textContent = sharesPurchased.toFixed(1);
-            document.getElementById('instantProfit').textContent = formatCurrency(instantProfit);
-            document.getElementById('roi').textContent = formatPercent(roi);
-            
-            document.getElementById('annualContribution').textContent = formatCurrency(annualContribution);
-            document.getElementById('actualPurchasePrice').textContent = formatCurrency(actualPurchasePrice);
-            document.getElementById('guaranteedReturn').textContent = formatPercent(guaranteedReturn);
-            
-            document.getElementById('annualizedReturn').textContent = formatPercent(annualizedReturn);
-            document.getElementById('lookbackAdvantage').textContent = formatCurrency(lookbackSavings);
+            // Calculate streamlined results across all periods
+            const totalContributionAllPeriods = periodContribution * numberOfPurchases;
+            const totalCurrentValueAllPeriods = totalShares * currentSalePrice;
+            const totalProfitAllPeriods = totalCurrentValueAllPeriods - totalContributionAllPeriods;
+            const averagePricePerShare = totalContributionAllPeriods / totalShares;
+            const totalROI = (totalProfitAllPeriods / totalContributionAllPeriods) * 100;
+
+            // Update streamlined display values
+            document.getElementById('totalContribution').textContent = formatCurrency(totalContributionAllPeriods);
+            document.getElementById('totalSharesPurchased').textContent = totalShares.toFixed(1);
+            document.getElementById('averagePricePerShare').textContent = formatCurrency(averagePricePerShare);
+            document.getElementById('totalCurrentValue').textContent = formatCurrency(totalCurrentValueAllPeriods);
+            document.getElementById('totalProfit').textContent = formatCurrency(totalProfitAllPeriods);
+            document.getElementById('roi').textContent = formatPercent(totalROI);
+            // Show/hide and update lookback advantage based on provision setting
+            const lookbackAdvantageCard = document.getElementById('lookbackAdvantageCard');
+            if (lookbackEnabled) {
+                lookbackAdvantageCard.style.display = 'block';
+                document.getElementById('lookbackAdvantage').textContent = formatCurrency(lookbackSavings);
+            } else {
+                lookbackAdvantageCard.style.display = 'none';
+            }
             
             document.getElementById('qualifyingTax').textContent = formatCurrency(qualifyingTax) + ' tax';
             document.getElementById('disqualifyingTax').textContent = formatCurrency(disqualifyingTax) + ' tax';
@@ -1150,13 +1599,13 @@ This is the price you actually pay for each share.">$0</div>
             
             // Update dynamic content
             updateDynamicTooltips(calculationData);
-            generateMultiplePeriods(salary, contributionRate, grantPrice, discount, offeringPeriod, period);
+            generateMultiplePeriods(salary, contributionRate, grantPrice, discount, offeringPeriod, period, purchasePrices, lookbackEnabled);
             
             // Show results
             document.getElementById('results').classList.add('show');
         }
 
-        function generateMultiplePeriods(salary, contributionRate, grantPrice, discount, offeringPeriod, purchasePeriod = 6) {
+        function generateMultiplePeriods(salary, contributionRate, grantPrice, discount, offeringPeriod, purchasePeriod = 6, purchasePrices = [], lookbackEnabled = true) {
             const multiplePeriods = document.getElementById('multiplePeriods');
             
             if (!multiplePeriods) {
@@ -1170,31 +1619,41 @@ This is the price you actually pay for each share.">$0</div>
             const monthlyContribution = (salary * contributionRate) / 12;
             const periodContribution = monthlyContribution * purchasePeriod;
             
-            // Get the current sale price from the input field
-            const currentSalePrice = parseFloat(document.getElementById('currentSalePrice').value) || 180;
+            // Get current sale price from advanced settings
+            const currentSalePrice = parseFloat(document.getElementById('currentSalePrice').value) || 240;
             
             // Generate chart data
             const chartLabels = [];
             const chartData = [];
             const chartColors = [];
             
-            // Use the exact stock price input value for all periods
+            // Use the actual purchase prices from the input fields
             const stockPriceScenarios = [];
             for (let i = 1; i <= purchasePeriods; i++) {
                 const month = i * purchasePeriod;
+                const actualPurchasePrice = purchasePrices[i-1] || 150; // Use actual price from input fields
                 
                 stockPriceScenarios.push({
                     period: i,
-                    price: currentSalePrice, // Use exact input value
+                    price: actualPurchasePrice,
                     label: `Month ${month}`
                 });
             }
 
             stockPriceScenarios.forEach((scenario, index) => {
-                const lowerPrice = Math.min(grantPrice, scenario.price);
-                const purchasePrice = lowerPrice * (1 - discount);
+                // Calculate purchase price based on lookback setting
+                let lowerPrice, purchasePrice;
+                if (lookbackEnabled) {
+                    lowerPrice = Math.min(grantPrice, scenario.price);
+                    purchasePrice = lowerPrice * (1 - discount);
+                } else {
+                    lowerPrice = scenario.price;
+                    purchasePrice = scenario.price * (1 - discount);
+                }
+                
                 const shares = periodContribution / purchasePrice;
-                const profit = shares * (scenario.price - purchasePrice);
+                const currentValue = shares * currentSalePrice; // Use current sale price, not purchase price!
+                const profit = currentValue - periodContribution; // Correct profit calculation
                 const roi = (profit / periodContribution) * 100;
 
                 // Add to chart data
@@ -1204,18 +1663,34 @@ This is the price you actually pay for each share.">$0</div>
 
                 const card = document.createElement('div');
                 card.className = 'scenario-card';
-                card.innerHTML = `
-                    <div class="scenario-title hover-explanation" data-explanation="Purchase Analysis for ${scenario.label}:
+                
+                // Create different explanations based on lookback setting
+                let explanation;
+                if (lookbackEnabled) {
+                    explanation = `Purchase Analysis for ${scenario.label} (with Lookback):
 
 • Contribution: ${formatCurrency(periodContribution)} (${purchasePeriod} months)
 • Grant Price: ${formatCurrency(grantPrice)} | Stock Price at Purchase: ${formatCurrency(scenario.price)}
 • Lookback Price (Lower): ${formatCurrency(lowerPrice)}
 • Purchase Price: ${formatCurrency(lowerPrice)} - ${(discount*100).toFixed(0)}% discount = ${formatCurrency(purchasePrice)}
 • Shares Purchased: ${formatCurrency(periodContribution)} ÷ ${formatCurrency(purchasePrice)} = ${shares.toFixed(1)} shares
-• Current Value: ${shares.toFixed(1)} × ${formatCurrency(scenario.price)} = ${formatCurrency(scenario.price * shares)}
-• Profit: ${formatCurrency(scenario.price * shares)} - ${formatCurrency(periodContribution)} = ${formatCurrency(profit)}">${scenario.label} Purchase</div>
+• Current Value: ${shares.toFixed(1)} × ${formatCurrency(currentSalePrice)} (Current Sale Price) = ${formatCurrency(currentValue)}
+• Profit: ${formatCurrency(currentValue)} - ${formatCurrency(periodContribution)} = ${formatCurrency(profit)}`;
+                } else {
+                    explanation = `Purchase Analysis for ${scenario.label} (no Lookback):
+
+• Contribution: ${formatCurrency(periodContribution)} (${purchasePeriod} months)
+• Stock Price at Purchase: ${formatCurrency(scenario.price)}
+• Purchase Price: ${formatCurrency(scenario.price)} - ${(discount*100).toFixed(0)}% discount = ${formatCurrency(purchasePrice)}
+• Shares Purchased: ${formatCurrency(periodContribution)} ÷ ${formatCurrency(purchasePrice)} = ${shares.toFixed(1)} shares
+• Current Value: ${shares.toFixed(1)} × ${formatCurrency(currentSalePrice)} (Current Sale Price) = ${formatCurrency(currentValue)}
+• Profit: ${formatCurrency(currentValue)} - ${formatCurrency(periodContribution)} = ${formatCurrency(profit)}`;
+                }
+                
+                card.innerHTML = `
+                    <div class="scenario-title hover-explanation" data-explanation="${explanation}">${scenario.label} Purchase</div>
                     <div class="scenario-value profit">${formatCurrency(profit)}</div>
-                    <small>ROI: ${roi.toFixed(1)}% • Stock Price: $${scenario.price.toFixed(0)}</small>
+                    <small>ROI: ${roi.toFixed(1)}% • Current Sale Price: $${currentSalePrice.toFixed(0)}</small>
                 `;
                 multiplePeriods.appendChild(card);
             });
@@ -1248,39 +1723,103 @@ This is the price you actually pay for each share.">$0</div>
                 }
                 
                 periodsChart = new Chart(ctx, {
-                    type: 'bar',
+                    type: 'line',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Profit ($)',
+                            label: 'ESPP Profit',
                             data: data,
-                            backgroundColor: colors && colors.length > 0 ? colors : ['rgba(10, 82, 100, 0.8)'],
-                            borderColor: colors && colors.length > 0 ? colors.map(color => color.replace('0.8', '1')) : ['rgba(10, 82, 100, 1)'],
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            borderSkipped: false,
+                            borderColor: '#0a5264',
+                            backgroundColor: 'rgba(10, 82, 100, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: '#0a5264',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            fill: true
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
                         plugins: {
                             title: {
                                 display: true,
                                 text: chartTitle,
-                                font: { size: 16, weight: 'bold' }
+                                font: { size: 16, weight: 'bold' },
+                                color: '#333',
+                                padding: 20
                             },
                             legend: {
-                                display: false
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    boxWidth: 15,
+                                    padding: 15,
+                                    font: { size: 12 }
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#0a5264',
+                                borderWidth: 1,
+                                cornerRadius: 6,
+                                displayColors: true,
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        return `Purchase Period: ${tooltipItems[0].label}`;
+                                    },
+                                    label: function(context) {
+                                        return `Profit: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
                             }
                         },
                         scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Purchase Periods',
+                                    font: { size: 14, weight: '600' },
+                                    color: '#555'
+                                },
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    font: { size: 12 }
+                                }
+                            },
                             y: {
                                 beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Profit ($)',
+                                    font: { size: 14, weight: '600' },
+                                    color: '#555'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)',
+                                    lineWidth: 1
+                                },
                                 ticks: {
                                     callback: function(value) {
-                                        return '$' + value.toLocaleString();
-                                    }
+                                        return formatCurrency(value);
+                                    },
+                                    color: '#666',
+                                    font: { size: 12 }
                                 }
                             }
                         }
@@ -1305,27 +1844,47 @@ This is the price you actually pay for each share.">$0</div>
 
         // Function to update slider range labels dynamically
         function updateSliderLabels(slider, type) {
-            const container = slider.closest('.slider-container');
-            const minLabel = container.querySelector('span:first-child');
-            const maxLabel = container.querySelector('span:nth-child(3)');
-            
-            if (type.includes('Price')) {
-                minLabel.textContent = `$${slider.min}`;
-                maxLabel.textContent = `$${slider.max}`;
+            // For the grant price slider (which has range labels)
+            if (type === 'grantPrice') {
+                const container = slider.closest('.price-range-container');
+                if (container) {
+                    const rangeLabels = container.querySelector('.range-labels');
+                    if (rangeLabels) {
+                        const minLabel = rangeLabels.querySelector('span:first-child');
+                        const maxLabel = rangeLabels.querySelector('span:last-child');
+                        if (minLabel && maxLabel) {
+                            minLabel.textContent = `$${slider.min}`;
+                            maxLabel.textContent = `$${slider.max}`;
+                        }
+                    }
+                }
             }
+            // For purchase price sliders, we don't update labels as they're compact
+            // and don't have visible range labels
         }
 
         // Initialize everything
         document.addEventListener('DOMContentLoaded', function() {
+            // Generate initial purchase price fields
+            generatePurchasePriceFields();
+            
             // Discount input field
             const discountInput = document.getElementById('discount');
             discountInput.addEventListener('input', calculateESPP);
             
-            // Stock price sliders and manual inputs
+            // Offering period and purchase period change listeners
+            document.getElementById('offeringPeriod').addEventListener('change', generatePurchasePriceFields);
+            document.getElementById('period').addEventListener('change', generatePurchasePriceFields);
+            
+            // Lookback provision change listener
+            document.getElementById('lookbackProvision').addEventListener('change', function() {
+                toggleGrantPriceSection();
+                calculateESPP();
+            });
+            
+            // Stock price sliders and manual inputs for grant price
             const grantPriceSlider = document.getElementById('grantPrice');
             const grantPriceManual = document.getElementById('grantPriceManual');
-            const purchasePriceSlider = document.getElementById('purchasePrice');
-            const purchasePriceManual = document.getElementById('purchasePriceManual');
             
             // Grant price sync with dynamic range adjustment
             grantPriceSlider.addEventListener('input', function() {
@@ -1352,44 +1911,17 @@ This is the price you actually pay for each share.">$0</div>
                 calculateESPP();
             });
             
-            // Purchase price sync with dynamic range adjustment
-            purchasePriceSlider.addEventListener('input', function() {
-                purchasePriceManual.value = this.value;
-                updateSliderLabels(this, 'purchasePrice');
-                calculateESPP();
-            });
-            purchasePriceManual.addEventListener('input', function() {
-                const value = parseFloat(this.value) || 0;
-                // Dynamically adjust slider range
-                if (value > purchasePriceSlider.max) {
-                    const newMax = Math.max(value * 1.2, 1000);
-                    purchasePriceSlider.max = newMax;
-                    updateSliderLabels(purchasePriceSlider, 'purchasePrice');
-                }
-                if (value < purchasePriceSlider.min && value > 0) {
-                    const newMin = Math.min(value * 0.8, 10);
-                    purchasePriceSlider.min = newMin;
-                    updateSliderLabels(purchasePriceSlider, 'purchasePrice');
-                }
-                if (value >= purchasePriceSlider.min && value <= purchasePriceSlider.max) {
-                    purchasePriceSlider.value = value;
-                }
-                calculateESPP();
-            });
-            
-            // Tax rate input fields are now handled by the general input listeners below
-            
-            // Set up all other input listeners
-            const inputs = document.querySelectorAll('input:not([type="range"]):not([id="grantPriceManual"]):not([id="purchasePriceManual"]), select');
+            // Set up all other input listeners (excluding dynamic purchase price fields which have their own listeners)
+            const inputs = document.querySelectorAll('input:not([type="range"]):not([id^="purchasePrice"]):not([id="grantPriceManual"]), select:not([id="offeringPeriod"]):not([id="period"])');
             inputs.forEach(input => {
                 input.addEventListener('input', calculateESPP);
             });
             
-            // Initial calculations
-            calculateESPP();
-            
             // Initialize advanced options as hidden
             document.getElementById('advancedOptions').style.display = 'none';
+            
+            // Initialize grant price section visibility
+            toggleGrantPriceSection();
         });
     </script>
 </body>
