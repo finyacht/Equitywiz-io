@@ -53,8 +53,15 @@ exports.handler = async (event, context) => {
     // Route to different Polygon.io endpoints
     switch (endpoint) {
       case 'sp500':
-        // S&P 500 - Use SPY ETF as proxy
-        polygonUrl = `https://api.polygon.io/v2/aggs/ticker/SPY/range/1/day/2023-01-01/2024-12-31?adjusted=true&sort=asc&apikey=${POLYGON_API_KEY}`;
+        // S&P 500 - Use SPY ETF as proxy with dynamic date range
+        const today = new Date();
+        const oneYearAgo = new Date(today);
+        oneYearAgo.setFullYear(today.getFullYear() - 1);
+        
+        const startDate = oneYearAgo.toISOString().split('T')[0]; // YYYY-MM-DD format
+        const endDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+        
+        polygonUrl = `https://api.polygon.io/v2/aggs/ticker/SPY/range/1/day/${startDate}/${endDate}?adjusted=true&sort=asc&apikey=${POLYGON_API_KEY}`;
         break;
         
       case 'market-status':
