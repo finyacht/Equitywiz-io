@@ -1014,10 +1014,9 @@
                 const indices = {};
                 results.forEach(item => {
                     const ticker = item.ticker || item.T;
-                    const current = item.value || item.c || 0;
-                    const previous = item.prevDay?.c || current;
-                    const change = current - previous;
-                    const changePercent = (change / previous) * 100;
+                    const current = item.prevDay?.c || item.value || item.c || 0;
+                    const changePercent = parseFloat(item.change) || 0;
+                    const change = (current * changePercent) / 100;
                     
                     switch(ticker) {
                         case 'SPY':
