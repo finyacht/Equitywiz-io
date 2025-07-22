@@ -127,6 +127,81 @@ app.get('/stock-screener.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'stock-screener.html'));
 });
 
+// Polygon API Proxy Route for Local Development
+app.get('/.netlify/functions/polygon-api', async (req, res) => {
+  try {
+    const { endpoint } = req.query;
+    const POLYGON_API_KEY = process.env.POLYGON_API_KEY || 'OqQWRbz1lQ5xl_NKDRsnBoFfFDD2KHAt';
+
+    console.log(`🔍 Local Polygon API: Fetching ${endpoint}`);
+
+    let polygonUrl;
+    
+    // Route to different Polygon.io endpoints
+    switch (endpoint) {
+      case 'sp500':
+        // S&P 500 - Use SPY ETF as proxy
+        polygonUrl = `https://api.polygon.io/v2/aggs/ticker/SPY/range/1/day/2023-01-01/2024-12-31?adjusted=true&sort=asc&apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      case 'market-status':
+        polygonUrl = `https://api.polygon.io/v1/marketstatus/now?apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      case 'gainers':
+        polygonUrl = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/gainers?apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      case 'losers':
+        polygonUrl = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/losers?apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      case 'indices':
+        // Major indices - we'll get SPY, QQQ, DIA, VIX
+        polygonUrl = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers?tickers=SPY,QQQ,DIA,VIX&apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      case 'ticker':
+        const { symbol } = req.query;
+        if (!symbol) {
+          return res.status(400).json({ error: 'Symbol parameter required for ticker endpoint' });
+        }
+        polygonUrl = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${symbol}?apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      default:
+        return res.status(400).json({ error: 'Invalid endpoint' });
+    }
+
+    console.log(`📡 Fetching from Polygon: ${polygonUrl.replace(POLYGON_API_KEY, '***')}`);
+
+    const response = await fetch(polygonUrl);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ Polygon API error: ${response.status} ${response.statusText}`);
+      console.error(`❌ Error details: ${errorText}`);
+      return res.status(response.status).json({ 
+        error: `Polygon API error: ${response.statusText}`,
+        details: errorText,
+        status: response.status
+      });
+    }
+
+    const data = await response.json();
+    console.log(`✅ Polygon API success for ${endpoint}`);
+    
+    res.json(data);
+
+  } catch (error) {
+    console.error('💥 Polygon API function error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
+  }
+});
+
 // Gemini API Proxy Route
 app.post('/api/gemini-chat', async (req, res) => {
   try {
