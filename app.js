@@ -118,6 +118,15 @@ app.get('/espp-calculator.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'espp-calculator.html'));
 });
 
+// Route for the Stock Market Screener
+app.get('/stock-screener', (req, res) => {
+  res.sendFile(path.join(__dirname, 'stock-screener.html'));
+});
+
+app.get('/stock-screener.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'stock-screener.html'));
+});
+
 // Gemini API Proxy Route
 app.post('/api/gemini-chat', async (req, res) => {
   try {

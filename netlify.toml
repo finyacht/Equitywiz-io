@@ -10,6 +10,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/polygon-api"
+  to = "/.netlify/functions/polygon-api"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
@@ -50,6 +56,18 @@
 [[redirects]]
   from = "/vanilla"
   to = "/vanilla.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/stock-screener"
+  to = "/stock-screener.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/espp-calculator"
+  to = "/espp-calculator.html"
   status = 200
   force = true
 
