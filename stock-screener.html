@@ -988,7 +988,7 @@
             transformSP500Data(data) {
                 if (!data.results || !Array.isArray(data.results)) return null;
                 
-                const results = data.results.slice(-30); // Last 30 days
+                const results = data.results.slice(-60); // Last 60 days for better trend visibility
                 return {
                     labels: results.map(item => {
                         const date = new Date(item.t);
