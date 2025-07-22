@@ -70,53 +70,59 @@ exports.handler = async (event, context) => {
         
       case 'gainers':
         // Free tier fallback: Use sample data or alternative approach
-        return res.json({
+        const gainersData = {
           status: "OK",
           results: [
-            { ticker: "AAPL", todaysChangePerc: 2.5, lastQuote: { lastPrice: 175.20 }},
-            { ticker: "GOOGL", todaysChangePerc: 1.8, lastQuote: { lastPrice: 145.30 }},
-            { ticker: "MSFT", todaysChangePerc: 1.2, lastQuote: { lastPrice: 350.45 }},
-            { ticker: "TSLA", todaysChangePerc: 0.9, lastQuote: { lastPrice: 185.60 }},
-            { ticker: "NVDA", todaysChangePerc: 0.7, lastQuote: { lastPrice: 520.80 }}
+            { ticker: "AAPL", todaysChangePerc: 2.8, lastQuote: { lastPrice: 233.45 }},
+            { ticker: "NVDA", todaysChangePerc: 2.1, lastQuote: { lastPrice: 147.82 }},
+            { ticker: "MSFT", todaysChangePerc: 1.9, lastQuote: { lastPrice: 445.67 }},
+            { ticker: "GOOGL", todaysChangePerc: 1.4, lastQuote: { lastPrice: 180.23 }},
+            { ticker: "TSLA", todaysChangePerc: 1.2, lastQuote: { lastPrice: 415.89 }}
           ]
-        });
+        };
+        return res.json(gainersData);
         
       case 'losers':
         // Free tier fallback: Use sample data
-        return res.json({
+        const losersData = {
           status: "OK", 
           results: [
-            { ticker: "META", todaysChangePerc: -1.5, lastQuote: { lastPrice: 485.20 }},
-            { ticker: "AMZN", todaysChangePerc: -1.2, lastQuote: { lastPrice: 155.30 }},
-            { ticker: "NFLX", todaysChangePerc: -0.8, lastQuote: { lastPrice: 445.67 }},
-            { ticker: "AMD", todaysChangePerc: -0.6, lastQuote: { lastPrice: 125.40 }},
-            { ticker: "INTC", todaysChangePerc: -0.4, lastQuote: { lastPrice: 42.15 }}
+            { ticker: "META", todaysChangePerc: -2.1, lastQuote: { lastPrice: 589.45 }},
+            { ticker: "AMZN", todaysChangePerc: -1.8, lastQuote: { lastPrice: 205.67 }},
+            { ticker: "NFLX", todaysChangePerc: -1.4, lastQuote: { lastPrice: 915.23 }},
+            { ticker: "AMD", todaysChangePerc: -1.1, lastQuote: { lastPrice: 142.89 }},
+            { ticker: "INTC", todaysChangePerc: -0.9, lastQuote: { lastPrice: 22.34 }}
           ]
-        });
+        };
+        return res.json(losersData);
         
       case 'indices':
         // Free tier: Get individual ticker data for major indices
-        const tickers = ['SPY', 'QQQ', 'DIA'];
-        const promises = tickers.map(async (ticker) => {
-          const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apikey=${POLYGON_API_KEY}`;
-          const response = await fetch(url);
-          if (response.ok) {
-            const data = await response.json();
-            return {
-              ticker,
-              prevDay: data.results?.[0] || { c: 0, o: 0 },
-              change: data.results?.[0] ? ((data.results[0].c - data.results[0].o) / data.results[0].o * 100).toFixed(2) : 0
-            };
-          }
-          return { ticker, prevDay: { c: 0, o: 0 }, change: 0 };
-        });
-        
-        const indicesData = await Promise.all(promises);
-        return res.json({
-          status: "OK",
-          results: indicesData
-        });
-        break;
+        try {
+          const tickers = ['SPY', 'QQQ', 'DIA'];
+          const promises = tickers.map(async (ticker) => {
+            const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apikey=${POLYGON_API_KEY}`;
+            const response = await fetch(url);
+            if (response.ok) {
+              const data = await response.json();
+              return {
+                ticker,
+                prevDay: data.results?.[0] || { c: 0, o: 0 },
+                change: data.results?.[0] ? ((data.results[0].c - data.results[0].o) / data.results[0].o * 100).toFixed(2) : 0
+              };
+            }
+            return { ticker, prevDay: { c: 0, o: 0 }, change: 0 };
+          });
+          
+          const indicesData = await Promise.all(promises);
+          return res.json({
+            status: "OK",
+            results: indicesData
+          });
+        } catch (error) {
+          console.error('Error fetching indices:', error);
+          return res.status(500).json({ error: 'Failed to fetch indices data' });
+        }
         
       case 'ticker':
         const { symbol } = event.queryStringParameters;
