@@ -99,11 +99,17 @@ exports.handler = async (event, context) => {
     const response = await fetch(polygonUrl);
     
     if (!response.ok) {
+      const errorText = await response.text();
       console.error(`❌ Polygon API error: ${response.status} ${response.statusText}`);
+      console.error(`❌ Error details: ${errorText}`);
       return {
         statusCode: response.status,
         headers,
-        body: JSON.stringify({ error: `Polygon API error: ${response.statusText}` }),
+        body: JSON.stringify({ 
+          error: `Polygon API error: ${response.statusText}`,
+          details: errorText,
+          status: response.status
+        }),
       };
     }
 

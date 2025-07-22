@@ -889,12 +889,24 @@
             async getSP500Data() {
                 try {
                     console.log('📊 Fetching S&P 500 data...');
-                    const response = await fetch(`${this.baseUrl}/.netlify/functions/polygon-api?endpoint=sp500`);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const url = `${this.baseUrl}/.netlify/functions/polygon-api?endpoint=sp500`;
+                    console.log('📡 S&P 500 URL:', url);
+                    
+                    const response = await fetch(url);
+                    console.log('📊 S&P 500 response status:', response.status);
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ S&P 500 API error:', errorText);
+                        throw new Error(`HTTP ${response.status} - ${errorText}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('✅ S&P 500 data received:', data);
                     return this.transformSP500Data(data);
                 } catch (error) {
                     console.error('❌ Error fetching S&P 500 data:', error);
+                    console.error('❌ Error details:', error.message);
                     return null;
                 }
             }
@@ -902,13 +914,30 @@
             async getTopMovers() {
                 try {
                     console.log('🔥 Fetching top movers...');
+                    const gainersUrl = `${this.baseUrl}/.netlify/functions/polygon-api?endpoint=gainers`;
+                    const losersUrl = `${this.baseUrl}/.netlify/functions/polygon-api?endpoint=losers`;
+                    
+                    console.log('📡 Gainers URL:', gainersUrl);
+                    console.log('📡 Losers URL:', losersUrl);
+                    
                     const [gainersResponse, losersResponse] = await Promise.all([
-                        fetch(`${this.baseUrl}/.netlify/functions/polygon-api?endpoint=gainers`),
-                        fetch(`${this.baseUrl}/.netlify/functions/polygon-api?endpoint=losers`)
+                        fetch(gainersUrl),
+                        fetch(losersUrl)
                     ]);
                     
-                    if (!gainersResponse.ok || !losersResponse.ok) {
-                        throw new Error('Failed to fetch movers data');
+                    console.log('📊 Gainers response status:', gainersResponse.status);
+                    console.log('📊 Losers response status:', losersResponse.status);
+                    
+                    if (!gainersResponse.ok) {
+                        const gainersError = await gainersResponse.text();
+                        console.error('❌ Gainers API error:', gainersError);
+                        throw new Error(`Gainers API failed: ${gainersResponse.status} - ${gainersError}`);
+                    }
+                    
+                    if (!losersResponse.ok) {
+                        const losersError = await losersResponse.text();
+                        console.error('❌ Losers API error:', losersError);
+                        throw new Error(`Losers API failed: ${losersResponse.status} - ${losersError}`);
                     }
                     
                     const [gainersData, losersData] = await Promise.all([
@@ -916,12 +945,16 @@
                         losersResponse.json()
                     ]);
                     
+                    console.log('✅ Gainers data received:', gainersData);
+                    console.log('✅ Losers data received:', losersData);
+                    
                     return {
                         gainers: this.transformMoversData(gainersData.results || []),
                         losers: this.transformMoversData(losersData.results || [])
                     };
                 } catch (error) {
                     console.error('❌ Error fetching top movers:', error);
+                    console.error('❌ Error details:', error.message);
                     return null;
                 }
             }
@@ -929,12 +962,24 @@
             async getMarketSummary() {
                 try {
                     console.log('📈 Fetching market indices...');
-                    const response = await fetch(`${this.baseUrl}/.netlify/functions/polygon-api?endpoint=indices`);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const url = `${this.baseUrl}/.netlify/functions/polygon-api?endpoint=indices`;
+                    console.log('📡 Market indices URL:', url);
+                    
+                    const response = await fetch(url);
+                    console.log('📊 Market indices response status:', response.status);
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Market indices API error:', errorText);
+                        throw new Error(`HTTP ${response.status} - ${errorText}`);
+                    }
+                    
                     const data = await response.json();
+                    console.log('✅ Market indices data received:', data);
                     return this.transformMarketData(data.results || []);
                 } catch (error) {
                     console.error('❌ Error fetching market summary:', error);
+                    console.error('❌ Error details:', error.message);
                     return null;
                 }
             }

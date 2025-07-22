@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygon API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0052a3;
+        }
+        .result {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            border-left: 4px solid #0066cc;
+        }
+        .error {
+            border-left-color: #dc2626;
+            background: #fef2f2;
+        }
+        .success {
+            border-left-color: #059669;
+            background: #f0fdf4;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Polygon.io API Debug Tool</h1>
+    <p>This tool helps debug the Polygon.io API integration for your stock market screener.</p>
+
+    <div class="test-section">
+        <h2>🔧 Environment Check</h2>
+        <button onclick="checkEnvironment()">Check Environment</button>
+        <div id="envResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test Individual Endpoints</h2>
+        <button onclick="testEndpoint('gainers')">Test Gainers</button>
+        <button onclick="testEndpoint('losers')">Test Losers</button>
+        <button onclick="testEndpoint('indices')">Test Indices</button>
+        <button onclick="testEndpoint('sp500')">Test S&P 500</button>
+        <div id="endpointResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔑 Direct Polygon.io Test</h2>
+        <p>Test Polygon.io API directly (requires CORS or server-side call)</p>
+        <button onclick="testDirectPolygon()">Test Direct API</button>
+        <div id="directResult" class="result"></div>
+    </div>
+
+    <script>
+        const baseUrl = window.location.origin;
+
+        function log(message, elementId, isError = false, isSuccess = false) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}\n`;
+            
+            element.textContent += logMessage;
+            element.className = `result ${isError ? 'error' : isSuccess ? 'success' : ''}`;
+            element.scrollTop = element.scrollHeight;
+            
+            console.log(message);
+        }
+
+        function checkEnvironment() {
+            const envResult = document.getElementById('envResult');
+            envResult.textContent = '';
+            
+            log('🔍 Checking environment...', 'envResult');
+            log(`🌐 Base URL: ${baseUrl}`, 'envResult');
+            log(`📍 Current location: ${window.location.href}`, 'envResult');
+            log(`🔧 User agent: ${navigator.userAgent}`, 'envResult');
+            
+            // Test if Netlify functions are accessible
+            testNetlifyFunctionAccess();
+        }
+
+        async function testNetlifyFunctionAccess() {
+            try {
+                log('📡 Testing Netlify functions access...', 'envResult');
+                const testUrl = `${baseUrl}/.netlify/functions/polygon-api?endpoint=test`;
+                log(`🔗 Test URL: ${testUrl}`, 'envResult');
+                
+                const response = await fetch(testUrl);
+                log(`📊 Response status: ${response.status}`, 'envResult');
+                log(`📊 Response headers: ${JSON.stringify([...response.headers.entries()])}`, 'envResult');
+                
+                const text = await response.text();
+                log(`📋 Response body: ${text}`, 'envResult', !response.ok, response.ok);
+                
+            } catch (error) {
+                log(`❌ Function access error: ${error.message}`, 'envResult', true);
+            }
+        }
+
+        async function testEndpoint(endpoint) {
+            const resultDiv = document.getElementById('endpointResult');
+            if (endpoint === 'gainers' || endpoint === 'losers') {
+                resultDiv.textContent = '';
+            }
+            
+            try {
+                log(`🧪 Testing ${endpoint} endpoint...`, 'endpointResult');
+                const url = `${baseUrl}/.netlify/functions/polygon-api?endpoint=${endpoint}`;
+                log(`📡 URL: ${url}`, 'endpointResult');
+                
+                const startTime = Date.now();
+                const response = await fetch(url);
+                const endTime = Date.now();
+                
+                log(`⏱️ Response time: ${endTime - startTime}ms`, 'endpointResult');
+                log(`📊 Status: ${response.status} ${response.statusText}`, 'endpointResult');
+                log(`📋 Headers: ${JSON.stringify([...response.headers.entries()], null, 2)}`, 'endpointResult');
+                
+                const text = await response.text();
+                
+                if (response.ok) {
+                    try {
+                        const data = JSON.parse(text);
+                        log(`✅ Success! Data preview:`, 'endpointResult', false, true);
+                        log(JSON.stringify(data, null, 2), 'endpointResult', false, true);
+                    } catch (jsonError) {
+                        log(`⚠️ Response not JSON: ${text}`, 'endpointResult');
+                    }
+                } else {
+                    log(`❌ Error response: ${text}`, 'endpointResult', true);
+                }
+                
+            } catch (error) {
+                log(`💥 Fetch error: ${error.message}`, 'endpointResult', true);
+                log(`📋 Error stack: ${error.stack}`, 'endpointResult', true);
+            }
+        }
+
+        async function testDirectPolygon() {
+            const resultDiv = document.getElementById('directResult');
+            resultDiv.textContent = '';
+            
+            log('⚠️ Note: Direct Polygon.io API calls will likely fail due to CORS', 'directResult');
+            log('📝 This test shows what the server-side function should receive', 'directResult');
+            
+            // This will likely fail due to CORS, but it's useful for debugging
+            try {
+                const testUrl = 'https://api.polygon.io/v1/marketstatus/now?apikey=OqQWRbz1lQ5xl_NKDRsnBoFfFDD2KHAt';
+                log(`🧪 Testing direct Polygon.io API...`, 'directResult');
+                log(`📡 URL: ${testUrl}`, 'directResult');
+                
+                const response = await fetch(testUrl);
+                log(`📊 Status: ${response.status}`, 'directResult');
+                
+                const data = await response.json();
+                log(`✅ Direct API works! Data:`, 'directResult', false, true);
+                log(JSON.stringify(data, null, 2), 'directResult', false, true);
+                
+            } catch (error) {
+                log(`❌ Expected CORS error: ${error.message}`, 'directResult');
+                log(`📝 This confirms we need server-side proxy (Netlify function)`, 'directResult');
+            }
+        }
+
+        // Auto-run environment check on load
+        window.addEventListener('DOMContentLoaded', checkEnvironment);
+    </script>
+</body>
+</html> 
