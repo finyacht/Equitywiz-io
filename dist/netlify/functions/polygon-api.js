@@ -80,7 +80,11 @@ exports.handler = async (event, context) => {
             { ticker: "TSLA", todaysChangePerc: 1.2, lastQuote: { lastPrice: 415.89 }}
           ]
         };
-        return res.json(gainersData);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(gainersData)
+        };
         
       case 'losers':
         // Free tier fallback: Use sample data
@@ -94,7 +98,11 @@ exports.handler = async (event, context) => {
             { ticker: "INTC", todaysChangePerc: -0.9, lastQuote: { lastPrice: 22.34 }}
           ]
         };
-        return res.json(losersData);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify(losersData)
+        };
         
       case 'indices':
         // Free tier: Get individual ticker data for major indices
@@ -115,13 +123,21 @@ exports.handler = async (event, context) => {
           });
           
           const indicesData = await Promise.all(promises);
-          return res.json({
-            status: "OK",
-            results: indicesData
-          });
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              status: "OK",
+              results: indicesData
+            })
+          };
         } catch (error) {
           console.error('Error fetching indices:', error);
-          return res.status(500).json({ error: 'Failed to fetch indices data' });
+          return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ error: 'Failed to fetch indices data' })
+          };
         }
         
       case 'ticker':
