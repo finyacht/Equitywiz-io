@@ -12,7 +12,7 @@ try {
 }
 
 const app = express();
-const port = 3000; // Changed from 4000 to 3000
+const port = 3001; // Using 3001 to avoid conflicts
 
 // Add middleware to parse JSON bodies
 app.use(express.json());
@@ -100,17 +100,48 @@ app.get('/chatbot-demo.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'chatbot-demo.html'));
 });
 
+// Route for the Neon Cycles Game
+app.get('/neon-cycles', (req, res) => {
+  res.sendFile(path.join(__dirname, 'neon-cycles.html'));
+});
+
+app.get('/neon-cycles.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'neon-cycles.html'));
+});
+
+// Route for the ESPP Calculator
+app.get('/espp-calculator', (req, res) => {
+  res.sendFile(path.join(__dirname, 'espp-calculator.html'));
+});
+
+app.get('/espp-calculator.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'espp-calculator.html'));
+});
+
+// Route for the Stock Market Screener
+app.get('/stock-screener', (req, res) => {
+  res.sendFile(path.join(__dirname, 'stock-screener.html'));
+});
+
+app.get('/stock-screener.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'stock-screener.html'));
+});
+
 // Gemini API Proxy Route
 app.post('/api/gemini-chat', async (req, res) => {
   try {
     const { message, history, apiKey } = req.body;
     
-    if (!apiKey) {
-      return res.status(400).json({ error: 'API key is required' });
+    // Use provided API key or fall back to environment variable
+    const activeApiKey = apiKey || process.env.GEMINI_API_KEY;
+    
+    if (!activeApiKey) {
+      return res.status(400).json({ error: 'API key not available' });
     }
 
     console.log('🤖 Gemini Proxy: Received request with message:', message);
-    console.log('🔑 Gemini Proxy: API Key present:', !!apiKey);
+    console.log('🔑 Gemini Proxy: API Key present:', !!activeApiKey);
+    console.log('🌍 Gemini Proxy: Using environment key:', !apiKey && !!process.env.GEMINI_API_KEY);
 
     // Build conversation for Gemini (simplified format)
     let conversationText = `You are Yikes AI, a specialized assistant for equity and cap table management based on comprehensive platform user guides.
@@ -185,7 +216,7 @@ IMPORTANT: Always provide comprehensive workflows with 6-12+ action points. Neve
 
     console.log('📤 Gemini Proxy: Sending request to Gemini API');
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${activeApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

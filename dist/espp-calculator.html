@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-RT0B6NXFG6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPP Return Calculator</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <!-- Load Chart.js with all required modules -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .nav-home {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-home:hover {
+            transform: translateY(-2px);
+        }
+
+        .nav-home svg {
+            margin-right: 8px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 56px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .header p {
+            font-size: 21px;
+            color: #86868b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1d1d1f;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .label-with-tooltip {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        label {
+            color: #1d1d1f;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .tooltip {
+            position: relative;
+            margin-left: 8px;
+            cursor: help;
+        }
+
+        .tooltip-icon {
+            width: 16px;
+            height: 16px;
+            background: #86868b;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .tooltip-content {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1d1d1f;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 300px;
+            width: max-content;
+            white-space: normal;
+            line-height: 1.5;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Auto-adjust tooltip position when near edges */
+        .tooltip:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-content.tooltip-left {
+            left: 0;
+            transform: translateX(0);
+        }
+
+        .tooltip-content.tooltip-right {
+            left: auto;
+            right: 0;
+            transform: translateX(0);
+        }
+
+        .tooltip:hover .tooltip-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-content::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #1d1d1f;
+        }
+
+        input, select {
+            padding: 16px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            color: #1e293b;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0a5264;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(10, 82, 100, 0.1), 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input:hover:not(:focus), select:hover:not(:focus) {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculate-btn {
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            color: white;
+            border: none;
+            padding: 18px 36px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(10, 82, 100, 0.3);
+        }
+
+        .results {
+            display: block;
+            margin-top: 40px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+        }
+
+        .result-label {
+            color: #86868b;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1d1d1f;
+        }
+
+        .profit {
+            color: #10b981;
+        }
+
+        .return {
+            color: #0a5264;
+        }
+
+        .scenarios {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .scenario-card {
+            background: white;
+            border: 2px solid #e5e5e7;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            border-color: #0a5264;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .scenario-title {
+            font-weight: 600;
+            color: #86868b;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .scenario-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .scenario-card small {
+            display: block;
+            margin-top: 8px;
+            color: #86868b;
+            font-size: 12px;
+        }
+
+        /* Price Sliders */
+        .price-sliders {
+            margin: 20px 0;
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .price-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e5e5e7;
+            outline: none;
+            margin-top: 10px;
+            -webkit-appearance: none;
+        }
+
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(10, 82, 100, 0.3);
+        }
+
+        .price-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(10, 82, 100, 0.3);
+        }
+
+        /* Advanced Options */
+        .advanced-toggle {
+            text-align: center;
+            margin: 30px 0 20px 0;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: 2px solid #0a5264;
+            color: #0a5264;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #0a5264;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .advanced-options {
+            border-top: 2px solid #e5e5e7;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            margin: 30px 0;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        #periodsChart {
+            width: 100%;
+            height: 300px;
+        }
+
+        /* Dynamic guarantee text */
+        .guarantee-text {
+            background: #f0f9ff;
+            border-left: 4px solid #0a5264;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 15px;
+            color: #0a5264;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 15px;
+            color: #1e40af;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #1d4ed8;
+        }
+
+        .disclaimer {
+            background: #fef2f2;
+            border: 2px solid #f87171;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #991b1b;
+            line-height: 1.6;
+        }
+
+        .disclaimer h3 {
+            color: #dc2626;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .disclaimer ul {
+            margin-left: 20px;
+            margin-top: 12px;
+        }
+
+        .disclaimer li {
+            margin-bottom: 8px;
+        }
+
+        .hover-explanation {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #86868b;
+        }
+
+        .hover-explanation:hover::after {
+            content: attr(data-explanation);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1d1d1f 0%, #2d2d2f 100%);
+            color: white;
+            padding: 20px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            z-index: 10000;
+            max-width: 400px;
+            min-width: 300px;
+            white-space: pre-line;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            word-wrap: break-word;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hover-explanation:hover::before {
+            display: none;
+        }
+
+        /* Enhanced tooltip styling */
+        .hover-explanation {
+            position: relative;
+            cursor: help;
+            border-bottom: 2px dotted #0a5264;
+            transition: all 0.3s ease;
+        }
+
+        .hover-explanation:hover {
+            border-bottom-color: #084552;
+        }
+
+        /* Input Groups with Sliders */
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 8px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%);
+            outline: none;
+            -webkit-appearance: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .slider:hover {
+            background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(10, 82, 100, 0.1);
+        }
+
+        .slider:focus {
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 4px rgba(10, 82, 100, 0.2);
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a5264 0%, #0891b2 30%, #0e7490 70%, #084552 100%);
+            cursor: pointer;
+            box-shadow: 
+                0 8px 16px rgba(10, 82, 100, 0.3),
+                0 4px 8px rgba(0, 0, 0, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 4px solid #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 
+                0 12px 24px rgba(10, 82, 100, 0.4),
+                0 6px 12px rgba(0, 0, 0, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            background: linear-gradient(135deg, #0891b2 0%, #0284c7 30%, #0369a1 70%, #0a5264 100%);
+        }
+
+        .slider::-webkit-slider-thumb:active {
+            transform: scale(1.05);
+            box-shadow: 
+                0 6px 12px rgba(10, 82, 100, 0.5),
+                0 3px 6px rgba(0, 0, 0, 0.2),
+                inset 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a5264 0%, #0891b2 30%, #0e7490 70%, #084552 100%);
+            cursor: pointer;
+            border: 4px solid #ffffff;
+            box-shadow: 
+                0 8px 16px rgba(10, 82, 100, 0.3),
+                0 4px 8px rgba(0, 0, 0, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slider::-moz-range-thumb:hover {
+            transform: scale(1.15);
+            box-shadow: 
+                0 12px 24px rgba(10, 82, 100, 0.4),
+                0 6px 12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #0891b2 0%, #0284c7 30%, #0369a1 70%, #0a5264 100%);
+        }
+
+        .value-display {
+            background: #f8f9fa;
+            border: 2px solid #e5e5e7;
+            border-radius: 8px;
+            padding: 8px 12px;
+            min-width: 80px;
+            text-align: center;
+            font-weight: 600;
+            color: #0a5264;
+        }
+
+        .manual-input {
+            width: 100px;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            color: #0a5264;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .manual-input:focus {
+            border-color: #0a5264;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(10, 82, 100, 0.1), 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .manual-input:hover:not(:focus) {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Checkbox Styling */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #0a5264;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            color: #555;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Modern Price Card Styling */
+        .price-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .price-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .grant-price-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid #0a5264;
+        }
+
+        .price-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .price-card-header h4 {
+            margin: 0;
+            color: #0a5264;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .price-input-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .price-range-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .modern-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, #e2e8f0 0%, #cbd5e1 100%);
+            outline: none;
+            -webkit-appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        .modern-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a5264 0%, #0891b2 100%);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(10, 82, 100, 0.3);
+            border: 3px solid #ffffff;
+        }
+
+        .modern-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(10, 82, 100, 0.4);
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .price-input-container {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0 12px;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .price-input-container:focus-within {
+            border-color: #0a5264;
+            box-shadow: 0 0 0 3px rgba(10, 82, 100, 0.1);
+        }
+
+        .currency-symbol {
+            color: #6b7280;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .price-input {
+            border: none;
+            outline: none;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0a5264;
+            background: transparent;
+            width: 100%;
+        }
+
+        /* Purchase Periods Section */
+        .purchase-periods-section {
+            margin-top: 25px;
+        }
+
+        .section-subtitle {
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+        }
+
+        .purchase-periods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .purchase-period-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .purchase-period-card:hover {
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .period-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .period-title {
+            color: #0a5264;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .period-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .compact-slider {
+            width: 120px;
+            height: 4px;
+            border-radius: 2px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .compact-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #0a5264;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .compact-input-container {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 0 8px;
+            min-width: 80px;
+        }
+
+        .compact-input-container .currency-symbol {
+            font-size: 12px;
+            margin-right: 3px;
+        }
+
+        .compact-price-input {
+            border: none;
+            outline: none;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0a5264;
+            background: transparent;
+            width: 100%;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .header p {
+                font-size: 18px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .scenarios {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="nav-home">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+            Back to Home
+        </a>
+
+        <div class="header">
+            <h1>ESPP Return Calculator</h1>
+            <p>Calculate potential returns from your Employee Stock Purchase Plan with detailed tax implications and scenarios</p>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Basic Parameters</h2>
+            
+            <!-- First Group: Salary and Contribution -->
+            <h3 class="section-title" style="margin-top: 20px; font-size: 20px;">Employee Information</h3>
+            <div class="input-grid">
+                <div class="input-group">
+                    <div class="label-with-tooltip">
+                        <label for="salary">Annual Salary</label>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">Your annual gross salary used to calculate ESPP contribution limits</div>
+                        </div>
+                    </div>
+                    <input type="number" id="salary" value="120000" min="0">
+                </div>
+                
+                <div class="input-group">
+                    <div class="label-with-tooltip">
+                        <label for="contribution">Contribution Rate (%)</label>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">Percentage of salary contributed to ESPP (typically 1-15%)</div>
+                        </div>
+                    </div>
+                    <input type="number" id="contribution" value="10" min="1" max="15">
+                </div>
+            </div>
+
+            <!-- Second Group: Plan Configuration -->
+            <h3 class="section-title" style="margin-top: 30px; font-size: 20px;">Plan Configuration</h3>
+            <div class="input-grid">
+                <div class="input-group">
+                    <div class="label-with-tooltip">
+                        <label for="period">Purchase Period</label>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">Length of the purchase period (contributions accumulate during this time)</div>
+                        </div>
+                    </div>
+                    <select id="period">
+                        <option value="6">6 months</option>
+                        <option value="12">12 months</option>
+                        <option value="24">24 months</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <div class="label-with-tooltip">
+                        <label for="discount">ESPP Discount (%)</label>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">Discount applied to the lower of grant or purchase price (max 15% under Section 423)</div>
+                        </div>
+                    </div>
+                    <input type="number" id="discount" value="15" min="0" max="15" step="0.1">
+                </div>
+
+                <div class="input-group">
+                    <div class="label-with-tooltip">
+                        <label for="offeringPeriod">Offering Period</label>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">Total offering period duration (can have multiple purchase periods)</div>
+                        </div>
+                    </div>
+                    <select id="offeringPeriod">
+                        <option value="6">6 months</option>
+                        <option value="12">12 months</option>
+                        <option value="24" selected>24 months</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <div class="label-with-tooltip">
+                        <label for="lookbackProvision">Lookback Provision</label>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">When enabled, uses the lower of grant price or purchase price. When disabled, uses only current purchase price and hides the grant price field.</div>
+                        </div>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="lookbackProvision" checked>
+                        <label for="lookbackProvision" class="checkbox-label">Enable Lookback Provision</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stock Prices Section -->
+            <h3 class="section-title" style="margin-top: 30px; font-size: 20px;">Stock Prices</h3>
+            
+            <!-- Grant Price Card (only shown when lookback is enabled) -->
+            <div class="price-card grant-price-card" id="grantPriceSection">
+                <div class="price-card-header">
+                    <h4>Grant Price</h4>
+                    <div class="tooltip">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-content">Stock price at the beginning of the offering period (used for lookback provision)</div>
+                    </div>
+                </div>
+                <div class="price-input-row">
+                    <div class="price-range-container">
+                        <input type="range" id="grantPrice" min="50" max="300" value="100" step="5" class="modern-slider">
+                        <div class="range-labels">
+                            <span>$50</span>
+                            <span>$300</span>
+                        </div>
+                    </div>
+                    <div class="price-input-container">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="grantPriceManual" class="price-input" value="100" min="10" max="1000" step="1">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Purchase Periods Grid -->
+            <div class="purchase-periods-section">
+                <h4 class="section-subtitle">Purchase Period Prices</h4>
+                <div class="purchase-periods-grid" id="purchasePriceContainer">
+                    <!-- Purchase price cards will be dynamically generated here -->
+                </div>
+            </div>
+
+            <!-- Advanced Options -->
+            <div class="advanced-toggle">
+                <button class="toggle-btn" onclick="toggleAdvanced()">⚙️ Advanced Options</button>
+            </div>
+
+            <div id="advancedOptions" class="advanced-options" style="display: none;">
+                <h3 class="section-title" style="margin-top: 20px; font-size: 18px;">Tax & Sale Parameters</h3>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <div class="label-with-tooltip">
+                            <label for="currentSalePrice">Current Sale Price ($)</label>
+                            <div class="tooltip">
+                                <div class="tooltip-icon">?</div>
+                                <div class="tooltip-content">Current stock price if selling today (for tax scenario analysis)</div>
+                            </div>
+                        </div>
+                        <input type="number" id="currentSalePrice" value="240" min="0" step="0.01">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-with-tooltip">
+                            <label for="ordinaryTaxRate">Ordinary Tax Rate (%)</label>
+                            <div class="tooltip">
+                                <div class="tooltip-icon">?</div>
+                                <div class="tooltip-content">Your ordinary income tax rate (used for discount amount and disqualifying dispositions)</div>
+                            </div>
+                        </div>
+                        <input type="number" id="ordinaryTaxRate" value="25" min="0" max="50" step="0.1">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label-with-tooltip">
+                            <label for="capitalGainsTaxRate">Capital Gains Tax Rate (%)</label>
+                            <div class="tooltip">
+                                <div class="tooltip-icon">?</div>
+                                <div class="tooltip-content">Your long-term capital gains tax rate (used for appreciation in qualifying dispositions)</div>
+                            </div>
+                        </div>
+                        <input type="number" id="capitalGainsTaxRate" value="15" min="0" max="20" step="0.1">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card results" id="results">
+            <h2 class="section-title">ESPP Analysis Results</h2>
+            
+            <!-- Streamlined Results -->
+            <div class="results-grid">
+                <!-- Investment Input -->
+                <div class="result-card">
+                    <div class="result-label">Total Contribution</div>
+                    <div class="result-value hover-explanation" id="totalContribution" data-explanation="Total Contribution Across Offering Period:
+
+This is the total amount you'll contribute across ALL purchase periods in the offering period.
+
+Calculation: Monthly Contribution × Purchase Period Length × Number of Purchase Periods
+
+This represents your total cash investment over the full offering cycle.">$0</div>
+                </div>
+                
+                <!-- What You Get -->
+                <div class="result-card">
+                    <div class="result-label">Total Shares Purchased</div>
+                    <div class="result-value" id="totalSharesPurchased">0</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Average Price Per Share</div>
+                    <div class="result-value hover-explanation" id="averagePricePerShare" data-explanation="Average Price Per Share:
+
+Calculation: Total Contribution ÷ Total Shares Purchased
+
+This gives you the weighted average price you paid across all purchase periods, factoring in different prices and share quantities per period.">$0</div>
+                </div>
+                
+                <!-- Current Position -->
+                <div class="result-card">
+                    <div class="result-label">Total Current Value</div>
+                    <div class="result-value profit" id="totalCurrentValue">$0</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Total Profit</div>
+                    <div class="result-value profit hover-explanation" id="totalProfit" data-explanation="Total Profit:
+
+Calculation: Total Current Value - Total Contribution
+
+This is your absolute dollar gain if you sold all shares at the current sale price. It represents the total value created by your ESPP participation across all periods.">$0</div>
+                </div>
+                
+                <!-- Performance Metrics -->
+                <div class="result-card">
+                    <div class="result-label">Return on Investment</div>
+                    <div class="result-value return hover-explanation" id="roi" data-explanation="Return on Investment (ROI):
+
+Calculation: (Total Profit ÷ Total Contribution) × 100
+
+This percentage shows your overall return across the entire offering period. It factors in all purchase periods, different prices, and the current sale price.">0%</div>
+                </div>
+                
+                <!-- Conditional Lookback Advantage -->
+                <div class="result-card" id="lookbackAdvantageCard">
+                    <div class="result-label">Lookback Advantage</div>
+                    <div class="result-value profit hover-explanation" id="lookbackAdvantage" data-explanation="Total Lookback Advantage across ALL purchase periods:
+
+This is the total additional profit you gain by having lookback provision enabled across all purchase periods in your offering period.
+
+Calculation:
+• For each period: Calculate profit WITH lookback vs WITHOUT lookback
+• Sum the differences across all periods
+• WITH lookback: Uses lower of (Grant Price, Market Price) + discount
+• WITHOUT lookback: Uses only Market Price + discount
+
+The larger the difference between grant price and market prices, the greater your advantage!">$0</div>
+                </div>
+                
+                <!-- Compliance -->
+                <div class="result-card">
+                    <div class="result-label">Remaining IRS Limit</div>
+                    <div class="result-value hover-explanation" id="remainingLimit" data-explanation="Annual IRS Limit: $25,000 maximum per year
+
+This shows how much of your annual contribution limit remains available for ESPP purchases. The IRS Section 423 sets this federal limit to ensure tax-qualified treatment.
+
+Your current annual contribution based on salary and percentage leaves this much room for additional ESPP participation.">$0</div>
+                </div>
+            </div>
+
+            <!-- Dynamic Guarantee Text will be shown in Advanced Features section -->
+
+            <h3 class="section-title">Multiple Purchase Periods Analysis</h3>
+            <div class="chart-container">
+                <canvas id="periodsChart"></canvas>
+            </div>
+            <div class="scenarios" id="multiplePeriods">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <h3 class="section-title">Tax Scenarios</h3>
+            <div class="scenarios">
+                <div class="scenario-card">
+                    <div class="scenario-title">Qualifying Disposition</div>
+                    <div class="scenario-value hover-explanation" id="qualifyingTax" data-explanation="Qualifying disposition: Discount taxed as ordinary income, appreciation as capital gains. Requires holding 2+ years from grant and 1+ year from purchase.">$0 tax</div>
+                    <small>Hold 2+ years from grant, 1+ year from purchase</small>
+                </div>
+                
+                <div class="scenario-card">
+                    <div class="scenario-title">Disqualifying Disposition</div>
+                    <div class="scenario-value hover-explanation" id="disqualifyingTax" data-explanation="Disqualifying disposition: All gains taxed as ordinary income at your marginal rate. Higher tax but immediate access to proceeds.">$0 tax</div>
+                    <small>Sell before holding requirements</small>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <strong>Advanced ESPP Features:</strong><br><br>
+                <strong>📈 Lookback Provision:</strong> Your purchase price is based on the LOWER of the stock price at the beginning of the offering period or the purchase date. This creates a "win-win" scenario.<br><br>
+                <strong>💰 Guaranteed Return:</strong> With a 15% discount, you're guaranteed at least 17.65% return (15% ÷ 85% = 17.65%) even if stock price stays flat.<br><br>
+                <strong>🔄 Reset Provision:</strong> Some plans reset the offering period if stock price drops significantly, giving you a new, lower starting price.<br><br>
+                <strong>📊 Multiple Purchase Periods:</strong> In a 24-month offering with 6-month purchase periods, you get 4 purchase opportunities, all potentially using the original low grant price!
+            </div>
+
+            <div class="disclaimer">
+                <h3>⚠️ Important Disclaimers</h3>
+                <p><strong>This calculator is for educational purposes only and should not be considered financial advice.</strong></p>
+                <ul>
+                    <li><strong>Tax Implications:</strong> ESPP transactions have complex tax implications that vary by jurisdiction and individual circumstances. Consult a tax professional.</li>
+                    <li><strong>Market Risk:</strong> Stock prices can fluctuate significantly. Past performance does not guarantee future results.</li>
+                    <li><strong>Plan Variations:</strong> ESPP plans vary significantly between companies. Review your specific plan documents.</li>
+                    <li><strong>Contribution Limits:</strong> Most ESPPs limit contributions to $25,000 worth of stock per year (based on fair market value at grant).</li>
+                    <li><strong>Holding Period Requirements:</strong> Favorable tax treatment requires specific holding periods. Early sale may result in higher taxes.</li>
+                    <li><strong>No Investment Advice:</strong> This tool provides calculations only. Consider your overall financial situation and risk tolerance.</li>
+                </ul>
+                <p><strong>Always consult with qualified financial and tax professionals before making investment decisions.</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let periodsChart = null;
+
+        // Function to generate dynamic purchase price fields
+        function generatePurchasePriceFields() {
+            const offeringPeriod = parseInt(document.getElementById('offeringPeriod').value) || 24;
+            const purchasePeriod = parseInt(document.getElementById('period').value) || 6;
+            const numberOfPurchases = Math.max(1, offeringPeriod / purchasePeriod);
+            
+            const container = document.getElementById('purchasePriceContainer');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= numberOfPurchases; i++) {
+                const monthNumber = i * purchasePeriod;
+                const defaultValue = 150 + (i-1)*10;
+                
+                const periodCard = document.createElement('div');
+                periodCard.className = 'purchase-period-card';
+                
+                periodCard.innerHTML = `
+                    <div class="period-header">
+                        <h5 class="period-title">Month ${monthNumber}</h5>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">Stock price at the end of purchase period ${i} when shares are bought</div>
+                        </div>
+                    </div>
+                    <div class="period-controls">
+                        <input type="range" id="purchasePrice${i}" min="50" max="300" value="${defaultValue}" step="5" class="compact-slider">
+                        <div class="compact-input-container">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" id="purchasePrice${i}Manual" class="compact-price-input" value="${defaultValue}" min="10" max="1000" step="1">
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(periodCard);
+            }
+            
+            // Add event listeners for new purchase price fields
+            setupPurchasePriceEventListeners(numberOfPurchases);
+            calculateESPP();
+        }
+
+        // Setup event listeners for purchase price sliders
+        function setupPurchasePriceEventListeners(numberOfPurchases) {
+            for (let i = 1; i <= numberOfPurchases; i++) {
+                const slider = document.getElementById(`purchasePrice${i}`);
+                const manual = document.getElementById(`purchasePrice${i}Manual`);
+                
+                slider.addEventListener('input', function() {
+                    manual.value = this.value;
+                    calculateESPP();
+                });
+                
+                manual.addEventListener('input', function() {
+                    const value = parseFloat(this.value) || 0;
+                    if (value > slider.max) {
+                        const newMax = Math.ceil(value * 1.2);
+                        slider.max = newMax;
+                    }
+                    if (value < slider.min && value > 0) {
+                        const newMin = Math.floor(value * 0.8);
+                        slider.min = newMin;
+                    }
+                    if (value >= slider.min && value <= slider.max) {
+                        slider.value = value;
+                    }
+                    calculateESPP();
+                });
+            }
+        }
+
+        // Function to toggle grant price section visibility based on lookback provision
+        function toggleGrantPriceSection() {
+            const lookbackEnabled = document.getElementById('lookbackProvision').checked;
+            const grantPriceSection = document.getElementById('grantPriceSection');
+            
+            if (lookbackEnabled) {
+                grantPriceSection.style.display = 'block';
+            } else {
+                grantPriceSection.style.display = 'none';
+            }
+        }
+
+        // Format numbers with proper locale
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        };
+        
+        const formatPercent = (percent) => {
+            return new Intl.NumberFormat('en-US', {
+                style: 'percent',
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1
+            }).format(percent / 100);
+        };
+
+        function updateSliderValues() {
+            const grantPrice = document.getElementById('grantPrice').value;
+            const purchasePrice = document.getElementById('purchasePrice').value;
+            
+            document.getElementById('grantPriceValue').textContent = grantPrice;
+            document.getElementById('purchasePriceValue').textContent = purchasePrice;
+        }
+
+        function updateDynamicTooltips(data) {
+            // Update lookback advantage tooltip
+            const lookbackElement = document.getElementById('lookbackAdvantage');
+            
+            if (data.lookbackEnabled) {
+                lookbackElement.setAttribute('data-explanation', 
+                    `Total Lookback Advantage across ALL purchase periods:
+    
+    This is the total additional profit you gain by having lookback provision enabled across all purchase periods in your offering period.
+    
+    Calculation:
+    • For each period: Calculate profit WITH lookback vs WITHOUT lookback
+    • Sum the differences across all periods
+    • WITH lookback: Uses lower of (Grant Price, Market Price) + discount
+    • WITHOUT lookback: Uses only Market Price + discount
+    
+    The larger the difference between grant price and market prices, the greater your advantage!`);
+            } else {
+                lookbackElement.setAttribute('data-explanation', 
+                    `Lookback provision is disabled. Purchase price is based only on the current market price at purchase date with discount applied.
+    
+    No lookback advantage since the plan doesn't use grant date pricing.`);
+            }
+
+            // Update tax tooltips
+            const qualifyingElement = document.getElementById('qualifyingTax');
+            const disqualifyingElement = document.getElementById('disqualifyingTax');
+            
+            const discountPerShare = (data.lowerPrice - data.actualPurchasePrice).toFixed(2);
+            const appreciationPerShare = Math.max(0, data.currentSalePrice - data.lowerPrice).toFixed(2);
+            const totalGainPerShare = (data.currentSalePrice - data.actualPurchasePrice).toFixed(2);
+            
+            // Calculate detailed math for tooltips (using corrected total figures)
+            const totalShares = data.totalShares || data.sharesPurchased;
+            const totalGain = totalShares * data.currentSalePrice - (totalShares * data.actualPurchasePrice);
+            const totalDiscountAmount = totalShares * (data.lowerPrice - data.actualPurchasePrice);
+            const totalAppreciationAmount = Math.max(0, totalShares * (data.currentSalePrice - data.lowerPrice));
+            
+            qualifyingElement.setAttribute('data-explanation',
+                `Math: (Total Discount × ${(data.ordinaryTaxRate*100).toFixed(0)}% Ordinary) + (Total Appreciation × ${(data.capitalGainsTaxRate*100).toFixed(0)}% Capital Gains)
+
+Across ALL ${Math.ceil(totalShares/data.sharesPurchased)} purchase periods:
+• Total Shares: ${totalShares.toFixed(1)} shares
+• Total Discount: ${formatCurrency(totalDiscountAmount)} (taxed as ordinary income)
+• Total Appreciation: ${formatCurrency(totalAppreciationAmount)} (taxed as capital gains)
+• Tax: (${formatCurrency(totalDiscountAmount)} × ${(data.ordinaryTaxRate*100).toFixed(0)}%) + (${formatCurrency(totalAppreciationAmount)} × ${(data.capitalGainsTaxRate*100).toFixed(0)}%) = ${formatCurrency(data.qualifyingTax)}`);
+            
+            disqualifyingElement.setAttribute('data-explanation',
+                `Math: Total Gain × ${(data.ordinaryTaxRate*100).toFixed(0)}% Ordinary Income Rate
+
+Across ALL ${Math.ceil(totalShares/data.sharesPurchased)} purchase periods:
+• Total Shares: ${totalShares.toFixed(1)} shares  
+• Total Gain: ${formatCurrency(totalGain)} (${formatCurrency(data.currentSalePrice)} sale price - average purchase price)
+• Tax: ${formatCurrency(totalGain)} × ${(data.ordinaryTaxRate*100).toFixed(0)}% = ${formatCurrency(data.disqualifyingTax)}
+Higher tax because ALL gain is ordinary income`);
+        }
+
+
+
+        function calculateESPP() {
+            // Get input values
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const contributionRate = parseFloat(document.getElementById('contribution').value) / 100 || 0;
+            const grantPrice = parseFloat(document.getElementById('grantPrice').value) || 0;
+            const discount = parseFloat(document.getElementById('discount').value) / 100 || 0;
+            const period = parseInt(document.getElementById('period').value) || 6;
+            const offeringPeriod = parseInt(document.getElementById('offeringPeriod').value) || 24;
+            const currentSalePrice = parseFloat(document.getElementById('currentSalePrice').value) || 240;
+            const lookbackEnabled = document.getElementById('lookbackProvision').checked;
+
+            // Calculate number of purchase periods and get their prices
+            const numberOfPurchases = Math.max(1, offeringPeriod / period);
+            const purchasePrices = [];
+            for (let i = 1; i <= numberOfPurchases; i++) {
+                const priceElement = document.getElementById(`purchasePrice${i}`);
+                if (priceElement) {
+                    purchasePrices.push(parseFloat(priceElement.value) || 0);
+                } else {
+                    purchasePrices.push(150); // Default fallback
+                }
+            }
+
+            // Calculate contributions
+            const monthlyContribution = (salary * contributionRate) / 12;
+            const periodContribution = monthlyContribution * period;
+            const annualContribution = monthlyContribution * 12;
+            const remainingLimit = Math.max(0, 25000 - annualContribution);
+            
+            // For display, use the first purchase period as the primary example
+            const primaryPurchasePrice = purchasePrices[0] || 150;
+            
+            // Calculate actual purchase price based on lookback setting
+            let actualPurchasePrice;
+            let lowerPrice;
+            if (lookbackEnabled) {
+                lowerPrice = Math.min(grantPrice, primaryPurchasePrice);
+                actualPurchasePrice = lowerPrice * (1 - discount);
+            } else {
+                lowerPrice = primaryPurchasePrice;
+                actualPurchasePrice = primaryPurchasePrice * (1 - discount);
+            }
+            
+            const sharesPurchased = periodContribution / actualPurchasePrice;
+            const instantProfit = sharesPurchased * (primaryPurchasePrice - actualPurchasePrice);
+            const roi = (instantProfit / periodContribution) * 100;
+            
+            // Guaranteed minimum return calculation
+            const guaranteedReturn = (discount / (1 - discount)) * 100;
+            
+            // Calculate total lookback advantage across ALL purchase periods
+            let lookbackSavings = 0;
+            if (lookbackEnabled) {
+                // Calculate total advantage across all periods
+                for (let i = 1; i <= numberOfPurchases; i++) {
+                    const periodPrice = purchasePrices[i-1] || 150;
+                    
+                    // With lookback: use lower of grant or purchase price
+                    const withLookbackPrice = Math.min(grantPrice, periodPrice);
+                    const withLookbackPurchasePrice = withLookbackPrice * (1 - discount);
+                    
+                    // Without lookback: use only purchase price
+                    const withoutLookbackPurchasePrice = periodPrice * (1 - discount);
+                    
+                    // Calculate shares bought in this period
+                    const sharesWithLookback = periodContribution / withLookbackPurchasePrice;
+                    const sharesWithoutLookback = periodContribution / withoutLookbackPurchasePrice;
+                    
+                    // Use current sale price for profit calculation
+                    
+                    // Calculate profits
+                    const profitWithLookback = (sharesWithLookback * currentSalePrice) - periodContribution;
+                    const profitWithoutLookback = (sharesWithoutLookback * currentSalePrice) - periodContribution;
+                    
+                    // Add to total lookback advantage
+                    lookbackSavings += Math.max(0, profitWithLookback - profitWithoutLookback);
+                }
+            }
+            
+            // Calculate annualized return
+            const periodsPerYear = 12 / period;
+            const annualizedReturn = (Math.pow(1 + (roi / 100), periodsPerYear) - 1) * 100;
+            
+            // Tax calculations across ALL purchase periods
+            const ordinaryTaxRate = parseFloat(document.getElementById('ordinaryTaxRate').value) / 100 || 0.25;
+            const capitalGainsTaxRate = parseFloat(document.getElementById('capitalGainsTaxRate').value) / 100 || 0.15;
+            
+            let totalDisqualifyingTax = 0;
+            let totalQualifyingTax = 0;
+            let totalShares = 0;
+            
+            // Calculate tax for each purchase period
+            for (let i = 1; i <= numberOfPurchases; i++) {
+                const periodPrice = purchasePrices[i-1] || 150;
+                
+                // Calculate purchase price based on lookback setting
+                let periodLowerPrice, periodPurchasePrice;
+                if (lookbackEnabled) {
+                    periodLowerPrice = Math.min(grantPrice, periodPrice);
+                    periodPurchasePrice = periodLowerPrice * (1 - discount);
+                } else {
+                    periodLowerPrice = periodPrice;
+                    periodPurchasePrice = periodPrice * (1 - discount);
+                }
+                
+                const periodShares = periodContribution / periodPurchasePrice;
+                totalShares += periodShares;
+                
+                // Disqualifying disposition: All gain is ordinary income
+                const periodDisqualifyingGain = Math.max(0, (currentSalePrice - periodPurchasePrice) * periodShares);
+                totalDisqualifyingTax += periodDisqualifyingGain * ordinaryTaxRate;
+                
+                // Qualifying disposition: Discount as ordinary income, appreciation as capital gains
+                const periodDiscountAmount = (periodLowerPrice - periodPurchasePrice) * periodShares;
+                const periodAppreciationGain = Math.max(0, (currentSalePrice - periodLowerPrice) * periodShares);
+                totalQualifyingTax += (periodDiscountAmount * ordinaryTaxRate) + (periodAppreciationGain * capitalGainsTaxRate);
+            }
+            
+            const disqualifyingTax = totalDisqualifyingTax;
+            const qualifyingTax = totalQualifyingTax;
+            
+            // Prepare data for tooltip updates
+            const calculationData = {
+                grantPrice, 
+                purchasePrice: primaryPurchasePrice, 
+                lowerPrice, 
+                actualPurchasePrice, 
+                sharesPurchased,
+                currentSalePrice, 
+                discount, 
+                qualifyingTax, 
+                disqualifyingTax,
+                lookbackEnabled,
+                ordinaryTaxRate,
+                capitalGainsTaxRate,
+                totalShares
+            };
+
+            // Calculate streamlined results across all periods
+            const totalContributionAllPeriods = periodContribution * numberOfPurchases;
+            const totalCurrentValueAllPeriods = totalShares * currentSalePrice;
+            const totalProfitAllPeriods = totalCurrentValueAllPeriods - totalContributionAllPeriods;
+            const averagePricePerShare = totalContributionAllPeriods / totalShares;
+            const totalROI = (totalProfitAllPeriods / totalContributionAllPeriods) * 100;
+
+            // Update streamlined display values
+            document.getElementById('totalContribution').textContent = formatCurrency(totalContributionAllPeriods);
+            document.getElementById('totalSharesPurchased').textContent = totalShares.toFixed(1);
+            document.getElementById('averagePricePerShare').textContent = formatCurrency(averagePricePerShare);
+            document.getElementById('totalCurrentValue').textContent = formatCurrency(totalCurrentValueAllPeriods);
+            document.getElementById('totalProfit').textContent = formatCurrency(totalProfitAllPeriods);
+            document.getElementById('roi').textContent = formatPercent(totalROI);
+            // Show/hide and update lookback advantage based on provision setting
+            const lookbackAdvantageCard = document.getElementById('lookbackAdvantageCard');
+            if (lookbackEnabled) {
+                lookbackAdvantageCard.style.display = 'block';
+                document.getElementById('lookbackAdvantage').textContent = formatCurrency(lookbackSavings);
+            } else {
+                lookbackAdvantageCard.style.display = 'none';
+            }
+            
+            document.getElementById('qualifyingTax').textContent = formatCurrency(qualifyingTax) + ' tax';
+            document.getElementById('disqualifyingTax').textContent = formatCurrency(disqualifyingTax) + ' tax';
+            
+            // Update contribution limit display
+            const limitElement = document.getElementById('remainingLimit');
+            if (annualContribution > 25000) {
+                limitElement.style.color = '#dc2626';
+                limitElement.textContent = `⚠️ LIMIT EXCEEDED`;
+            } else {
+                limitElement.style.color = '#10b981';
+                limitElement.textContent = formatCurrency(remainingLimit);
+            }
+            
+            // Update dynamic content
+            updateDynamicTooltips(calculationData);
+            generateMultiplePeriods(salary, contributionRate, grantPrice, discount, offeringPeriod, period, purchasePrices, lookbackEnabled);
+            
+            // Show results
+            document.getElementById('results').classList.add('show');
+        }
+
+        function generateMultiplePeriods(salary, contributionRate, grantPrice, discount, offeringPeriod, purchasePeriod = 6, purchasePrices = [], lookbackEnabled = true) {
+            const multiplePeriods = document.getElementById('multiplePeriods');
+            
+            if (!multiplePeriods) {
+                console.error('❌ multiplePeriods element not found!');
+                return;
+            }
+            
+            multiplePeriods.innerHTML = '';
+            
+            const purchasePeriods = Math.max(1, offeringPeriod / purchasePeriod);
+            const monthlyContribution = (salary * contributionRate) / 12;
+            const periodContribution = monthlyContribution * purchasePeriod;
+            
+            // Get current sale price from advanced settings
+            const currentSalePrice = parseFloat(document.getElementById('currentSalePrice').value) || 240;
+            
+            // Generate chart data
+            const chartLabels = [];
+            const chartData = [];
+            const chartColors = [];
+            
+            // Use the actual purchase prices from the input fields
+            const stockPriceScenarios = [];
+            for (let i = 1; i <= purchasePeriods; i++) {
+                const month = i * purchasePeriod;
+                const actualPurchasePrice = purchasePrices[i-1] || 150; // Use actual price from input fields
+                
+                stockPriceScenarios.push({
+                    period: i,
+                    price: actualPurchasePrice,
+                    label: `Month ${month}`
+                });
+            }
+
+            stockPriceScenarios.forEach((scenario, index) => {
+                // Calculate purchase price based on lookback setting
+                let lowerPrice, purchasePrice;
+                if (lookbackEnabled) {
+                    lowerPrice = Math.min(grantPrice, scenario.price);
+                    purchasePrice = lowerPrice * (1 - discount);
+                } else {
+                    lowerPrice = scenario.price;
+                    purchasePrice = scenario.price * (1 - discount);
+                }
+                
+                const shares = periodContribution / purchasePrice;
+                const currentValue = shares * currentSalePrice; // Use current sale price, not purchase price!
+                const profit = currentValue - periodContribution; // Correct profit calculation
+                const roi = (profit / periodContribution) * 100;
+
+                // Add to chart data
+                chartLabels.push(scenario.label);
+                chartData.push(profit);
+                chartColors.push(`rgba(10, 82, 100, ${0.8 - index * 0.15})`);
+
+                const card = document.createElement('div');
+                card.className = 'scenario-card';
+                
+                // Create different explanations based on lookback setting
+                let explanation;
+                if (lookbackEnabled) {
+                    explanation = `Purchase Analysis for ${scenario.label} (with Lookback):
+
+• Contribution: ${formatCurrency(periodContribution)} (${purchasePeriod} months)
+• Grant Price: ${formatCurrency(grantPrice)} | Stock Price at Purchase: ${formatCurrency(scenario.price)}
+• Lookback Price (Lower): ${formatCurrency(lowerPrice)}
+• Purchase Price: ${formatCurrency(lowerPrice)} - ${(discount*100).toFixed(0)}% discount = ${formatCurrency(purchasePrice)}
+• Shares Purchased: ${formatCurrency(periodContribution)} ÷ ${formatCurrency(purchasePrice)} = ${shares.toFixed(1)} shares
+• Current Value: ${shares.toFixed(1)} × ${formatCurrency(currentSalePrice)} (Current Sale Price) = ${formatCurrency(currentValue)}
+• Profit: ${formatCurrency(currentValue)} - ${formatCurrency(periodContribution)} = ${formatCurrency(profit)}`;
+                } else {
+                    explanation = `Purchase Analysis for ${scenario.label} (no Lookback):
+
+• Contribution: ${formatCurrency(periodContribution)} (${purchasePeriod} months)
+• Stock Price at Purchase: ${formatCurrency(scenario.price)}
+• Purchase Price: ${formatCurrency(scenario.price)} - ${(discount*100).toFixed(0)}% discount = ${formatCurrency(purchasePrice)}
+• Shares Purchased: ${formatCurrency(periodContribution)} ÷ ${formatCurrency(purchasePrice)} = ${shares.toFixed(1)} shares
+• Current Value: ${shares.toFixed(1)} × ${formatCurrency(currentSalePrice)} (Current Sale Price) = ${formatCurrency(currentValue)}
+• Profit: ${formatCurrency(currentValue)} - ${formatCurrency(periodContribution)} = ${formatCurrency(profit)}`;
+                }
+                
+                card.innerHTML = `
+                    <div class="scenario-title hover-explanation" data-explanation="${explanation}">${scenario.label} Purchase</div>
+                    <div class="scenario-value profit">${formatCurrency(profit)}</div>
+                    <small>ROI: ${roi.toFixed(1)}% • Current Sale Price: $${currentSalePrice.toFixed(0)}</small>
+                `;
+                multiplePeriods.appendChild(card);
+            });
+
+            // Generate chart
+            generateChart(chartLabels, chartData, chartColors, purchasePeriods === 1);
+        }
+
+        function generateChart(labels, data, colors, isSinglePeriod) {
+            const canvas = document.getElementById('periodsChart');
+            
+            if (!canvas) {
+                console.error('Canvas element not found!');
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            
+            if (periodsChart) {
+                periodsChart.destroy();
+            }
+            
+            const chartTitle = isSinglePeriod ? 'Single Purchase Period' : 'Multiple Purchase Periods Profit';
+            
+            try {
+                // Ensure we have valid data
+                if (!labels || labels.length === 0 || !data || data.length === 0) {
+                    console.error('No data available for chart');
+                    return;
+                }
+                
+                periodsChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'ESPP Profit',
+                            data: data,
+                            borderColor: '#0a5264',
+                            backgroundColor: 'rgba(10, 82, 100, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: '#0a5264',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: chartTitle,
+                                font: { size: 16, weight: 'bold' },
+                                color: '#333',
+                                padding: 20
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    boxWidth: 15,
+                                    padding: 15,
+                                    font: { size: 12 }
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                                mode: 'index',
+                                intersect: false,
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#ffffff',
+                                bodyColor: '#ffffff',
+                                borderColor: '#0a5264',
+                                borderWidth: 1,
+                                cornerRadius: 6,
+                                displayColors: true,
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        return `Purchase Period: ${tooltipItems[0].label}`;
+                                    },
+                                    label: function(context) {
+                                        return `Profit: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Purchase Periods',
+                                    font: { size: 14, weight: '600' },
+                                    color: '#555'
+                                },
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    font: { size: 12 }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Profit ($)',
+                                    font: { size: 14, weight: '600' },
+                                    color: '#555'
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)',
+                                    lineWidth: 1
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return formatCurrency(value);
+                                    },
+                                    color: '#666',
+                                    font: { size: 12 }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating chart:', error);
+            }
+        }
+
+        function toggleAdvanced() {
+            const advanced = document.getElementById('advancedOptions');
+            advanced.style.display = advanced.style.display === 'none' ? 'block' : 'none';
+            
+            const button = document.querySelector('.toggle-btn');
+            if (advanced.style.display === 'none') {
+                button.textContent = '⚙️ Advanced Options';
+            } else {
+                button.textContent = '⚙️ Hide Advanced';
+            }
+        }
+
+        // Function to update slider range labels dynamically
+        function updateSliderLabels(slider, type) {
+            // For the grant price slider (which has range labels)
+            if (type === 'grantPrice') {
+                const container = slider.closest('.price-range-container');
+                if (container) {
+                    const rangeLabels = container.querySelector('.range-labels');
+                    if (rangeLabels) {
+                        const minLabel = rangeLabels.querySelector('span:first-child');
+                        const maxLabel = rangeLabels.querySelector('span:last-child');
+                        if (minLabel && maxLabel) {
+                            minLabel.textContent = `$${slider.min}`;
+                            maxLabel.textContent = `$${slider.max}`;
+                        }
+                    }
+                }
+            }
+            // For purchase price sliders, we don't update labels as they're compact
+            // and don't have visible range labels
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate initial purchase price fields
+            generatePurchasePriceFields();
+            
+            // Discount input field
+            const discountInput = document.getElementById('discount');
+            discountInput.addEventListener('input', calculateESPP);
+            
+            // Offering period and purchase period change listeners
+            document.getElementById('offeringPeriod').addEventListener('change', generatePurchasePriceFields);
+            document.getElementById('period').addEventListener('change', generatePurchasePriceFields);
+            
+            // Lookback provision change listener
+            document.getElementById('lookbackProvision').addEventListener('change', function() {
+                toggleGrantPriceSection();
+                calculateESPP();
+            });
+            
+            // Stock price sliders and manual inputs for grant price
+            const grantPriceSlider = document.getElementById('grantPrice');
+            const grantPriceManual = document.getElementById('grantPriceManual');
+            
+            // Grant price sync with dynamic range adjustment
+            grantPriceSlider.addEventListener('input', function() {
+                grantPriceManual.value = this.value;
+                updateSliderLabels(this, 'grantPrice');
+                calculateESPP();
+            });
+            grantPriceManual.addEventListener('input', function() {
+                const value = parseFloat(this.value) || 0;
+                // Dynamically adjust slider range
+                if (value > grantPriceSlider.max) {
+                    const newMax = Math.max(value * 1.2, 1000);
+                    grantPriceSlider.max = newMax;
+                    updateSliderLabels(grantPriceSlider, 'grantPrice');
+                }
+                if (value < grantPriceSlider.min && value > 0) {
+                    const newMin = Math.min(value * 0.8, 10);
+                    grantPriceSlider.min = newMin;
+                    updateSliderLabels(grantPriceSlider, 'grantPrice');
+                }
+                if (value >= grantPriceSlider.min && value <= grantPriceSlider.max) {
+                    grantPriceSlider.value = value;
+                }
+                calculateESPP();
+            });
+            
+            // Set up all other input listeners (excluding dynamic purchase price fields which have their own listeners)
+            const inputs = document.querySelectorAll('input:not([type="range"]):not([id^="purchasePrice"]):not([id="grantPriceManual"]), select:not([id="offeringPeriod"]):not([id="period"])');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateESPP);
+            });
+            
+            // Initialize advanced options as hidden
+            document.getElementById('advancedOptions').style.display = 'none';
+            
+            // Initialize grant price section visibility
+            toggleGrantPriceSection();
+        });
+    </script>
+</body>
+</html> 
+</html> 

@@ -53,6 +53,18 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/stock-screener"
+  to = "/stock-screener.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/espp-calculator"
+  to = "/espp-calculator.html"
+  status = 200
+  force = true
+
 # Keep wildcards at the bottom with lower priority
 [[redirects]]
   from = "/*"
