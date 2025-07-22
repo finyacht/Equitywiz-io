@@ -854,109 +854,262 @@
             sp500Chart.update('active');
         }
 
-        // Simulated real-time updates
-        function simulateRealTimeUpdates() {
-            setInterval(() => {
-                // Update market summary with random changes
-                updateMarketSummary();
-                
-                // Add some data point animation
-                if (sp500Chart) {
-                    const lastDataPoint = sp500Chart.data.datasets[0].data;
-                    const lastValue = lastDataPoint[lastDataPoint.length - 1];
-                    const change = (Math.random() - 0.5) * 10;
-                    lastDataPoint[lastDataPoint.length - 1] = lastValue + change;
-                    sp500Chart.update('none');
-                }
-            }, 5000); // Update every 5 seconds
-        }
-
-        function updateMarketSummary() {
-            // Simulate small random changes
-            const sp500Element = document.getElementById('sp500Price');
-            const currentPrice = parseFloat(sp500Element.textContent.replace(',', ''));
-            const change = (Math.random() - 0.5) * 5;
-            const newPrice = currentPrice + change;
-            
-            sp500Element.textContent = newPrice.toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
+        // Real-time updates now handled by loadRealData() function
 
         // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Stock Market Screener Initializing...');
+            
+            // Initialize chart with sample data first
             initChart();
             populateStockList('topGainers', sampleData.topGainers);
             populateStockList('topLosers', sampleData.topLosers);
             setupTimeControls();
             
-            // Start real-time simulation
-            simulateRealTimeUpdates();
+            console.log('📊 Sample data loaded, now fetching live data...');
             
-            console.log('🚀 Stock Market Screener Initialized');
-            console.log('📊 Ready for API integration');
+            // Load live data from Polygon.io
+            await loadRealData();
+            
+            // Set up periodic updates every 60 seconds
+            setInterval(async () => {
+                console.log('🔄 Refreshing market data...');
+                await loadRealData();
+            }, 60000); // Update every 60 seconds
+            
+            console.log('✅ Stock Market Screener fully initialized with live data!');
         });
 
-        // API Integration Functions (Ready for your live data)
-        class StockAPI {
-            constructor(apiKey) {
-                this.apiKey = apiKey;
-                this.baseUrl = 'YOUR_API_ENDPOINT'; // Replace with your API endpoint
+        // Live Polygon.io API Integration
+        class PolygonAPI {
+            constructor() {
+                this.baseUrl = window.location.origin; // Use same domain for Netlify functions
             }
 
-            async getSP500Data(period = '1M') {
+            async getSP500Data() {
                 try {
-                    // Replace with your actual API call
-                    const response = await fetch(`${this.baseUrl}/sp500?period=${period}&key=${this.apiKey}`);
+                    console.log('📊 Fetching S&P 500 data...');
+                    const response = await fetch(`${this.baseUrl}/.netlify/functions/polygon-api?endpoint=sp500`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     const data = await response.json();
-                    return data;
+                    return this.transformSP500Data(data);
                 } catch (error) {
-                    console.error('Error fetching S&P 500 data:', error);
+                    console.error('❌ Error fetching S&P 500 data:', error);
                     return null;
                 }
             }
 
             async getTopMovers() {
                 try {
-                    // Replace with your actual API call
-                    const response = await fetch(`${this.baseUrl}/movers?key=${this.apiKey}`);
-                    const data = await response.json();
-                    return data;
+                    console.log('🔥 Fetching top movers...');
+                    const [gainersResponse, losersResponse] = await Promise.all([
+                        fetch(`${this.baseUrl}/.netlify/functions/polygon-api?endpoint=gainers`),
+                        fetch(`${this.baseUrl}/.netlify/functions/polygon-api?endpoint=losers`)
+                    ]);
+                    
+                    if (!gainersResponse.ok || !losersResponse.ok) {
+                        throw new Error('Failed to fetch movers data');
+                    }
+                    
+                    const [gainersData, losersData] = await Promise.all([
+                        gainersResponse.json(),
+                        losersResponse.json()
+                    ]);
+                    
+                    return {
+                        gainers: this.transformMoversData(gainersData.results || []),
+                        losers: this.transformMoversData(losersData.results || [])
+                    };
                 } catch (error) {
-                    console.error('Error fetching top movers:', error);
+                    console.error('❌ Error fetching top movers:', error);
                     return null;
                 }
             }
 
             async getMarketSummary() {
                 try {
-                    // Replace with your actual API call
-                    const response = await fetch(`${this.baseUrl}/summary?key=${this.apiKey}`);
+                    console.log('📈 Fetching market indices...');
+                    const response = await fetch(`${this.baseUrl}/.netlify/functions/polygon-api?endpoint=indices`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     const data = await response.json();
-                    return data;
+                    return this.transformMarketData(data.results || []);
                 } catch (error) {
-                    console.error('Error fetching market summary:', error);
+                    console.error('❌ Error fetching market summary:', error);
                     return null;
                 }
             }
+
+            // Transform Polygon S&P 500 data for our chart
+            transformSP500Data(data) {
+                if (!data.results || !Array.isArray(data.results)) return null;
+                
+                const results = data.results.slice(-30); // Last 30 days
+                return {
+                    labels: results.map(item => {
+                        const date = new Date(item.t);
+                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    }),
+                    data: results.map(item => item.c) // Closing prices
+                };
+            }
+
+            // Transform Polygon movers data for our lists
+            transformMoversData(results) {
+                return results.slice(0, 5).map(stock => ({
+                    symbol: stock.ticker || stock.T,
+                    name: this.getCompanyName(stock.ticker || stock.T),
+                    price: stock.value || stock.c || 0,
+                    change: stock.change || (stock.c - stock.prevDay?.c) || 0,
+                    percent: stock.changePercent || ((stock.c - stock.prevDay?.c) / stock.prevDay?.c * 100) || 0
+                }));
+            }
+
+            // Transform market indices data
+            transformMarketData(results) {
+                const indices = {};
+                results.forEach(item => {
+                    const ticker = item.ticker || item.T;
+                    const current = item.value || item.c || 0;
+                    const previous = item.prevDay?.c || current;
+                    const change = current - previous;
+                    const changePercent = (change / previous) * 100;
+                    
+                    switch(ticker) {
+                        case 'SPY':
+                            indices.sp500 = { price: current, change, changePercent };
+                            break;
+                        case 'QQQ':
+                            indices.nasdaq = { price: current, change, changePercent };
+                            break;
+                        case 'DIA':
+                            indices.dow = { price: current, change, changePercent };
+                            break;
+                        case 'VIX':
+                            indices.vix = { price: current, change, changePercent };
+                            break;
+                    }
+                });
+                return indices;
+            }
+
+            // Simple company name lookup (you can expand this)
+            getCompanyName(ticker) {
+                const names = {
+                    'AAPL': 'Apple Inc.',
+                    'MSFT': 'Microsoft Corp.',
+                    'GOOGL': 'Alphabet Inc.',
+                    'AMZN': 'Amazon.com Inc.',
+                    'TSLA': 'Tesla Inc.',
+                    'META': 'Meta Platforms',
+                    'NFLX': 'Netflix Inc.',
+                    'NVDA': 'NVIDIA Corp.',
+                    'AMD': 'Advanced Micro Devices',
+                    'CRM': 'Salesforce Inc.'
+                };
+                return names[ticker] || `${ticker} Corp.`;
+            }
         }
 
-        // Usage example (uncomment when you have your API):
-        // const stockAPI = new StockAPI('YOUR_API_KEY');
-        // 
-        // async function loadRealData() {
-        //     const sp500Data = await stockAPI.getSP500Data('1M');
-        //     const movers = await stockAPI.getTopMovers();
-        //     const summary = await stockAPI.getMarketSummary();
-        //     
-        //     if (sp500Data) updateChart(sp500Data);
-        //     if (movers) {
-        //         populateStockList('topGainers', movers.gainers);
-        //         populateStockList('topLosers', movers.losers);
-        //     }
-        //     if (summary) updateMarketSummary(summary);
-        // }
+        // Initialize live API
+        const polygonAPI = new PolygonAPI();
+
+        // Load real market data
+        async function loadRealData() {
+            try {
+                console.log('🚀 Loading live market data...');
+                
+                // Show loading state
+                showLoadingState();
+                
+                // Fetch all data in parallel
+                const [sp500Data, movers, summary] = await Promise.all([
+                    polygonAPI.getSP500Data(),
+                    polygonAPI.getTopMovers(),
+                    polygonAPI.getMarketSummary()
+                ]);
+                
+                // Update chart if we have S&P 500 data
+                if (sp500Data && sp500Chart) {
+                    sp500Chart.data.labels = sp500Data.labels;
+                    sp500Chart.data.datasets[0].data = sp500Data.data;
+                    sp500Chart.update('active');
+                    console.log('✅ Updated S&P 500 chart with live data');
+                }
+                
+                // Update top movers
+                if (movers) {
+                    if (movers.gainers) {
+                        populateStockList('topGainers', movers.gainers);
+                        console.log('✅ Updated top gainers');
+                    }
+                    if (movers.losers) {
+                        populateStockList('topLosers', movers.losers);
+                        console.log('✅ Updated top losers');
+                    }
+                }
+                
+                // Update market summary
+                if (summary) {
+                    updateMarketSummaryDisplay(summary);
+                    console.log('✅ Updated market summary');
+                }
+                
+                hideLoadingState();
+                console.log('🎉 Live data loaded successfully!');
+                
+            } catch (error) {
+                console.error('💥 Error loading real data:', error);
+                hideLoadingState();
+                // Fall back to sample data if API fails
+                console.log('📊 Falling back to sample data...');
+            }
+        }
+
+        // Update market summary display with live data
+        function updateMarketSummaryDisplay(summary) {
+            if (summary.sp500) {
+                updateSummaryCard('sp500Price', 'sp500Change', summary.sp500);
+            }
+            if (summary.nasdaq) {
+                updateSummaryCard('nasdaqPrice', 'nasdaqChange', summary.nasdaq);
+            }
+            if (summary.dow) {
+                updateSummaryCard('dowPrice', 'dowChange', summary.dow);
+            }
+            if (summary.vix) {
+                updateSummaryCard('vixPrice', 'vixChange', summary.vix);
+            }
+        }
+
+        function updateSummaryCard(priceId, changeId, data) {
+            const priceElement = document.getElementById(priceId);
+            const changeElement = document.getElementById(changeId);
+            
+            if (priceElement && changeElement) {
+                priceElement.textContent = data.price.toFixed(2);
+                
+                const isPositive = data.change >= 0;
+                const arrow = isPositive ? '↗' : '↘';
+                const sign = isPositive ? '+' : '';
+                
+                changeElement.className = `summary-change ${isPositive ? 'positive' : 'negative'}`;
+                changeElement.innerHTML = `
+                    <span>${arrow}</span>
+                    <span>${sign}${data.changePercent.toFixed(2)}% (${sign}${data.change.toFixed(2)})</span>
+                `;
+            }
+        }
+
+        function showLoadingState() {
+            // Add loading indicators to major sections
+            const indicators = document.querySelectorAll('.summary-value, .chart-container');
+            indicators.forEach(el => el.style.opacity = '0.6');
+        }
+
+        function hideLoadingState() {
+            const indicators = document.querySelectorAll('.summary-value, .chart-container');
+            indicators.forEach(el => el.style.opacity = '1');
+        }
     </script>
 </body>
 </html> 

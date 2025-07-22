@@ -10,6 +10,12 @@
   force = true
 
 [[redirects]]
+  from = "/api/polygon-api"
+  to = "/.netlify/functions/polygon-api"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
