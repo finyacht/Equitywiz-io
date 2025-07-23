@@ -11,13 +11,13 @@
         /* CSS Variables for Design Consistency */
         :root {
             /* Colors - Professional Palette */
-            --primary-blue: #0066cc;
-            --primary-blue-dark: #0052a3;
-            --primary-blue-light: #e6f2ff;
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1d4ed8;
+            --primary-blue-light: #dbeafe;
             
-            --secondary-slate: #1e293b;
-            --secondary-slate-light: #475569;
-            --secondary-slate-lighter: #64748b;
+            --secondary-slate: #334155;
+            --secondary-slate-light: #64748b;
+            --secondary-slate-lighter: #94a3b8;
             
             --neutral-50: #f8fafc;
             --neutral-100: #f1f5f9;
@@ -27,11 +27,11 @@
             --neutral-800: #1e293b;
             --neutral-900: #0f172a;
             
-            --success-green: #059669;
-            --success-green-light: #d1fae5;
+            --success-green: #16a34a;
+            --success-green-light: #dcfce7;
             
             --danger-red: #dc2626;
-            --danger-red-light: #fecaca;
+            --danger-red-light: #fee2e2;
             
             --warning-amber: #d97706;
             --warning-amber-light: #fef3c7;
@@ -82,7 +82,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, var(--neutral-50) 0%, var(--neutral-100) 100%);
+            background: linear-gradient(135deg, var(--neutral-50) 0%, var(--primary-blue-light) 100%);
             color: var(--neutral-800);
             line-height: 1.6;
             overflow-x: hidden;
@@ -108,7 +108,8 @@
             font-size: var(--text-sm);
             margin-bottom: var(--space-8);
             transition: all 0.2s ease;
-            border: 1px solid transparent;
+            border: none;
+            box-shadow: var(--shadow-md);
         }
 
         .nav-home:hover {
@@ -135,6 +136,7 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: var(--space-4);
             letter-spacing: -0.025em;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .header p {
@@ -159,11 +161,12 @@
 
         /* Enhanced Card Design */
         .card {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: var(--radius-2xl);
             padding: var(--space-10);
             box-shadow: var(--shadow-lg);
-            border: 1px solid var(--neutral-200);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
 
@@ -203,12 +206,14 @@
         }
 
         .summary-card {
-            background: white;
-            border: 1px solid var(--neutral-200);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: var(--radius-xl);
             padding: var(--space-6);
             text-align: center;
             transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
         }
 
         .summary-card:hover {
@@ -726,12 +731,12 @@
                     datasets: [{
                         label: 'S&P 500',
                         data: sampleData.sp500['1M'].data,
-                        borderColor: '#0066cc',
-                        backgroundColor: 'rgba(0, 102, 204, 0.1)',
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.4,
-                        pointBackgroundColor: '#0066cc',
+                        pointBackgroundColor: '#2563eb',
                         pointBorderColor: '#ffffff',
                         pointBorderWidth: 2,
                         pointRadius: 6,
