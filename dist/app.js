@@ -12,7 +12,7 @@ try {
 }
 
 const app = express();
-const port = 3000; // Changed from 4000 to 3000
+const port = 3001; // Using 3001 to avoid conflicts
 
 // Add middleware to parse JSON bodies
 app.use(express.json());
@@ -100,17 +100,173 @@ app.get('/chatbot-demo.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'chatbot-demo.html'));
 });
 
+// Route for the Neon Cycles Game
+app.get('/neon-cycles', (req, res) => {
+  res.sendFile(path.join(__dirname, 'neon-cycles.html'));
+});
+
+app.get('/neon-cycles.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'neon-cycles.html'));
+});
+
+// Route for the ESPP Calculator
+app.get('/espp-calculator', (req, res) => {
+  res.sendFile(path.join(__dirname, 'espp-calculator.html'));
+});
+
+app.get('/espp-calculator.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'espp-calculator.html'));
+});
+
+// Route for the Stock Market Screener
+app.get('/stock-screener', (req, res) => {
+  res.sendFile(path.join(__dirname, 'stock-screener.html'));
+});
+
+app.get('/stock-screener.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'stock-screener.html'));
+});
+
+// Polygon API Proxy Route for Local Development
+app.get('/.netlify/functions/polygon-api', async (req, res) => {
+  try {
+    const { endpoint } = req.query;
+    const POLYGON_API_KEY = process.env.POLYGON_API_KEY || 'OqQWRbz1lQ5xl_NKDRsnBoFfFDD2KHAt';
+
+    console.log(`🔍 Local Polygon API: Fetching ${endpoint}`);
+
+    let polygonUrl;
+    
+    // Route to different Polygon.io endpoints
+    switch (endpoint) {
+      case 'sp500':
+        // S&P 500 - Use SPY ETF as proxy with dynamic date range
+        const today = new Date();
+        const oneYearAgo = new Date(today);
+        oneYearAgo.setFullYear(today.getFullYear() - 1);
+        
+        const startDate = oneYearAgo.toISOString().split('T')[0]; // YYYY-MM-DD format
+        const endDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+        
+        polygonUrl = `https://api.polygon.io/v2/aggs/ticker/SPY/range/1/day/${startDate}/${endDate}?adjusted=true&sort=asc&apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      case 'market-status':
+        polygonUrl = `https://api.polygon.io/v1/marketstatus/now?apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      case 'gainers':
+        // Free tier fallback: Use sample data or alternative approach
+        const gainersData = {
+          status: "OK",
+          results: [
+            { ticker: "AAPL", todaysChangePerc: 2.8, lastQuote: { lastPrice: 233.45 }},
+            { ticker: "NVDA", todaysChangePerc: 2.1, lastQuote: { lastPrice: 147.82 }},
+            { ticker: "MSFT", todaysChangePerc: 1.9, lastQuote: { lastPrice: 445.67 }},
+            { ticker: "GOOGL", todaysChangePerc: 1.4, lastQuote: { lastPrice: 180.23 }},
+            { ticker: "TSLA", todaysChangePerc: 1.2, lastQuote: { lastPrice: 415.89 }}
+          ]
+        };
+        return res.json(gainersData);
+        
+      case 'losers':
+        // Free tier fallback: Use sample data
+        const losersData = {
+          status: "OK", 
+          results: [
+            { ticker: "META", todaysChangePerc: -2.1, lastQuote: { lastPrice: 589.45 }},
+            { ticker: "AMZN", todaysChangePerc: -1.8, lastQuote: { lastPrice: 205.67 }},
+            { ticker: "NFLX", todaysChangePerc: -1.4, lastQuote: { lastPrice: 915.23 }},
+            { ticker: "AMD", todaysChangePerc: -1.1, lastQuote: { lastPrice: 142.89 }},
+            { ticker: "INTC", todaysChangePerc: -0.9, lastQuote: { lastPrice: 22.34 }}
+          ]
+        };
+        return res.json(losersData);
+        
+      case 'indices':
+        // Free tier: Get individual ticker data for major indices
+        try {
+          const tickers = ['SPY', 'QQQ', 'DIA'];
+          const promises = tickers.map(async (ticker) => {
+            const url = `https://api.polygon.io/v2/aggs/ticker/${ticker}/prev?adjusted=true&apikey=${POLYGON_API_KEY}`;
+            const response = await fetch(url);
+            if (response.ok) {
+              const data = await response.json();
+              return {
+                ticker,
+                prevDay: data.results?.[0] || { c: 0, o: 0 },
+                change: data.results?.[0] ? ((data.results[0].c - data.results[0].o) / data.results[0].o * 100).toFixed(2) : 0
+              };
+            }
+            return { ticker, prevDay: { c: 0, o: 0 }, change: 0 };
+          });
+          
+          const indicesData = await Promise.all(promises);
+          return res.json({
+            status: "OK",
+            results: indicesData
+          });
+        } catch (error) {
+          console.error('Error fetching indices:', error);
+          return res.status(500).json({ error: 'Failed to fetch indices data' });
+        }
+        
+      case 'ticker':
+        const { symbol } = req.query;
+        if (!symbol) {
+          return res.status(400).json({ error: 'Symbol parameter required for ticker endpoint' });
+        }
+        polygonUrl = `https://api.polygon.io/v2/snapshot/locale/us/markets/stocks/tickers/${symbol}?apikey=${POLYGON_API_KEY}`;
+        break;
+        
+      default:
+        return res.status(400).json({ error: 'Invalid endpoint' });
+    }
+
+    console.log(`📡 Fetching from Polygon: ${polygonUrl.replace(POLYGON_API_KEY, '***')}`);
+
+    const response = await fetch(polygonUrl);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ Polygon API error: ${response.status} ${response.statusText}`);
+      console.error(`❌ Error details: ${errorText}`);
+      return res.status(response.status).json({ 
+        error: `Polygon API error: ${response.statusText}`,
+        details: errorText,
+        status: response.status
+      });
+    }
+
+    const data = await response.json();
+    console.log(`✅ Polygon API success for ${endpoint}`);
+    
+    res.json(data);
+
+  } catch (error) {
+    console.error('💥 Polygon API function error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
+  }
+});
+
 // Gemini API Proxy Route
 app.post('/api/gemini-chat', async (req, res) => {
   try {
     const { message, history, apiKey } = req.body;
     
-    if (!apiKey) {
-      return res.status(400).json({ error: 'API key is required' });
+    // Use provided API key or fall back to environment variable
+    const activeApiKey = apiKey || process.env.GEMINI_API_KEY;
+    
+    if (!activeApiKey) {
+      return res.status(400).json({ error: 'API key not available' });
     }
 
     console.log('🤖 Gemini Proxy: Received request with message:', message);
-    console.log('🔑 Gemini Proxy: API Key present:', !!apiKey);
+    console.log('🔑 Gemini Proxy: API Key present:', !!activeApiKey);
+    console.log('🌍 Gemini Proxy: Using environment key:', !apiKey && !!process.env.GEMINI_API_KEY);
 
     // Build conversation for Gemini (simplified format)
     let conversationText = `You are Yikes AI, a specialized assistant for equity and cap table management based on comprehensive platform user guides.
@@ -185,7 +341,7 @@ IMPORTANT: Always provide comprehensive workflows with 6-12+ action points. Neve
 
     console.log('📤 Gemini Proxy: Sending request to Gemini API');
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${activeApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

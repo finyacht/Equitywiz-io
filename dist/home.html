@@ -401,6 +401,7 @@
         .interest .tool-name::before { background: var(--interest-color); }
         .budget .tool-name::before { background: #8B5CF6; }
         .grant .tool-name::before { background: #0a5264; }
+        .espp .tool-name::before { background: #0a5264; }
         .converter .tool-name::before { background: #059669; }
 
         .waterfall .tool-indicator { background: var(--waterfall-color); }
@@ -409,6 +410,7 @@
         .interest .tool-indicator { background: var(--interest-color); }
         .budget .tool-indicator { background: #8B5CF6; }
         .grant .tool-indicator { background: #0a5264; }
+        .espp .tool-indicator { background: #0a5264; }
         .converter .tool-indicator { background: #059669; }
 
         .tool-type {
@@ -460,6 +462,7 @@
         .interest .tool-launch-btn { background: #0ea5e9; }
         .budget .tool-launch-btn { background: #8B5CF6; }
         .grant .tool-launch-btn { background: #0a5264; }
+        .espp .tool-launch-btn { background: #0a5264; }
         .waterfall .tool-launch-btn { 
             background: var(--waterfall-color) !important; 
         }
@@ -745,6 +748,62 @@
                 font-size: 0.85rem !important;
                 color: #64748b !important;
             }
+
+            /* Mobile Game Section */
+            .game-break-section {
+                padding: 30px 10px !important;
+                margin-top: 20px !important;
+            }
+            
+            .game-break-container {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            
+            .game-break-header {
+                margin-bottom: 25px !important;
+            }
+            
+            .game-break-icon {
+                font-size: 2rem !important;
+                margin-bottom: 15px !important;
+            }
+            
+            .game-break-title {
+                font-size: 1.6rem !important;
+                margin-bottom: 8px !important;
+            }
+            
+            .game-break-subtitle {
+                font-size: 0.95rem !important;
+                padding: 0 10px !important;
+            }
+            
+            .game-card {
+                padding: 25px 15px !important;
+                margin: 0 5px !important;
+            }
+            
+            .game-title {
+                font-size: 1.5rem !important;
+                letter-spacing: 1px !important;
+            }
+            
+            .game-tagline {
+                font-size: 0.9rem !important;
+                margin-bottom: 20px !important;
+            }
+            
+            .game-description {
+                font-size: 0.9rem !important;
+                margin-bottom: 30px !important;
+                padding: 0 5px !important;
+            }
+            
+            .game-launch-btn {
+                padding: 12px 30px !important;
+                font-size: 0.95rem !important;
+            }
         }
 
         @media (max-width: 480px) {
@@ -869,7 +928,7 @@
         }
 
         .footer {
-            margin-top: auto;
+            margin-top: 0;
             width: 100%;
             text-align: center;
             padding: 30px 0;
@@ -904,6 +963,201 @@
         .footer-copyright {
             color: #94a3b8;
             font-size: 0.875rem;
+        }
+
+        /* Game Break Section */
+        .game-break-section {
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-break-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.1) 0%, transparent 300px),
+                radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.08) 0%, transparent 400px);
+            z-index: 0;
+        }
+        
+        .game-break-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .game-break-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .game-break-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
+        }
+        
+        .game-break-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .game-break-subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin: 0;
+            font-weight: 400;
+        }
+        
+        .game-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid #0ff;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 
+                0 0 40px rgba(0, 255, 255, 0.2),
+                inset 0 0 20px rgba(0, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .game-card:hover {
+            box-shadow: 
+                0 0 60px rgba(0, 255, 255, 0.3),
+                inset 0 0 30px rgba(0, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .neon-border {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0ff, #f0f, #ff0, #0f0, #0ff);
+            background-size: 200% 100%;
+            animation: neon-flow 3s linear infinite;
+        }
+        
+        @keyframes neon-flow {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+        
+        .game-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #0ff;
+            text-shadow: 0 0 20px #0ff;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+        
+        .game-tagline {
+            font-size: 1.1rem;
+            color: #f0f;
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 500;
+            text-shadow: 0 0 10px #f0f;
+        }
+        
+        .game-description {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .game-launch {
+            text-align: center;
+        }
+        
+        .game-launch-btn {
+            display: inline-block;
+            padding: 16px 48px;
+            background: linear-gradient(45deg, #0ff, #f0f);
+            color: #000;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+        
+        .game-launch-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.6);
+        }
+        
+        .btn-text {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn-glow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .game-launch-btn:hover .btn-glow {
+            left: 100%;
+        }
+
+        /* Mobile responsiveness for game section */
+        @media (max-width: 768px) {
+            .game-break-section {
+                padding: 40px 15px;
+            }
+            
+            .game-break-title {
+                font-size: 1.8rem;
+            }
+            
+            .game-break-subtitle {
+                font-size: 1rem;
+            }
+            
+            .game-card {
+                padding: 30px 20px;
+            }
+            
+            .game-title {
+                font-size: 1.8rem;
+            }
+            
+            .game-launch-btn {
+                padding: 14px 36px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -1028,6 +1282,36 @@
                                 <a href="grant-calculator.html" class="tool-launch-btn">Launch</a>
                             </td>
                         </tr>
+                        <tr class="tool-row espp">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">ESPP Calculator</h3>
+                                <p class="tool-type">Employee Stock Purchase Plan Calculator</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Calculate potential returns from your Employee Stock Purchase Plan with detailed tax implications and scenarios.</p>
+                            </td>
+                            <td>
+                                <a href="espp-calculator.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row stock">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Stock Market Screener</h3>
+                                <p class="tool-type">Real-time Market Data & Analysis</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Professional stock market dashboard with S&P 500 charts, real-time data, top gainers/losers, and advanced screening tools for informed investment decisions.</p>
+                            </td>
+                            <td>
+                                <a href="stock-screener.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
                         <tr class="tool-row converter">
                             <td>
                                 <div class="tool-indicator"></div>
@@ -1045,6 +1329,34 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Break Section -->
+    <div class="game-break-section">
+        <div class="game-break-container">
+            <div class="game-break-header">
+                <div class="game-break-icon">🎮</div>
+                <h2 class="game-break-title">Need a Break?</h2>
+                <p class="game-break-subtitle">Feeling bored? Take a gaming break from all those calculations!</p>
+            </div>
+            <div class="game-card">
+                <div class="game-preview">
+                    <div class="neon-border"></div>
+                    <div class="game-title">NEON CYCLES</div>
+                    <div class="game-tagline">Light Trail Battle Arena</div>
+                    <div class="game-description">
+                        Test your reflexes in this retro-futuristic Tron-style game. Battle against AI opponents, 
+                        create light trails, and be the last one standing in the neon arena!
+                    </div>
+                </div>
+                <div class="game-launch">
+                    <a href="neon-cycles.html" class="game-launch-btn">
+                        <span class="btn-text">ENTER THE ARENA</span>
+                        <span class="btn-glow"></span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
