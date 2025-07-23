@@ -101,10 +101,6 @@
 [functions]
   directory = "netlify/functions"
 
-# Plugins configuration - explicitly prevent NextJS plugin
-[[plugins]]
-  # No plugins needed for this static Express.js app
-
 # Custom headers for security
 [[headers]]
   for = "/*"
