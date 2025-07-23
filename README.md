@@ -113,3 +113,5 @@ git push origin dev
 ## Author
 
 Created by [Your Name] 
+
+# Trigger Netlify redeploy after file deletions 
