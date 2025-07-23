@@ -2,6 +2,15 @@
   publish = "dist"
   command = "npm run netlify-build"
 
+# Disable automatic plugin detection and framework detection
+[build.processing]
+  skip_processing = false
+
+# Explicitly disable NextJS detection
+[build.environment]
+  NODE_VERSION = "18"
+  DISABLE_AUTODETECT = "true"
+
 # API Endpoints - Must be first for priority
 [[redirects]]
   from = "/api/gemini-chat"
@@ -91,6 +100,10 @@
 # Functions configuration
 [functions]
   directory = "netlify/functions"
+
+# Plugins configuration - explicitly prevent NextJS plugin
+[[plugins]]
+  # No plugins needed for this static Express.js app
 
 # Custom headers for security
 [[headers]]
