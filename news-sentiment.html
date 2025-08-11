@@ -90,6 +90,15 @@
           </select>
         </div>
         <div>
+          <label>Time range</label>
+          <select id="timeRange">
+            <option value="24h">Last 24 hours</option>
+            <option value="48h" selected>Last 48 hours</option>
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+          </select>
+        </div>
+        <div>
           <label>Max Articles</label>
           <input id="pageSize" type="number" min="5" max="50" value="25" />
         </div>
@@ -213,7 +222,8 @@
       const q = document.getElementById('query').value.trim();
       const language = document.getElementById('language').value;
       const pageSize = document.getElementById('pageSize').value;
-      const url = `${apiBase}?q=${encodeURIComponent(q)}&language=${encodeURIComponent(language)}&pageSize=${encodeURIComponent(pageSize)}`;
+      const timeRange = document.getElementById('timeRange').value;
+      const url = `${apiBase}?q=${encodeURIComponent(q)}&language=${encodeURIComponent(language)}&pageSize=${encodeURIComponent(pageSize)}&timeRange=${encodeURIComponent(timeRange)}`;
       const res = await fetch(url);
       const data = await res.json();
       lastApiPayload = data;
