@@ -5,6 +5,10 @@
 
 const https = require('https');
 
+// Simple in-memory cache to mitigate rate limits (per function instance)
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const cache = new Map(); // key -> { expires, payload }
+
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -68,6 +72,13 @@ exports.handler = async (event, context) => {
 
     const { default: fetch } = await import('node-fetch');
 
+    // Construct a cache key
+    const cacheKey = JSON.stringify({ q: query, language, pageSize, timeRange, fromISO, toISO });
+    const cached = cache.get(cacheKey);
+    if (cached && cached.expires > Date.now()) {
+      return { statusCode: 200, headers, body: JSON.stringify(cached.payload) };
+    }
+
     // 1) Fetch articles from NewsAPI (Everything endpoint)
     const newsUrl = new URL('https://newsapi.org/v2/everything');
     newsUrl.searchParams.set('q', query);
@@ -77,10 +88,51 @@ exports.handler = async (event, context) => {
     newsUrl.searchParams.set('sortBy', 'popularity');
     newsUrl.searchParams.set('pageSize', String(pageSize));
 
-    const newsRes = await fetch(newsUrl.toString(), { headers: { 'X-Api-Key': NEWSAPI_KEY } });
+    let newsRes = await fetch(newsUrl.toString(), { headers: { 'X-Api-Key': NEWSAPI_KEY } });
     if (!newsRes.ok) {
-      const errText = await newsRes.text();
-      return { statusCode: newsRes.status, headers, body: JSON.stringify({ error: 'NewsAPI error', details: errText }) };
+      // If rate limited by NewsAPI, try a graceful fallback or cached response
+      if (newsRes.status === 429) {
+        // If we have any cached payload for this key, return it
+        if (cached && cached.expires > Date.now()) {
+          return { statusCode: 200, headers, body: JSON.stringify(cached.payload) };
+        }
+        // Attempt a lighter fallback using top-headlines with same query (best effort)
+        try {
+          const altUrl = new URL('https://newsapi.org/v2/top-headlines');
+          altUrl.searchParams.set('q', query);
+          altUrl.searchParams.set('language', language);
+          altUrl.searchParams.set('pageSize', String(Math.min(pageSize, 10)));
+          const altRes = await fetch(altUrl.toString(), { headers: { 'X-Api-Key': NEWSAPI_KEY } });
+          if (altRes.ok) {
+            newsRes = altRes; // continue with alt data
+          } else {
+            const msg = await altRes.text();
+            return { statusCode: 200, headers, body: JSON.stringify({
+              query,
+              from: fromISO,
+              to: toISO,
+              totalArticles: 0,
+              counts: { Positive: 0, Neutral: 0, Negative: 0 },
+              articles: [],
+              note: 'Rate limited by NewsAPI (429). Showing no results. Please try again shortly or reduce frequency.' ,
+              upstream: msg
+            }) };
+          }
+        } catch (e) {
+          return { statusCode: 200, headers, body: JSON.stringify({
+            query,
+            from: fromISO,
+            to: toISO,
+            totalArticles: 0,
+            counts: { Positive: 0, Neutral: 0, Negative: 0 },
+            articles: [],
+            note: 'Rate limited by NewsAPI (429). Please try again shortly.'
+          }) };
+        }
+      } else {
+        const errText = await newsRes.text();
+        return { statusCode: newsRes.status, headers, body: JSON.stringify({ error: 'NewsAPI error', details: errText }) };
+      }
     }
     const newsData = await newsRes.json();
     const articles = Array.isArray(newsData.articles) ? newsData.articles : [];
@@ -229,7 +281,7 @@ exports.handler = async (event, context) => {
     // Aggregate counts
     const counts = enriched.reduce((acc, a) => { acc[a.sentiment] = (acc[a.sentiment] || 0) + 1; return acc; }, {});
 
-    return {
+    const payload = {
       statusCode: 200,
       headers,
       body: JSON.stringify({
@@ -241,6 +293,9 @@ exports.handler = async (event, context) => {
         articles: enriched
       })
     };
+    // Cache the successful result
+    cache.set(cacheKey, { expires: Date.now() + CACHE_TTL_MS, payload: JSON.parse(payload.body) });
+    return payload;
   } catch (error) {
     return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error', details: error.message }) };
   }
