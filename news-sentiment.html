@@ -242,7 +242,8 @@
         ${pill(`Negative: ${data.counts?.Negative || 0}`, 'neg')}
         <span class="muted">Total: ${data.totalArticles}</span>
       `;
-      document.getElementById('window').textContent = `Window: ${new Date(data.from).toLocaleString()} → ${new Date(data.to).toLocaleString()}${data.note ? ' • ' + data.note : ''}`;
+      const source = data.provider ? ` • Source: ${data.provider}` : '';
+      document.getElementById('window').textContent = `Window: ${new Date(data.from).toLocaleString()} → ${new Date(data.to).toLocaleString()}${source}${data.note ? ' • ' + data.note : ''}`;
       document.getElementById('articles').innerHTML = (data.articles || []).map(card).join('');
     }
 
