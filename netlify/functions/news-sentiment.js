@@ -26,9 +26,14 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const NEWSAPI_KEY = process.env.NEWSAPI_KEY; // Set in Netlify env
-    if (!NEWSAPI_KEY) {
-      return { statusCode: 500, headers, body: JSON.stringify({ error: 'NEWSAPI_KEY not configured' }) };
+    // Support key rotation: NEWSAPI_KEYS can be comma-separated list. Fallback to NEWSAPI_KEY
+    const keyList = ((process.env.NEWSAPI_KEYS || '')
+      .split(',')
+      .map(k => k.trim())
+      .filter(Boolean));
+    if (process.env.NEWSAPI_KEY && !keyList.length) keyList.push(process.env.NEWSAPI_KEY);
+    if (!keyList.length) {
+      return { statusCode: 500, headers, body: JSON.stringify({ error: 'NEWSAPI_KEY/NEWSAPI_KEYS not configured' }) };
     }
 
     const TWITTER_BEARER_TOKEN = process.env.TWITTER_BEARER_TOKEN || '';
@@ -88,10 +93,32 @@ exports.handler = async (event, context) => {
     newsUrl.searchParams.set('sortBy', 'popularity');
     newsUrl.searchParams.set('pageSize', String(pageSize));
 
-    let newsRes = await fetch(newsUrl.toString(), { headers: { 'X-Api-Key': NEWSAPI_KEY } });
-    if (!newsRes.ok) {
+    // Helper: try multiple keys sequentially
+    async function fetchWithKeys(url) {
+      let lastError = null;
+      for (const apiKey of keyList) {
+        try {
+          const res = await fetch(url, { headers: { 'X-Api-Key': apiKey } });
+          if (res.ok) return { res };
+          lastError = res;
+          if (res.status === 429) {
+            // rotate to next key
+            continue;
+          } else {
+            // non-429 error; return immediately
+            return { res };
+          }
+        } catch (e) {
+          lastError = e;
+        }
+      }
+      return { res: lastError };
+    }
+
+    let { res: newsRes } = await fetchWithKeys(newsUrl.toString());
+    if (!newsRes || !newsRes.ok) {
       // If rate limited by NewsAPI, try a graceful fallback or cached response
-      if (newsRes.status === 429) {
+      if (newsRes && newsRes.status === 429) {
         // If we have any cached payload for this key, return it
         if (cached && cached.expires > Date.now()) {
           return { statusCode: 200, headers, body: JSON.stringify(cached.payload) };
@@ -102,7 +129,7 @@ exports.handler = async (event, context) => {
           altUrl.searchParams.set('q', query);
           altUrl.searchParams.set('language', language);
           altUrl.searchParams.set('pageSize', String(Math.min(pageSize, 10)));
-          const altRes = await fetch(altUrl.toString(), { headers: { 'X-Api-Key': NEWSAPI_KEY } });
+          const { res: altRes } = await fetchWithKeys(altUrl.toString());
           if (altRes.ok) {
             newsRes = altRes; // continue with alt data
           } else {
@@ -130,7 +157,7 @@ exports.handler = async (event, context) => {
           }) };
         }
       } else {
-        const errText = await newsRes.text();
+        const errText = newsRes && newsRes.text ? await newsRes.text() : String(newsRes);
         return { statusCode: newsRes.status, headers, body: JSON.stringify({ error: 'NewsAPI error', details: errText }) };
       }
     }
