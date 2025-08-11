@@ -209,18 +209,29 @@ exports.handler = async (event, context) => {
         // Build query. newsdata.io supports 'q' and 'from_date'/'to_date' in ISO YYYY-MM-DD
         const fromDate = fromISO.slice(0, 10);
         const toDate = toISO.slice(0, 10);
-        const ndUrl = new URL('https://newsdata.io/api/1/news');
-        ndUrl.searchParams.set('apikey', ND_KEY);
-        ndUrl.searchParams.set('q', q);
-        ndUrl.searchParams.set('language', lang);
-        ndUrl.searchParams.set('from_date', fromDate);
-        ndUrl.searchParams.set('to_date', toDate);
-        ndUrl.searchParams.set('page', '1');
-        ndUrl.searchParams.set('page_size', String(Math.min(size, 50)));
-        const ndRes = await fetch(ndUrl.toString());
+        const makeUrl = (withDates) => {
+          const url = new URL('https://newsdata.io/api/1/news');
+          url.searchParams.set('apikey', ND_KEY);
+          url.searchParams.set('q', q);
+          url.searchParams.set('language', lang);
+          if (withDates) {
+            url.searchParams.set('from_date', fromDate);
+            url.searchParams.set('to_date', toDate);
+          }
+          url.searchParams.set('page', '1');
+          url.searchParams.set('page_size', String(Math.min(size, 50)));
+          return url;
+        };
+
+        // Try with dates first
+        let ndRes = await fetch(makeUrl(true).toString());
+        if (!ndRes.ok) {
+          // Some plans may not allow from/to; retry without them
+          ndRes = await fetch(makeUrl(false).toString());
+        }
         if (!ndRes.ok) return { ok: false, status: ndRes.status, error: await ndRes.text() };
         const ndJson = await ndRes.json();
-        const results = Array.isArray(ndJson.results) ? ndJson.results : [];
+        const results = Array.isArray(ndJson.results) ? ndJson.results : (Array.isArray(ndJson.articles) ? ndJson.articles : []);
         // Normalize to NewsAPI-like article shape we expect later
         const normalized = results.map(r => ({
           title: r.title || '',
@@ -368,7 +379,8 @@ exports.handler = async (event, context) => {
         to: toISO,
         totalArticles: enriched.length,
         counts,
-        articles: enriched
+        articles: enriched,
+        provider
       })
     };
     // Cache the successful result
