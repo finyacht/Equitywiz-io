@@ -33,12 +33,37 @@ exports.handler = async (event, context) => {
     const query = (params.q || 'stocks OR market OR economy').slice(0, 200);
     const language = params.language || 'en';
     const pageSize = Math.min(parseInt(params.pageSize || '25', 10), 50);
+    const timeRange = (params.timeRange || '48h').toLowerCase();
 
-    // Time window: last 2 days
+    // Time window selection
     const now = new Date();
-    const twoDaysAgo = new Date(now);
-    twoDaysAgo.setDate(now.getDate() - 2);
-    const fromISO = twoDaysAgo.toISOString();
+    let from = new Date(now);
+    if (timeRange === '24h') {
+      from.setHours(now.getHours() - 24);
+    } else if (timeRange === '48h') {
+      from.setHours(now.getHours() - 48);
+    } else if (timeRange === '7d') {
+      from.setDate(now.getDate() - 7);
+    } else if (timeRange === '30d') {
+      from.setDate(now.getDate() - 30);
+    } else if (params.from && params.to) {
+      // Optional custom ISO range; validate very roughly and cap to 60 days window
+      const tryFrom = new Date(params.from);
+      const tryTo = new Date(params.to);
+      if (!isNaN(tryFrom) && !isNaN(tryTo) && tryFrom < tryTo) {
+        const maxWindowMs = 60 * 24 * 60 * 60 * 1000; // 60 days
+        if (tryTo - tryFrom <= maxWindowMs) {
+          from = tryFrom;
+        } else {
+          from = new Date(tryTo - maxWindowMs);
+        }
+      } else {
+        from.setHours(now.getHours() - 48);
+      }
+    } else {
+      from.setHours(now.getHours() - 48);
+    }
+    const fromISO = from.toISOString();
     const toISO = now.toISOString();
 
     const { default: fetch } = await import('node-fetch');
