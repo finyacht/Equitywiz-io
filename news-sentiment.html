@@ -23,21 +23,63 @@
     .row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
     .stats { display:flex; gap:12px; font-size:12px; color:#475569; }
     .chart { height: 240px; }
+
+    /* Back to Home button (match ESPP calculator) */
+    .nav-home {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #0a5264 0%, #084552 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 500;
+      margin-bottom: 30px;
+      transition: transform 0.2s ease;
+    }
+    .nav-home:hover { transform: translateY(-2px); }
+    .nav-home svg { margin-right: 8px; }
+
+    /* Subtle text improvements */
+    .lead { color:#334155; font-size:18px; text-align:center; margin: 0 0 4px 0; }
+    .helper { color:#64748b; font-size:14px; text-align:center; }
+    .input-grid .full-span { grid-column: 1 / -1; }
+    #query { width: 100%; font-size:16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    label { display:block; font-weight:600; margin-bottom:6px; color:#1f2937; }
+    .btn-secondary { background:#f1f5f9; color:#0f172a; border:1px solid #e2e8f0; padding:10px 14px; border-radius:10px; font-weight:600; cursor:pointer; }
+    .btn-secondary:hover { background:#e2e8f0; }
+    .ai-actions { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .ai-output { background:#0b1220; color:#e2e8f0; padding:14px; border-radius:12px; font-size:14px; white-space:pre-wrap; min-height:80px; }
+    .ai-inline { display:flex; gap:8px; margin-top:10px; }
+    .ai-inline input { flex:1; padding:10px 12px; border:1px solid #e2e8f0; border-radius:10px; }
+    .spinner { display:none; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <a href="/home.html" class="nav-home">← Back to Home</a>
-    <div class="header">
-      <h1>News Sentiment Tracker</h1>
-      <p>Positive, Neutral, Negative sentiment on news from the last 2 days using Reddit and Twitter signals</p>
-    </div>
-    <div class="card">
+    <a href="/home.html" class="nav-home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      Back to Home
+    </a>
+    <div class="card" id="setupCard">
+      <div class="header" style="margin-bottom: 6px;">
+        <h1>News Sentiment Tracker</h1>
+        <p>Positive, Neutral, Negative sentiment on news from the last 2 days using Reddit and Twitter signals</p>
+      </div>
+      <p class="lead">Find social sentiment on precise news topics in the last 48 hours.</p>
+      <ul style="margin:8px 0 16px 18px; color:#475569; line-height:1.6;">
+        <li>Enter a search query (plain text is fine).</li>
+        <li>Select language and max articles.</li>
+        <li>Click <strong>Run Sentiment</strong> to see totals and per‑article scores.</li>
+      </ul>
       <div class="input-grid">
-        <div>
-          <label>Query</label>
-          <input id="query" type="text" value="stocks OR market OR economy" />
+        <div class="full-span">
+          <label>Search query</label>
+          <input id="query" type="text" value='Nvidia earnings' />
+          <div class="helper" style="text-align:left; margin-top:6px;">Example: “Nvidia earnings” (try also “Apple iPhone launch”, “Tesla deliveries”).</div>
         </div>
         <div>
           <label>Language</label>
@@ -55,26 +97,69 @@
       <button id="run" class="calculate-btn" style="margin-top:12px;">Run Sentiment</button>
     </div>
 
-    <div class="card">
+    <div class="card" id="chartCard">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px;">
+        <h3 style="margin:0; font-size:18px;">Sentiment (Last 2 Days)</h3>
+        <div class="tooltip" style="position:relative;">
+          <span style="display:inline-block; width:18px; height:18px; border-radius:50%; background:#64748b; color:#fff; text-align:center; line-height:18px; font-weight:700; cursor:help;">i</span>
+          <div class="tooltip-content" style="position:absolute; right:0; top:120%; background:#111827; color:#fff; padding:10px 12px; border-radius:8px; width:320px; font-size:12px; line-height:1.4; box-shadow:0 4px 16px rgba(0,0,0,.25); display:none; z-index:10;">
+            <strong>How we classify sentiment</strong><br/><br/>
+            • Base score: sentiment analysis on article title + description + content, normalized to [-1, 1].<br/>
+            • Reddit score: sentiment on recent comments matching the article URL/title, normalized to [-1, 1].<br/>
+            • Twitter score (if available): sentiment on recent tweets matching the title, normalized to [-1, 1].<br/>
+            • Combined score = 0.50×Base + 0.35×Reddit + 0.15×Twitter.<br/>
+            • Labels: Positive ≥ +0.15, Negative ≤ -0.15, otherwise Neutral.
+          </div>
+        </div>
+      </div>
       <canvas id="sentChart" class="chart"></canvas>
     </div>
 
-    <div class="card">
+    <div class="card" id="summaryCard">
       <div class="row" style="justify-content: space-between;">
         <div class="row" id="counts"></div>
         <div class="muted" id="window"></div>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="articlesCard">
       <div class="articles" id="articles"></div>
+    </div>
+
+    <div class="card" id="aiCard">
+      <h3 style="margin-top:0;">AI Insights</h3>
+      <div class="ai-actions">
+        <button id="aiSummarize" class="btn-secondary">Summarize results</button>
+        <button id="aiSuggest" class="btn-secondary">Suggest simple queries</button>
+        <button id="aiOutliers" class="btn-secondary">Explain outliers</button>
+      </div>
+      <div id="aiOutput" class="ai-output">Run a query, then use AI actions for summaries, ideas, and explanations.</div>
+      <div class="ai-inline">
+        <input id="aiAskInput" type="text" placeholder="Ask AI about these results (e.g., Which themes drove negative sentiment?)" />
+        <button id="aiAskBtn" class="btn-secondary">Ask</button>
+      </div>
+      <div id="aiSpinner" class="spinner">Thinking…</div>
     </div>
   </div>
 
   <script>
+    // Simple tooltip show/hide
+    document.addEventListener('mouseover', (e) => {
+      const t = e.target.closest('.tooltip');
+      if (!t) return;
+      const c = t.querySelector('.tooltip-content');
+      if (c) c.style.display = 'block';
+    });
+    document.addEventListener('mouseout', (e) => {
+      const t = e.target.closest('.tooltip');
+      if (!t) return;
+      const c = t.querySelector('.tooltip-content');
+      if (c) c.style.display = 'none';
+    });
     const apiBase = '/.netlify/functions/news-sentiment';
     const ctx = document.getElementById('sentChart').getContext('2d');
     let chart;
+    let lastApiPayload = null; // store last results for AI prompts
 
     function renderChart(counts) {
       const pos = counts.Positive || 0;
@@ -131,6 +216,7 @@
       const url = `${apiBase}?q=${encodeURIComponent(q)}&language=${encodeURIComponent(language)}&pageSize=${encodeURIComponent(pageSize)}`;
       const res = await fetch(url);
       const data = await res.json();
+      lastApiPayload = data;
       renderChart(data.counts || {});
       document.getElementById('counts').innerHTML = `
         ${pill(`Positive: ${data.counts?.Positive || 0}`, 'pos')}
@@ -144,7 +230,65 @@
 
     document.getElementById('run').addEventListener('click', run);
     run();
+
+    // Gemini helpers using Netlify function
+    async function callGemini(prompt) {
+      const spinner = document.getElementById('aiSpinner');
+      const output = document.getElementById('aiOutput');
+      try {
+        spinner.style.display = 'block';
+        const body = {
+          message: `${prompt}\n\nContext JSON (summarize, do not echo raw):\n${JSON.stringify({
+            query: () => lastApiPayload?.query || document.getElementById('query').value.trim(),
+            counts: lastApiPayload?.counts || {},
+            from: lastApiPayload?.from,
+            to: lastApiPayload?.to,
+            topArticles: (lastApiPayload?.articles || []).slice(0, 8).map(a => ({ title: a.title, source: a.source, sentiment: a.sentiment, combinedScore: a.combinedScore }))
+          }, null, 2)}`
+        };
+        const res = await fetch('/.netlify/functions/gemini-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (res.ok && data.response) {
+          output.textContent = data.response;
+        } else {
+          output.textContent = 'AI is unavailable right now.';
+        }
+      } catch (e) {
+        output.textContent = 'AI error. Please try again later.';
+      } finally {
+        spinner.style.display = 'none';
+      }
+    }
+
+    document.getElementById('aiSummarize').addEventListener('click', () => {
+      callGemini('Summarize the sentiment landscape, note key themes and sources. Keep it concise with bullets.');
+    });
+    document.getElementById('aiSuggest').addEventListener('click', () => {
+      callGemini('Suggest 5 beginner-friendly search queries related to the current topic that yield useful sentiment insights.');
+    });
+    document.getElementById('aiOutliers').addEventListener('click', () => {
+      callGemini('Identify any outlier articles whose sentiment strongly differs from the overall counts and briefly explain potential reasons.');
+    });
+    document.getElementById('aiAskBtn').addEventListener('click', () => {
+      const q = document.getElementById('aiAskInput').value.trim();
+      if (q) callGemini(q);
+    });
   </script>
+  
+  <div class="container">
+    <div class="card" style="background:#f8fafc;">
+      <h3 style="margin-bottom:8px;">Disclaimer</h3>
+      <p style="color:#475569; font-size:14px; line-height:1.6;">
+        This tool is for informational and educational purposes only and does not constitute financial advice or an endorsement of any security. 
+        Sentiment is computed using heuristic and third-party data (NewsAPI, Reddit, and optionally Twitter) and may be noisy, incomplete, or biased. 
+        Use your own judgment and consult qualified professionals before making investment decisions.
+      </p>
+    </div>
+  </div>
   
 </body>
 </html>
