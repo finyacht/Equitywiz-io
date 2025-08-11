@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News Sentiment Tracker</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .results-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .pill { display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+    .pos { background:#e6fffb; color:#047857; }
+    .neu { background:#f3f4f6; color:#374151; }
+    .neg { background:#fef2f2; color:#b91c1c; }
+    .articles { display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+    .article { border:1px solid #e5e7eb; border-radius:12px; overflow:hidden; background:#fff; display:flex; flex-direction:column; }
+    .article img { width:100%; height:150px; object-fit:cover; background:#f3f4f6; }
+    .article .content { padding:12px 14px; display:flex; flex-direction:column; gap:8px; }
+    .muted { color:#6b7280; font-size:12px; }
+    .row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .stats { display:flex; gap:12px; font-size:12px; color:#475569; }
+    .chart { height: 240px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <a href="/home.html" class="nav-home">← Back to Home</a>
+    <div class="header">
+      <h1>News Sentiment Tracker</h1>
+      <p>Positive, Neutral, Negative sentiment on news from the last 2 days using Reddit and Twitter signals</p>
+    </div>
+    <div class="card">
+      <div class="input-grid">
+        <div>
+          <label>Query</label>
+          <input id="query" type="text" value="stocks OR market OR economy" />
+        </div>
+        <div>
+          <label>Language</label>
+          <select id="language">
+            <option value="en" selected>English</option>
+            <option value="de">German</option>
+            <option value="fr">French</option>
+          </select>
+        </div>
+        <div>
+          <label>Max Articles</label>
+          <input id="pageSize" type="number" min="5" max="50" value="25" />
+        </div>
+      </div>
+      <button id="run" class="calculate-btn" style="margin-top:12px;">Run Sentiment</button>
+    </div>
+
+    <div class="card">
+      <canvas id="sentChart" class="chart"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content: space-between;">
+        <div class="row" id="counts"></div>
+        <div class="muted" id="window"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="articles" id="articles"></div>
+    </div>
+  </div>
+
+  <script>
+    const apiBase = '/.netlify/functions/news-sentiment';
+    const ctx = document.getElementById('sentChart').getContext('2d');
+    let chart;
+
+    function renderChart(counts) {
+      const pos = counts.Positive || 0;
+      const neu = counts.Neutral || 0;
+      const neg = counts.Negative || 0;
+      const data = [pos, neu, neg];
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Positive', 'Neutral', 'Negative'],
+          datasets: [{
+            label: 'Articles',
+            data,
+            backgroundColor: ['#10b98133', '#94a3b833', '#ef444433'],
+            borderColor: ['#047857', '#64748b', '#b91c1c'],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false }, title: { display: true, text: 'Sentiment (Last 2 Days)' } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
+
+    function pill(label, cls) { return `<span class="pill ${cls}">${label}</span>`; }
+
+    function card(article) {
+      const s = article.sentiment;
+      const cls = s === 'Positive' ? 'pos' : s === 'Negative' ? 'neg' : 'neu';
+      return `
+      <a class="article" href="${article.url}" target="_blank" rel="noopener noreferrer">
+        ${article.imageUrl ? `<img src="${article.imageUrl}" alt="">` : `<div style="height:150px;background:#f1f5f9"></div>`}
+        <div class="content">
+          <div class="row">${pill(s, cls)} <span class="muted">${article.source}</span></div>
+          <div><strong>${article.title}</strong></div>
+          <div class="stats">
+            <span>Base: ${article.baseScore.toFixed(2)}</span>
+            <span>Reddit: ${article.redditScore.toFixed(2)} (${article.redditComments})</span>
+            <span>Twitter: ${article.twitterScore.toFixed(2)} (${article.tweets})</span>
+            <span>Combined: ${article.combinedScore.toFixed(2)}</span>
+          </div>
+          <div class="muted">${new Date(article.publishedAt).toLocaleString()}</div>
+        </div>
+      </a>`;
+    }
+
+    async function run() {
+      const q = document.getElementById('query').value.trim();
+      const language = document.getElementById('language').value;
+      const pageSize = document.getElementById('pageSize').value;
+      const url = `${apiBase}?q=${encodeURIComponent(q)}&language=${encodeURIComponent(language)}&pageSize=${encodeURIComponent(pageSize)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      renderChart(data.counts || {});
+      document.getElementById('counts').innerHTML = `
+        ${pill(`Positive: ${data.counts?.Positive || 0}`, 'pos')}
+        ${pill(`Neutral: ${data.counts?.Neutral || 0}`, 'neu')}
+        ${pill(`Negative: ${data.counts?.Negative || 0}`, 'neg')}
+        <span class="muted">Total: ${data.totalArticles}</span>
+      `;
+      document.getElementById('window').textContent = `Window: ${new Date(data.from).toLocaleString()} → ${new Date(data.to).toLocaleString()}`;
+      document.getElementById('articles').innerHTML = (data.articles || []).map(card).join('');
+    }
+
+    document.getElementById('run').addEventListener('click', run);
+    run();
+  </script>
+  
+</body>
+</html>
+

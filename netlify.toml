@@ -71,6 +71,12 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/news-sentiment"
+  to = "/news-sentiment.html"
+  status = 200
+  force = true
+
 # Keep wildcards at the bottom with lower priority
 [[redirects]]
   from = "/*"
