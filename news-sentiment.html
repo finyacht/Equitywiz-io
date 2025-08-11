@@ -41,7 +41,7 @@
     .nav-home svg { margin-right: 8px; }
 
     /* Subtle text improvements */
-    .lead { color:#334155; font-size:18px; text-align:center; margin: 0 0 4px 0; }
+    .lead { color:#334155; font-size:18px; text-align:left; margin: 0 0 4px 0; }
     .helper { color:#64748b; font-size:14px; text-align:center; }
     .input-grid .full-span { grid-column: 1 / -1; }
     #query { width: 100%; font-size:16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
@@ -65,16 +65,16 @@
       Back to Home
     </a>
     <div class="card" id="setupCard">
-      <div class="header" style="margin-bottom: 6px;">
+      <div class="header" style="margin-bottom: 6px; text-align:left;">
         <h1>News Sentiment Tracker</h1>
-        <p>Positive, Neutral, Negative sentiment on news from the last 2 days using Reddit and Twitter signals</p>
+        <p style="margin:6px 0 0 0; color:#475569;">Positive, Neutral, Negative sentiment on news from the last 2 days using Reddit and Twitter signals</p>
       </div>
-      <p class="lead">Find social sentiment on precise news topics in the last 48 hours.</p>
-      <ul style="margin:8px 0 16px 18px; color:#475569; line-height:1.6;">
+      <div class="lead" style="margin-bottom:8px;">Find social sentiment on precise news topics in the last 48 hours.</div>
+      <ol style="margin:8px 0 16px 18px; color:#475569; line-height:1.6;">
         <li>Enter a search query (plain text is fine).</li>
         <li>Select language and max articles.</li>
         <li>Click <strong>Run Sentiment</strong> to see totals and per‑article scores.</li>
-      </ul>
+      </ol>
       <div class="input-grid">
         <div class="full-span">
           <label>Search query</label>
@@ -239,14 +239,14 @@
         spinner.style.display = 'block';
         const body = {
           message: `${prompt}\n\nContext JSON (summarize, do not echo raw):\n${JSON.stringify({
-            query: () => lastApiPayload?.query || document.getElementById('query').value.trim(),
+            query: lastApiPayload?.query || document.getElementById('query').value.trim(),
             counts: lastApiPayload?.counts || {},
             from: lastApiPayload?.from,
             to: lastApiPayload?.to,
             topArticles: (lastApiPayload?.articles || []).slice(0, 8).map(a => ({ title: a.title, source: a.source, sentiment: a.sentiment, combinedScore: a.combinedScore }))
           }, null, 2)}`
         };
-        const res = await fetch('/.netlify/functions/gemini-chat', {
+        const res = await fetch('/.netlify/functions/gemini-news', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
