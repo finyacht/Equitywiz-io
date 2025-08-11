@@ -226,6 +226,14 @@
       const url = `${apiBase}?q=${encodeURIComponent(q)}&language=${encodeURIComponent(language)}&pageSize=${encodeURIComponent(pageSize)}&timeRange=${encodeURIComponent(timeRange)}`;
       const res = await fetch(url);
       const data = await res.json();
+      if (!res.ok) {
+        // Show user-friendly note
+        document.getElementById('articles').innerHTML = '';
+        renderChart({});
+        document.getElementById('counts').innerHTML = '<span class="muted">The news provider rate-limited our request. Please try again in a minute or pick a longer time range.</span>';
+        document.getElementById('window').textContent = '';
+        return;
+      }
       lastApiPayload = data;
       renderChart(data.counts || {});
       document.getElementById('counts').innerHTML = `
@@ -234,7 +242,7 @@
         ${pill(`Negative: ${data.counts?.Negative || 0}`, 'neg')}
         <span class="muted">Total: ${data.totalArticles}</span>
       `;
-      document.getElementById('window').textContent = `Window: ${new Date(data.from).toLocaleString()} → ${new Date(data.to).toLocaleString()}`;
+      document.getElementById('window').textContent = `Window: ${new Date(data.from).toLocaleString()} → ${new Date(data.to).toLocaleString()}${data.note ? ' • ' + data.note : ''}`;
       document.getElementById('articles').innerHTML = (data.articles || []).map(card).join('');
     }
 
