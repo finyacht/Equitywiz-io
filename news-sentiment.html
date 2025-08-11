@@ -67,9 +67,9 @@
     <div class="card" id="setupCard">
       <div class="header" style="margin-bottom: 6px; text-align:left;">
         <h1>News Sentiment Tracker</h1>
-        <p style="margin:6px 0 0 0; color:#475569;">Positive, Neutral, Negative sentiment on news from the last 2 days using Reddit and Twitter signals</p>
+        <p style="margin:6px 0 0 0; color:#475569;">Positive, Neutral, Negative sentiment on news from your selected time range using Reddit and Twitter signals</p>
       </div>
-      <div class="lead" style="margin-bottom:8px;">Find social sentiment on precise news topics in the last 48 hours.</div>
+      <div class="lead" style="margin-bottom:8px;">Find social sentiment on precise news topics over your chosen time range.</div>
       <ol style="margin:8px 0 16px 18px; color:#475569; line-height:1.6;">
         <li>Enter a search query (plain text is fine).</li>
         <li>Select language and max articles.</li>
@@ -108,7 +108,7 @@
 
     <div class="card" id="chartCard">
       <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px;">
-        <h3 style="margin:0; font-size:18px;">Sentiment (Last 2 Days)</h3>
+        <h3 id="chartTitle" style="margin:0; font-size:18px;">Sentiment</h3>
         <div class="tooltip" style="position:relative;">
           <span style="display:inline-block; width:18px; height:18px; border-radius:50%; background:#64748b; color:#fff; text-align:center; line-height:18px; font-weight:700; cursor:help;">i</span>
           <div class="tooltip-content" style="position:absolute; right:0; top:120%; background:#111827; color:#fff; padding:10px 12px; border-radius:8px; width:320px; font-size:12px; line-height:1.4; box-shadow:0 4px 16px rgba(0,0,0,.25); display:none; z-index:10;">
@@ -190,7 +190,7 @@
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false }, title: { display: true, text: 'Sentiment (Last 2 Days)' } },
+          plugins: { legend: { display: false }, title: { display: true, text: document.getElementById('timeRange') ? `Sentiment (${document.getElementById('timeRange').selectedOptions[0].textContent})` : 'Sentiment' } },
           scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
         }
       });
