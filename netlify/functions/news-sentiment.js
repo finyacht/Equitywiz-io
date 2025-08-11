@@ -101,7 +101,7 @@ exports.handler = async (event, context) => {
           const res = await fetch(url, { headers: { 'X-Api-Key': apiKey } });
           if (res.ok) return { res };
           lastError = res;
-          if (res.status === 429) {
+          if ([429, 401, 403].includes(res.status)) {
             // rotate to next key
             continue;
           } else {
@@ -116,9 +116,11 @@ exports.handler = async (event, context) => {
     }
 
     let { res: newsRes } = await fetchWithKeys(newsUrl.toString());
+    let baseArticles = [];
+    let provider = 'newsapi.org';
     if (!newsRes || !newsRes.ok) {
       // If rate limited by NewsAPI, try a graceful fallback or cached response
-      if (newsRes && newsRes.status === 429) {
+      if (newsRes && (newsRes.status === 429 || newsRes.status === 401 || newsRes.status === 403)) {
         // If we have any cached payload for this key, return it
         if (cached && cached.expires > Date.now()) {
           return { statusCode: 200, headers, body: JSON.stringify(cached.payload) };
@@ -134,6 +136,31 @@ exports.handler = async (event, context) => {
             newsRes = altRes; // continue with alt data
           } else {
             const msg = await altRes.text();
+            // Try secondary provider: newsdata.io
+            const nd = await fetchFromNewsData(query, language, fromISO, toISO, pageSize);
+            if (nd.ok) {
+              baseArticles = nd.articles;
+              provider = 'newsdata.io';
+            } else {
+              return { statusCode: 200, headers, body: JSON.stringify({
+                query,
+                from: fromISO,
+                to: toISO,
+                totalArticles: 0,
+                counts: { Positive: 0, Neutral: 0, Negative: 0 },
+                articles: [],
+                note: 'Upstream provider unavailable (429/401/403). Please try again shortly.' ,
+                upstream: msg
+              }) };
+            }
+          }
+        } catch (e) {
+          // Try secondary provider: newsdata.io
+          const nd = await fetchFromNewsData(query, language, fromISO, toISO, pageSize);
+          if (nd.ok) {
+            baseArticles = nd.articles;
+            provider = 'newsdata.io';
+          } else {
             return { statusCode: 200, headers, body: JSON.stringify({
               query,
               from: fromISO,
@@ -141,28 +168,19 @@ exports.handler = async (event, context) => {
               totalArticles: 0,
               counts: { Positive: 0, Neutral: 0, Negative: 0 },
               articles: [],
-              note: 'Rate limited by NewsAPI (429). Showing no results. Please try again shortly or reduce frequency.' ,
-              upstream: msg
+              note: 'Providers unavailable. Please try again shortly.'
             }) };
           }
-        } catch (e) {
-          return { statusCode: 200, headers, body: JSON.stringify({
-            query,
-            from: fromISO,
-            to: toISO,
-            totalArticles: 0,
-            counts: { Positive: 0, Neutral: 0, Negative: 0 },
-            articles: [],
-            note: 'Rate limited by NewsAPI (429). Please try again shortly.'
-          }) };
         }
       } else {
         const errText = newsRes && newsRes.text ? await newsRes.text() : String(newsRes);
         return { statusCode: newsRes.status, headers, body: JSON.stringify({ error: 'NewsAPI error', details: errText }) };
       }
     }
-    const newsData = await newsRes.json();
-    const articles = Array.isArray(newsData.articles) ? newsData.articles : [];
+    if (!baseArticles.length) {
+      const newsData = await newsRes.json();
+      baseArticles = Array.isArray(newsData.articles) ? newsData.articles : [];
+    }
 
     // Utility: simple sentiment using 'sentiment' npm package
     let Sentiment;
@@ -183,6 +201,39 @@ exports.handler = async (event, context) => {
       };
     }
     const sentiment = new Sentiment();
+    // Secondary provider: newsdata.io
+    async function fetchFromNewsData(q, lang, fromISO, toISO, size) {
+      try {
+        const ND_KEY = process.env.NEWSDATA_API_KEY || process.env.NEWSDATA_KEY;
+        if (!ND_KEY) return { ok: false, status: 500, error: 'NEWSDATA_API_KEY not configured' };
+        // Build query. newsdata.io supports 'q' and 'from_date'/'to_date' in ISO YYYY-MM-DD
+        const fromDate = fromISO.slice(0, 10);
+        const toDate = toISO.slice(0, 10);
+        const ndUrl = new URL('https://newsdata.io/api/1/news');
+        ndUrl.searchParams.set('apikey', ND_KEY);
+        ndUrl.searchParams.set('q', q);
+        ndUrl.searchParams.set('language', lang);
+        ndUrl.searchParams.set('from_date', fromDate);
+        ndUrl.searchParams.set('to_date', toDate);
+        ndUrl.searchParams.set('page', '1');
+        ndUrl.searchParams.set('page_size', String(Math.min(size, 50)));
+        const ndRes = await fetch(ndUrl.toString());
+        if (!ndRes.ok) return { ok: false, status: ndRes.status, error: await ndRes.text() };
+        const ndJson = await ndRes.json();
+        const results = Array.isArray(ndJson.results) ? ndJson.results : [];
+        // Normalize to NewsAPI-like article shape we expect later
+        const normalized = results.map(r => ({
+          title: r.title || '',
+          source: { name: r.source_id || r.source || 'Unknown' },
+          url: r.link || r.url || '',
+          publishedAt: r.pubDate || r.published_at || new Date().toISOString(),
+          urlToImage: r.image_url || r.image || ''
+        }));
+        return { ok: true, articles: normalized };
+      } catch (e) {
+        return { ok: false, status: 500, error: e.message };
+      }
+    }
 
     const clean = (s) => (s || '').replace(/[\r\n]+/g, ' ').trim();
     const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
@@ -273,7 +324,7 @@ exports.handler = async (event, context) => {
     }
 
     // Process each article with sentiment and social signals (limited concurrency)
-    const limited = articles.slice(0, pageSize);
+    const limited = baseArticles.slice(0, pageSize);
     const enriched = [];
     for (const article of limited) {
       const baseText = `${clean(article.title)}. ${clean(article.description)}. ${clean(article.content)}`;
