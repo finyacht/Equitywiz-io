@@ -1071,6 +1071,12 @@
                     }
                 }
                 
+                // Fallback: ensure SP500 price not zero using intraday series
+                if (summary && sp500Data && (!summary.sp500 || !summary.sp500.price || summary.sp500.price === 0)) {
+                    const last = Array.isArray(sp500Data.data) && sp500Data.data.length ? sp500Data.data[sp500Data.data.length - 1] : 0;
+                    summary.sp500 = { price: Number(last) || 0, change: 0, changePercent: 0 };
+                }
+
                 // Update market summary
                 if (summary) {
                     updateMarketSummaryDisplay(summary);
