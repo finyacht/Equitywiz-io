@@ -884,7 +884,7 @@
             console.log('✅ Stock Market Screener fully initialized with live data!');
         });
 
-        // Live Polygon.io API Integration
+        // Alpha Vantage Integration via Netlify functions
         class PolygonAPI {
             constructor() {
                 this.baseUrl = window.location.origin; // Use same domain for Netlify functions
@@ -893,7 +893,7 @@
             async getSP500Data() {
                 try {
                     console.log('📊 Fetching S&P 500 data...');
-                    const url = `${this.baseUrl}/.netlify/functions/polygon-api?endpoint=sp500`;
+                    const url = `${this.baseUrl}/.netlify/functions/alpha-screener?endpoint=intraday&symbol=SPY&interval=5min&size=compact`;
                     console.log('📡 S&P 500 URL:', url);
                     
                     const response = await fetch(url);
@@ -918,43 +918,19 @@
             async getTopMovers() {
                 try {
                     console.log('🔥 Fetching top movers...');
-                    const gainersUrl = `${this.baseUrl}/.netlify/functions/polygon-api?endpoint=gainers`;
-                    const losersUrl = `${this.baseUrl}/.netlify/functions/polygon-api?endpoint=losers`;
+                    const moversUrl = `${this.baseUrl}/.netlify/functions/alpha-screener?endpoint=top-movers&market=US`;
                     
-                    console.log('📡 Gainers URL:', gainersUrl);
-                    console.log('📡 Losers URL:', losersUrl);
+                    console.log('📡 Movers URL:', moversUrl);
                     
-                    const [gainersResponse, losersResponse] = await Promise.all([
-                        fetch(gainersUrl),
-                        fetch(losersUrl)
-                    ]);
+                    const resp = await fetch(moversUrl);
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                    const data = await resp.json();
                     
-                    console.log('📊 Gainers response status:', gainersResponse.status);
-                    console.log('📊 Losers response status:', losersResponse.status);
-                    
-                    if (!gainersResponse.ok) {
-                        const gainersError = await gainersResponse.text();
-                        console.error('❌ Gainers API error:', gainersError);
-                        throw new Error(`Gainers API failed: ${gainersResponse.status} - ${gainersError}`);
-                    }
-                    
-                    if (!losersResponse.ok) {
-                        const losersError = await losersResponse.text();
-                        console.error('❌ Losers API error:', losersError);
-                        throw new Error(`Losers API failed: ${losersResponse.status} - ${losersError}`);
-                    }
-                    
-                    const [gainersData, losersData] = await Promise.all([
-                        gainersResponse.json(),
-                        losersResponse.json()
-                    ]);
-                    
-                    console.log('✅ Gainers data received:', gainersData);
-                    console.log('✅ Losers data received:', losersData);
+                    console.log('✅ Movers data received:', data);
                     
                     return {
-                        gainers: this.transformMoversData(gainersData.results || []),
-                        losers: this.transformMoversData(losersData.results || [])
+                        gainers: this.transformMoversData(data.top_gainers || data.gainers || []),
+                        losers: this.transformMoversData(data.top_losers || data.losers || [])
                     };
                 } catch (error) {
                     console.error('❌ Error fetching top movers:', error);
@@ -966,7 +942,7 @@
             async getMarketSummary() {
                 try {
                     console.log('📈 Fetching market indices...');
-                    const url = `${this.baseUrl}/.netlify/functions/polygon-api?endpoint=indices`;
+                    const url = `${this.baseUrl}/.netlify/functions/alpha-screener?endpoint=quote&symbol=SPY`;
                     console.log('📡 Market indices URL:', url);
                     
                     const response = await fetch(url);
@@ -980,7 +956,7 @@
                     
                     const data = await response.json();
                     console.log('✅ Market indices data received:', data);
-                    return this.transformMarketData(data.results || []);
+                    return this.transformMarketData([{ ticker: 'SPY', change: parseFloat(data['Global Quote']?.['10. change percent'] || '0').toFixed(2) }]);
                 } catch (error) {
                     console.error('❌ Error fetching market summary:', error);
                     console.error('❌ Error details:', error.message);
