@@ -942,21 +942,20 @@
             async getMarketSummary() {
                 try {
                     console.log('📈 Fetching market indices...');
-                    const url = `${this.baseUrl}/.netlify/functions/alpha-screener?endpoint=quote&symbol=SPY`;
-                    console.log('📡 Market indices URL:', url);
-                    
-                    const response = await fetch(url);
-                    console.log('📊 Market indices response status:', response.status);
-                    
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('❌ Market indices API error:', errorText);
-                        throw new Error(`HTTP ${response.status} - ${errorText}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log('✅ Market indices data received:', data);
-                    return this.transformMarketData([{ ticker: 'SPY', change: parseFloat(data['Global Quote']?.['10. change percent'] || '0').toFixed(2) }]);
+                    const symbols = ['SPY','QQQ','DIA'];
+                    const urls = symbols.map(s => `${this.baseUrl}/.netlify/functions/alpha-screener?endpoint=quote&symbol=${s}`);
+                    console.log('📡 Market indices URLs:', urls);
+                    const responses = await Promise.all(urls.map(u => fetch(u)));
+                    const jsons = await Promise.all(responses.map(r => r.json()));
+                    const items = jsons.map((data, idx) => {
+                        const q = data['Global Quote'] || {};
+                        const price = parseFloat(q['05. price'] || q['05. Price'] || 0);
+                        const cp = String(q['10. change percent'] || '0');
+                        const changePercent = parseFloat(cp.replace('%','')) || 0;
+                        return { ticker: symbols[idx], value: price, change: changePercent };
+                    });
+                    console.log('✅ Market indices normalized:', items);
+                    return this.transformMarketData(items);
                 } catch (error) {
                     console.error('❌ Error fetching market summary:', error);
                     console.error('❌ Error details:', error.message);
