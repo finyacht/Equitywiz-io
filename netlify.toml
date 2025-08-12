@@ -15,11 +15,6 @@
   status = 200
   force = true
 
-[[redirects]]
-  from = "/api/alpha-screener"
-  to = "/.netlify/functions/alpha-screener"
-  status = 200
-  force = true
 
 [[redirects]]
   from = "/api/gemini-news"
