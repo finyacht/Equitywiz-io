@@ -1026,6 +1026,18 @@
                     </select>
                 </div>
 
+                <!-- Current Price moved from Advanced Options -->
+                <div class="input-group">
+                    <div class="label-with-tooltip">
+                        <label for="currentSalePrice">Current Price ($)</label>
+                        <div class="tooltip">
+                            <div class="tooltip-icon">?</div>
+                            <div class="tooltip-content">Current market price used to compute current value and net profit across all periods</div>
+                        </div>
+                    </div>
+                    <input type="number" id="currentSalePrice" value="240" min="0" step="0.01">
+                </div>
+
                 <div class="input-group">
                     <div class="label-with-tooltip">
                         <label for="lookbackProvision">Lookback Provision</label>
@@ -1084,16 +1096,6 @@
             <div id="advancedOptions" class="advanced-options" style="display: none;">
                 <h3 class="section-title" style="margin-top: 20px; font-size: 18px;">Tax & Sale Parameters</h3>
                 <div class="input-grid">
-                    <div class="input-group">
-                        <div class="label-with-tooltip">
-                            <label for="currentSalePrice">Current Sale Price ($)</label>
-                            <div class="tooltip">
-                                <div class="tooltip-icon">?</div>
-                                <div class="tooltip-content">Current stock price if selling today (for tax scenario analysis)</div>
-                            </div>
-                        </div>
-                        <input type="number" id="currentSalePrice" value="240" min="0" step="0.01">
-                    </div>
 
                     <div class="input-group">
                         <div class="label-with-tooltip">
@@ -1164,7 +1166,7 @@ This gives you the weighted average price you paid across all purchase periods, 
 
 Calculation: Total Current Value - Total Contribution
 
-This is your absolute dollar gain if you sold all shares at the current sale price. It represents the total value created by your ESPP participation across all periods.">$0</div>
+This is your absolute dollar gain if you sold all shares at the current price. It represents the total value created by your ESPP participation across all periods.">$0</div>
                 </div>
                 
                 <!-- Performance Metrics -->
@@ -1174,7 +1176,7 @@ This is your absolute dollar gain if you sold all shares at the current sale pri
 
 Calculation: (Total Profit ÷ Total Contribution) × 100
 
-This percentage shows your overall return across the entire offering period. It factors in all purchase periods, different prices, and the current sale price.">0%</div>
+This percentage shows your overall return across the entire offering period. It factors in all purchase periods, different prices, and the current price.">0%</div>
                 </div>
                 
                 <!-- Conditional Lookback Advantage -->
@@ -1491,7 +1493,7 @@ Higher tax because ALL gain is ordinary income`);
                     const sharesWithLookback = periodContribution / withLookbackPurchasePrice;
                     const sharesWithoutLookback = periodContribution / withoutLookbackPurchasePrice;
                     
-                    // Use current sale price for profit calculation
+                    // Use current price for profit calculation
                     
                     // Calculate profits
                     const profitWithLookback = (sharesWithLookback * currentSalePrice) - periodContribution;
@@ -1619,7 +1621,7 @@ Higher tax because ALL gain is ordinary income`);
             const monthlyContribution = (salary * contributionRate) / 12;
             const periodContribution = monthlyContribution * purchasePeriod;
             
-            // Get current sale price from advanced settings
+            // Get current price from plan configuration
             const currentSalePrice = parseFloat(document.getElementById('currentSalePrice').value) || 240;
             
             // Generate chart data
@@ -1640,6 +1642,10 @@ Higher tax because ALL gain is ordinary income`);
                 });
             }
 
+            // Cumulative trackers for chart
+            let cumulativeShares = 0;
+            let cumulativeContribution = 0;
+
             stockPriceScenarios.forEach((scenario, index) => {
                 // Calculate purchase price based on lookback setting
                 let lowerPrice, purchasePrice;
@@ -1652,13 +1658,28 @@ Higher tax because ALL gain is ordinary income`);
                 }
                 
                 const shares = periodContribution / purchasePrice;
-                const currentValue = shares * currentSalePrice; // Use current sale price, not purchase price!
-                const profit = currentValue - periodContribution; // Correct profit calculation
+                const currentValue = shares * currentSalePrice; // Use current price
+                const profit = currentValue - periodContribution; // Profit this period
                 const roi = (profit / periodContribution) * 100;
 
-                // Add to chart data
+                // Update cumulative totals
+                cumulativeShares += shares;
+                cumulativeContribution += periodContribution;
+                const cumulativeValue = cumulativeShares * currentSalePrice;
+                const cumulativeProfit = cumulativeValue - cumulativeContribution;
+
+                // Add cumulative point to chart data with rich tooltip context
                 chartLabels.push(scenario.label);
-                chartData.push(profit);
+                chartData.push({
+                    y: cumulativeProfit,
+                    currentPrice: currentSalePrice,
+                    thisPeriodProfit: profit,
+                    thisPeriodContribution: periodContribution,
+                    thisPeriodShares: shares,
+                    cumShares: cumulativeShares,
+                    cumContribution: cumulativeContribution,
+                    cumValue: cumulativeValue
+                });
                 chartColors.push(`rgba(10, 82, 100, ${0.8 - index * 0.15})`);
 
                 const card = document.createElement('div');
@@ -1674,7 +1695,7 @@ Higher tax because ALL gain is ordinary income`);
 • Lookback Price (Lower): ${formatCurrency(lowerPrice)}
 • Purchase Price: ${formatCurrency(lowerPrice)} - ${(discount*100).toFixed(0)}% discount = ${formatCurrency(purchasePrice)}
 • Shares Purchased: ${formatCurrency(periodContribution)} ÷ ${formatCurrency(purchasePrice)} = ${shares.toFixed(1)} shares
-• Current Value: ${shares.toFixed(1)} × ${formatCurrency(currentSalePrice)} (Current Sale Price) = ${formatCurrency(currentValue)}
+• Current Value: ${shares.toFixed(1)} × ${formatCurrency(currentSalePrice)} (Current Price) = ${formatCurrency(currentValue)}
 • Profit: ${formatCurrency(currentValue)} - ${formatCurrency(periodContribution)} = ${formatCurrency(profit)}`;
                 } else {
                     explanation = `Purchase Analysis for ${scenario.label} (no Lookback):
@@ -1683,14 +1704,14 @@ Higher tax because ALL gain is ordinary income`);
 • Stock Price at Purchase: ${formatCurrency(scenario.price)}
 • Purchase Price: ${formatCurrency(scenario.price)} - ${(discount*100).toFixed(0)}% discount = ${formatCurrency(purchasePrice)}
 • Shares Purchased: ${formatCurrency(periodContribution)} ÷ ${formatCurrency(purchasePrice)} = ${shares.toFixed(1)} shares
-• Current Value: ${shares.toFixed(1)} × ${formatCurrency(currentSalePrice)} (Current Sale Price) = ${formatCurrency(currentValue)}
+• Current Value: ${shares.toFixed(1)} × ${formatCurrency(currentSalePrice)} (Current Price) = ${formatCurrency(currentValue)}
 • Profit: ${formatCurrency(currentValue)} - ${formatCurrency(periodContribution)} = ${formatCurrency(profit)}`;
                 }
                 
                 card.innerHTML = `
                     <div class="scenario-title hover-explanation" data-explanation="${explanation}">${scenario.label} Purchase</div>
                     <div class="scenario-value profit">${formatCurrency(profit)}</div>
-                    <small>ROI: ${roi.toFixed(1)}% • Current Sale Price: $${currentSalePrice.toFixed(0)}</small>
+                    <small>ROI: ${roi.toFixed(1)}% • Current Price: $${currentSalePrice.toFixed(0)}</small>
                 `;
                 multiplePeriods.appendChild(card);
             });
@@ -1713,7 +1734,7 @@ Higher tax because ALL gain is ordinary income`);
                 periodsChart.destroy();
             }
             
-            const chartTitle = isSinglePeriod ? 'Single Purchase Period' : 'Multiple Purchase Periods Profit';
+            const chartTitle = isSinglePeriod ? 'Single Purchase Period' : 'Cumulative Profit Over Purchase Periods';
             
             try {
                 // Ensure we have valid data
@@ -1721,14 +1742,18 @@ Higher tax because ALL gain is ordinary income`);
                     console.error('No data available for chart');
                     return;
                 }
+                // Normalize dataset: keep numeric values for plotting, store rich context separately
+                const metaPoints = data.map(d => (typeof d === 'number' ? { y: d } : d));
+                const numericData = data.map(d => (typeof d === 'number' ? d : (Number(d.y) || 0)));
                 
                 periodsChart = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'ESPP Profit',
-                            data: data,
+                            label: 'Cumulative Profit',
+                            data: numericData,
+                            meta: metaPoints,
                             borderColor: '#0a5264',
                             backgroundColor: 'rgba(10, 82, 100, 0.1)',
                             borderWidth: 3,
@@ -1778,10 +1803,21 @@ Higher tax because ALL gain is ordinary income`);
                                 displayColors: true,
                                 callbacks: {
                                     title: function(tooltipItems) {
-                                        return `Purchase Period: ${tooltipItems[0].label}`;
+                                        return `Up to ${tooltipItems[0].label}`;
                                     },
                                     label: function(context) {
-                                        return `Profit: ${formatCurrency(context.parsed.y)}`;
+                                        const d = (context.dataset && context.dataset.meta && context.dataset.meta[context.dataIndex]) || {};
+                                        const lines = [];
+                                        lines.push(`Cumulative Profit: ${formatCurrency(context.parsed.y)}`);
+                                        if (d.currentPrice != null) lines.push(`Current Price: ${formatCurrency(d.currentPrice)}`);
+                                        if (d.cumShares != null) lines.push(`Cum Shares: ${d.cumShares.toFixed(1)}`);
+                                        if (d.cumValue != null && d.cumContribution != null) {
+                                            lines.push(`Cum Value: ${formatCurrency(d.cumValue)}`);
+                                            lines.push(`Cum Contribution: ${formatCurrency(d.cumContribution)}`);
+                                            lines.push(`Math: ${formatCurrency(d.cumValue)} - ${formatCurrency(d.cumContribution)}`);
+                                        }
+                                        if (d.thisPeriodProfit != null) lines.push(`This Period Profit: ${formatCurrency(d.thisPeriodProfit)}`);
+                                        return lines;
                                     }
                                 }
                             }
@@ -1806,7 +1842,7 @@ Higher tax because ALL gain is ordinary income`);
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Profit ($)',
+                                    text: 'Cumulative Profit ($)',
                                     font: { size: 14, weight: '600' },
                                     color: '#555'
                                 },
