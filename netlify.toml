@@ -15,6 +15,13 @@
   status = 200
   force = true
 
+
+[[redirects]]
+  from = "/api/gemini-news"
+  to = "/.netlify/functions/gemini-news"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
@@ -68,6 +75,12 @@
 [[redirects]]
   from = "/espp-calculator"
   to = "/espp-calculator.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/news-sentiment"
+  to = "/news-sentiment.html"
   status = 200
   force = true
 
