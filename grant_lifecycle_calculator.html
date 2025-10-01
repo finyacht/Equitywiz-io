@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-RT0B6NXFG6');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grant Lifecycle Calculator</title>
+  <!-- Shared site styles -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+  <!-- Chart.js (match version used across calculators) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --muted: #64748b;
+      --text: #0f172a;
+      --accent: #0a5264;
+      --accent-2: #0f6b81;
+      --danger: #ef4444;
+      --success: #16a34a;
+      --border: #e2e8f0;
+      --accent-soft: rgba(10, 82, 100, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; line-height: 1.4; background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); }
+    .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
+
+    /* Toolbar */
+    .toolbar { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.9); backdrop-filter: blur(6px); border-bottom: 1px solid var(--border); }
+    .toolbar-inner { max-width: 1400px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+    .toolbar-left { display:flex; align-items:center; gap:10px; }
+    .home-btn { display:inline-flex; align-items:center; gap:8px; text-decoration:none; color:#1e293b; font-weight:600; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:#fff; }
+    .home-btn:hover { background:#f8fafc; }
+    h1 { font-size: 24px; margin: 0 0 12px 0; }
+    .subtle { color: var(--muted); font-size: 13px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+    .grid .span-2 { grid-column: 1 / -1; }
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+      .grid .span-2 { grid-column: 1; }
+    }
+    .panel { 
+      border-radius: 12px; 
+      padding: 16px; 
+      border: 1px solid var(--border); 
+      background: #fff; 
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+    details.panel { padding: 0; overflow: hidden; }
+    details.panel > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    details.panel > summary:hover {
+      background: linear-gradient(135deg, var(--accent-soft) 0%, #f1f5f9 100%);
+    }
+    details.panel > summary::-webkit-details-marker { display: none; }
+    .summary-right { display:flex; align-items:center; gap:8px; color: var(--muted); font-weight: 500; }
+    .summary-right .chev { 
+      border-radius: 8px; 
+      padding: 6px; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      box-shadow: 0 2px 4px rgba(10, 82, 100, 0.1);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 2px 4px rgba(10, 82, 100, 0.1); }
+      50% { box-shadow: 0 4px 8px rgba(10, 82, 100, 0.2); }
+    }
+    details.panel > summary:hover .chev { 
+      background: var(--accent); 
+      color: white;
+      transform: scale(1.15) rotate(5deg);
+      box-shadow: 0 6px 12px rgba(10, 82, 100, 0.3);
+      animation: none;
+    }
+    details.panel[open] > summary .chev { 
+      transform: rotate(180deg) scale(1.1);
+      background: var(--accent);
+      color: white;
+      animation: none;
+    }
+    details.panel .content { padding: 16px; }
+    .panel h2 { font-size: 16px; margin: 0 0 12px 0; }
+    .section-title { display: flex; align-items: center; gap: 8px; }
+    .pill {
+      font-size: 12px; color: var(--accent); border: 1px solid var(--accent);
+      padding: 2px 8px; border-radius: 999px; background: var(--accent-soft);
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .row-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 768px) {
+      .row, .row-3, .row-4 { grid-template-columns: 1fr; gap: 12px; }
+    }
+    .field { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 6px; 
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(248, 250, 252, 0.5);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .field:hover {
+      background: rgba(248, 250, 252, 0.8);
+      border-color: var(--accent-soft);
+    }
+    .field:focus-within {
+      background: rgba(248, 250, 252, 1);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+    label { 
+      font-size: 12px; 
+      color: var(--accent); 
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    input, select {
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    input:focus, select:focus { 
+      border-color: var(--accent); 
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      transform: translateY(-1px);
+      outline: none;
+    }
+    input:hover, select:hover {
+      border-color: var(--accent-2);
+    }
+    input:focus, select:focus, input:active, select:active {
+      scroll-margin-top: 100px;
+    }
+    .table-wrap { 
+      overflow: auto; 
+      border: 1px solid var(--border); 
+      border-radius: 8px; 
+      background:#fff; 
+      max-height: 420px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 760px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    th { 
+      text-align: left; 
+      color: var(--accent); 
+      font-weight: 700; 
+      background: linear-gradient(135deg, var(--accent-soft) 0%, #f8fafc 100%); 
+      position: sticky; 
+      top: 0; 
+      z-index: 2;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 11px;
+    }
+    td.num, th.num { text-align: right; }
+    tbody tr:hover { 
+      background: linear-gradient(135deg, var(--accent-soft) 0%, #f9fafb 100%); 
+      transform: translateX(2px);
+      transition: all 0.2s ease;
+    }
+    tfoot td { 
+      background: linear-gradient(135deg, var(--accent-soft) 0%, #f8fafc 100%); 
+      font-weight: 700; 
+      color: var(--accent);
+    }
+    .controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .switch { display: inline-flex; align-items: center; gap: 8px; }
+    .switch input { width: 16px; height: 16px; }
+    .legend { display: flex; gap: 12px; color: var(--muted); font-size: 12px; flex-wrap: wrap; }
+    .empty-hint { color: var(--muted); font-size: 13px; padding: 12px 0; }
+    .legend span i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn.secondary { background: #e2e8f0; border: 1px solid var(--border); color: #0f172a; }
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+    .sep { height: 1px; background: var(--border); margin: 8px 0; }
+    .note { color: var(--muted); font-size: 12px; }
+  </style>
+  <meta name="description" content="Interactive Grant Lifecycle Calculator for Options, RSUs, and Share Grants with vesting schedules, sales/exercise tracking, and value charting.">
+</head>
+<body>
+  <div class="toolbar">
+    <div class="toolbar-inner">
+      <div class="toolbar-left">
+        <a class="home-btn" href="home.html" aria-label="Back to Home">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 10L12 3L21 10V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V10Z" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 21V12H15V21" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Home
+        </a>
+        <h1 style="margin:0; font-size:18px;">Grant Lifecycle Calculator</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <header style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px;">
+      <div style="flex:1;">
+        <h1 style="margin:0;">Grant Lifecycle Calculator</h1>
+        <div class="subtle">Model options, RSUs, and share grants end-to-end: vesting → exercises/sales → value.</div>
+        <div class="subtle" style="display:flex; align-items:center; gap:8px; margin-top:6px;">
+          by <strong>Amal Ganatra</strong>
+          <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" style="color:inherit;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <div class="panel" style="min-width:360px; max-width:420px;">
+        <div class="section-title">
+          <h2 style="margin:0;">Quick Stats</h2>
+          <span class="pill">live</span>
+        </div>
+        <div class="row-3">
+          <div class="field"><label>Total Vested</label><div id="qsVested">0</div></div>
+          <div class="field"><label>Unrealized Value</label><div id="qsUnrealized">$0</div></div>
+          <div class="field"><label>Net Units (excl sold)</label><div id="qsNetUnits">0</div></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid" style="margin-top:16px;">
+      <div class="panel stack">
+        <div class="section-title">
+          <h2 style="margin:0;">Global Assumptions</h2>
+          <span class="pill">drives valuation</span>
+        </div>
+        <div class="row-4">
+          <div class="field">
+            <label for="priceMode">Price Model</label>
+            <select id="priceMode">
+              <option value="constant">Constant Price</option>
+              <option value="growth">Annual Growth (%)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="startPrice">Start FMV / Share</label>
+            <input id="startPrice" type="number" step="0.01" value="20" placeholder="e.g., 20">
+          </div>
+          <div class="field">
+            <label for="annualGrowth">Annual Growth %</label>
+            <input id="annualGrowth" type="number" step="0.1" value="10" placeholder="e.g., 10">
+          </div>
+          <div class="field">
+            <label for="chartGranularity">Chart Granularity</label>
+            <select id="chartGranularity">
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+        <div class="note">Tip: Switch to "Annual Growth" to forecast FMV over time.</div>
+      </div>
+
+      <details class="panel span-2">
+        <summary>
+          <span>Options Grant <span class="pill">ISO/NSO</span></span>
+          <span class="summary-right">
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </summary>
+        <div class="content">
+        <div class="row-3">
+          <div class="field">
+            <label for="optGrantDate">Grant Date</label>
+            <input id="optGrantDate" type="date">
+          </div>
+          <div class="field">
+            <label for="optUnits">Units</label>
+            <input id="optUnits" type="number" step="1" value="1200" placeholder="e.g., 1200">
+          </div>
+          <div class="field">
+            <label for="optStrike">Strike Price</label>
+            <input id="optStrike" type="number" step="0.01" value="5" placeholder="e.g., 5">
+          </div>
+        </div>
+        <div class="row-4">
+          <div class="field">
+            <label for="optVestingStart">Vesting Start</label>
+            <input id="optVestingStart" type="date">
+          </div>
+          <div class="field">
+            <label for="optCliffMonths">Cliff (months)</label>
+            <input id="optCliffMonths" type="number" step="1" value="12">
+          </div>
+          <div class="field">
+            <label for="optTotalMonths">Total Vest (months)</label>
+            <input id="optTotalMonths" type="number" step="1" value="48">
+          </div>
+          <div class="field">
+            <label for="optFrequency">Frequency</label>
+            <select id="optFrequency">
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+        <div class="controls" style="justify-content: flex-end;">
+          <span class="note">Changes auto-apply.</span>
+        </div>
+        <div class="table-wrap">
+          <table id="optTable" aria-label="Options vesting table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th class="num">Vested Units</th>
+                <th class="num">Cumulative Vested</th>
+                <th class="num">Exercised Units</th>
+                <th class="num">Remaining Vested</th>
+                <th class="num">Intrinsic Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" style="text-align:center; color: var(--muted);">No schedule yet. Enter details and click "Generate Vesting".</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>Total</td>
+                <td id="optTotalVested">0</td>
+                <td></td>
+                <td id="optTotalExercised">0</td>
+                <td id="optTotalRemaining">0</td>
+                <td id="optTotalValue">$0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        </div>
+      </details>
+
+      <details class="panel span-2">
+        <summary>
+          <span>RSU Grant <span class="pill">time-based</span></span>
+          <span class="summary-right"><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </summary>
+        <div class="content">
+        <div class="row-3">
+          <div class="field">
+            <label for="rsuGrantDate">Grant Date</label>
+            <input id="rsuGrantDate" type="date">
+          </div>
+          <div class="field">
+            <label for="rsuUnits">Units</label>
+            <input id="rsuUnits" type="number" step="1" value="800" placeholder="e.g., 800">
+          </div>
+          <div class="field">
+            <label for="rsuVestingStart">Vesting Start</label>
+            <input id="rsuVestingStart" type="date">
+          </div>
+        </div>
+        <div class="row-4">
+          <div class="field">
+            <label for="rsuCliffMonths">Cliff (months)</label>
+            <input id="rsuCliffMonths" type="number" step="1" value="12">
+          </div>
+          <div class="field">
+            <label for="rsuTotalMonths">Total Vest (months)</label>
+            <input id="rsuTotalMonths" type="number" step="1" value="48">
+          </div>
+          <div class="field">
+            <label for="rsuFrequency">Frequency</label>
+            <select id="rsuFrequency">
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="rsuSoldMode">Sales Mode</label>
+            <select id="rsuSoldMode">
+              <option value="after">After Vest</option>
+              <option value="same">Sell On Vest</option>
+            </select>
+          </div>
+        </div>
+        <div class="controls" style="justify-content: flex-end;">
+          <span class="note">Changes auto-apply.</span>
+        </div>
+        <div class="table-wrap">
+          <table id="rsuTable" aria-label="RSU vesting table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th class="num">Vested Units</th>
+                <th class="num">Cumulative Vested</th>
+                <th class="num">Sold Units</th>
+                <th class="num">Remaining Vested</th>
+                <th class="num">Value @ FMV</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" style="text-align:center; color: var(--muted);">No schedule yet. Enter details and click "Generate Vesting".</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>Total</td>
+                <td id="rsuTotalVested">0</td>
+                <td></td>
+                <td id="rsuTotalSold">0</td>
+                <td id="rsuTotalRemaining">0</td>
+                <td id="rsuTotalValue">$0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        </div>
+      </details>
+
+      <details class="panel span-2">
+        <summary>
+          <span>Share Grant <span class="pill">outright shares</span></span>
+          <span class="summary-right"><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </summary>
+        <div class="content">
+        <div class="row-3">
+          <div class="field">
+            <label for="shrGrantDate">Grant Date</label>
+            <input id="shrGrantDate" type="date">
+          </div>
+          <div class="field">
+            <label for="shrUnits">Units</label>
+            <input id="shrUnits" type="number" step="1" value="500" placeholder="e.g., 500">
+          </div>
+          <div class="field">
+            <label for="shrVestingStart">Vesting Start</label>
+            <input id="shrVestingStart" type="date">
+          </div>
+        </div>
+        <div class="row-4">
+          <div class="field">
+            <label for="shrCliffMonths">Cliff (months)</label>
+            <input id="shrCliffMonths" type="number" step="1" value="0">
+          </div>
+          <div class="field">
+            <label for="shrTotalMonths">Total Vest (months)</label>
+            <input id="shrTotalMonths" type="number" step="1" value="0">
+          </div>
+          <div class="field">
+            <label for="shrFrequency">Frequency</label>
+            <select id="shrFrequency">
+              <option value="immediate">Immediate</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="shrSoldMode">Sales Mode</label>
+            <select id="shrSoldMode">
+              <option value="after">After Vest</option>
+              <option value="same">Sell On Vest</option>
+            </select>
+          </div>
+        </div>
+        <div class="controls" style="justify-content: flex-end;">
+          <span class="note">Changes auto-apply.</span>
+        </div>
+        <div class="table-wrap">
+          <table id="shrTable" aria-label="Share grant vesting table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th class="num">Vested Units</th>
+                <th class="num">Cumulative Vested</th>
+                <th class="num">Sold Units</th>
+                <th class="num">Remaining Vested</th>
+                <th class="num">Value @ FMV</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" style="text-align:center; color: var(--muted);">No schedule yet. Enter details and click "Generate Vesting".</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>Total</td>
+                <td id="shrTotalVested">0</td>
+                <td></td>
+                <td id="shrTotalSold">0</td>
+                <td id="shrTotalRemaining">0</td>
+                <td id="shrTotalValue">$0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        </div>
+      </details>
+    </div>
+
+    <div class="panel span-2" style="margin-top:16px;">
+      <div class="section-title" style="justify-content: space-between; align-items: center;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <h2 style="margin:0;">Combined Value</h2>
+          <span class="pill">portfolio</span>
+        </div>
+        <div class="controls">
+          <label class="switch">
+            <input type="checkbox" id="includeSold" checked>
+            <span>Include Sold/Exercised</span>
+          </label>
+          <button class="btn secondary" id="resetAll">Reset All</button>
+        </div>
+      </div>
+      <div class="legend" style="margin:8px 0 12px 0;">
+        <span><i style="background: var(--accent);"></i>Options Value</span>
+        <span><i style="background: var(--success);"></i>RSU Value</span>
+        <span><i style="background: var(--accent-2);"></i>Shares Value</span>
+      </div>
+      <div style="height: 300px; position: relative;">
+        <canvas id="combinedChart"></canvas>
+      </div>
+      <div id="chartEmpty" class="empty-hint" style="display:none;">No schedule yet. Add a grant to see portfolio value over time.</div>
+    </div>
+
+    <div class="panel" style="margin-top:16px;">
+      <div class="section-title">
+        <h2 style="margin:0;">Tax Settings (Placeholder)</h2>
+        <span class="pill">future</span>
+      </div>
+      <div class="row-4">
+        <div class="field">
+          <label for="taxJurisdiction">Jurisdiction</label>
+          <select id="taxJurisdiction">
+            <option value="us">United States</option>
+            <option value="uk">United Kingdom</option>
+            <option value="eu">EU</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="withholdRate">Default Withholding %</label>
+          <input id="withholdRate" type="number" step="0.1" value="22">
+        </div>
+        <div class="field">
+          <label for="taxToggle">Apply Taxes (stub)</label>
+          <select id="taxToggle">
+            <option value="off">Off</option>
+            <option value="on">On</option>
+          </select>
+        </div>
+      </div>
+      <div class="note">These controls are placeholders. Calculations will connect in a later iteration.</div>
+    </div>
+
+  </div>
+
+  <!-- No site JS included to avoid interference with calculator functionality -->
+  <script>
+    // --------------------------- Utilities ---------------------------
+    const $ = (id) => document.getElementById(id);
+    const formatCurrency = (v) => {
+      const num = Number(v || 0);
+      return num.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+    };
+    const parseNum = (el) => Number((el.value || '0').replace(/,/g, '')) || 0;
+    const asDate = (value) => value ? new Date(value + 'T00:00:00') : null;
+
+    function addMonths(date, months) {
+      const d = new Date(date.getTime());
+      const day = d.getDate();
+      d.setMonth(d.getMonth() + months);
+      if (d.getDate() !== day) {
+        d.setDate(0);
+      }
+      return d;
+    }
+
+    function roundToGranularity(date, granularity) {
+      const d = new Date(date.getFullYear(), date.getMonth(), 1);
+      if (granularity === 'quarterly') {
+        const qStartMonth = Math.floor(d.getMonth() / 3) * 3;
+        return new Date(d.getFullYear(), qStartMonth, 1);
+      }
+      if (granularity === 'yearly') {
+        return new Date(d.getFullYear(), 0, 1);
+      }
+      return d; // monthly
+    }
+
+    function enumeratePeriods(startDate, totalMonths, cliffMonths, frequency) {
+      const periods = [];
+      if (!startDate || totalMonths <= 0) {
+        // immediate vest if totalMonths === 0 handled by caller
+        return periods;
+      }
+      const step = frequency === 'yearly' ? 12 : (frequency === 'quarterly' ? 3 : 1);
+      const endDate = addMonths(startDate, totalMonths);
+      let t = addMonths(startDate, cliffMonths);
+      if (cliffMonths > 0) periods.push(t);
+      t = addMonths(t, step);
+      while (t <= endDate) {
+        periods.push(t);
+        t = addMonths(t, step);
+      }
+      // Ensure last period equals endDate
+      if (periods.length === 0 || periods[periods.length - 1].getTime() !== endDate.getTime()) {
+        periods.push(endDate);
+      }
+      return periods;
+    }
+
+    function priceAt(date) {
+      const mode = $('priceMode').value;
+      const start = parseNum($('startPrice'));
+      const growth = parseNum($('annualGrowth')) / 100;
+      if (mode === 'constant') return start;
+      const msPerYear = 365.25 * 24 * 3600 * 1000;
+      // Time since vesting start of earliest grant or today
+      const earliest = [
+        $('optVestingStart').value,
+        $('rsuVestingStart').value,
+        $('shrVestingStart').value
+      ].filter(Boolean).map(d => new Date(d + 'T00:00:00')).sort((a,b)=>a-b)[0] || new Date();
+      const tYears = Math.max(0, (date.getTime() - earliest.getTime()) / msPerYear);
+      return start * Math.pow(1 + growth, tYears);
+    }
+
+    function distributeUnits(totalUnits, periods) {
+      if (periods.length === 0) return [];
+      const per = Math.floor(totalUnits / periods.length);
+      const remainder = totalUnits - per * periods.length;
+      const arr = periods.map((_, idx) => per + (idx < remainder ? 1 : 0));
+      return arr;
+    }
+
+    function buildImmediateSchedule(units, date) {
+      return [{ date, units }];
+    }
+
+    // --------------------------- State ---------------------------
+    const state = {
+      options: { schedule: [], exercises: {} },
+      rsu: { schedule: [], sales: {} },
+      shares: { schedule: [], sales: {} }
+    };
+
+    // --------------------------- Rendering ---------------------------
+    function renderOptionsTable() {
+      const tbody = $('optTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      let cum = 0, totalVested = 0, totalEx = 0, totalRem = 0, totalVal = 0;
+      state.options.schedule.forEach((row, idx) => {
+        cum += row.units;
+        const inputId = `opt_ex_${idx}`;
+        const exercised = Number(state.options.exercises[inputId] || 0);
+        const remaining = Math.max(0, cum - Object.values(state.options.exercises).reduce((a,b)=>a+Number(b||0),0));
+        const intrinsic = Math.max(0, priceAt(row.date) - parseNum($('optStrike')));
+        const rowVal = intrinsic * Math.max(0, row.units - exercised);
+        totalVested += row.units;
+        totalEx += exercised;
+        totalRem = remaining;
+        totalVal += rowVal;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.date.toISOString().slice(0,10)}</td>
+          <td class="num">${row.units}</td>
+          <td class="num">${cum}</td>
+          <td class="num"><input type="number" min="0" step="1" value="${exercised}" id="${inputId}" style="width:100px"></td>
+          <td class="num">${remaining}</td>
+          <td class="num">${formatCurrency(rowVal)}</td>
+        `;
+        tbody.appendChild(tr);
+        tr.querySelector('input').addEventListener('input', (e) => {
+          state.options.exercises[inputId] = Number(e.target.value || 0);
+          renderOptionsTable();
+          renderChart();
+        });
+      });
+      $('optTotalVested').textContent = totalVested;
+      $('optTotalExercised').textContent = totalEx;
+      $('optTotalRemaining').textContent = totalRem;
+      $('optTotalValue').textContent = formatCurrency(totalVal);
+      updateQuickStats();
+    }
+
+    function renderRSUTable() {
+      const tbody = $('rsuTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      let cum = 0, totalVested = 0, totalSold = 0, totalRem = 0, totalVal = 0;
+      state.rsu.schedule.forEach((row, idx) => {
+        cum += row.units;
+        const inputId = `rsu_sold_${idx}`;
+        const sold = Number(state.rsu.sales[inputId] || 0);
+        const remaining = Math.max(0, cum - Object.values(state.rsu.sales).reduce((a,b)=>a+Number(b||0),0));
+        const rowVal = priceAt(row.date) * Math.max(0, row.units - sold);
+        totalVested += row.units;
+        totalSold += sold;
+        totalRem = remaining;
+        totalVal += rowVal;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.date.toISOString().slice(0,10)}</td>
+          <td class="num">${row.units}</td>
+          <td class="num">${cum}</td>
+          <td class="num"><input type="number" min="0" step="1" value="${sold}" id="${inputId}" style="width:100px"></td>
+          <td class="num">${remaining}</td>
+          <td class="num">${formatCurrency(rowVal)}</td>
+        `;
+        tbody.appendChild(tr);
+        tr.querySelector('input').addEventListener('input', (e) => {
+          state.rsu.sales[inputId] = Number(e.target.value || 0);
+          renderRSUTable();
+          renderChart();
+        });
+      });
+      $('rsuTotalVested').textContent = totalVested;
+      $('rsuTotalSold').textContent = totalSold;
+      $('rsuTotalRemaining').textContent = totalRem;
+      $('rsuTotalValue').textContent = formatCurrency(totalVal);
+      updateQuickStats();
+    }
+
+    function renderSharesTable() {
+      const tbody = $('shrTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      let cum = 0, totalVested = 0, totalSold = 0, totalRem = 0, totalVal = 0;
+      state.shares.schedule.forEach((row, idx) => {
+        cum += row.units;
+        const inputId = `shr_sold_${idx}`;
+        const sold = Number(state.shares.sales[inputId] || 0);
+        const remaining = Math.max(0, cum - Object.values(state.shares.sales).reduce((a,b)=>a+Number(b||0),0));
+        const rowVal = priceAt(row.date) * Math.max(0, row.units - sold);
+        totalVested += row.units;
+        totalSold += sold;
+        totalRem = remaining;
+        totalVal += rowVal;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.date.toISOString().slice(0,10)}</td>
+          <td class="num">${row.units}</td>
+          <td class="num">${cum}</td>
+          <td class="num"><input type="number" min="0" step="1" value="${sold}" id="${inputId}" style="width:100px"></td>
+          <td class="num">${remaining}</td>
+          <td class="num">${formatCurrency(rowVal)}</td>
+        `;
+        tbody.appendChild(tr);
+        tr.querySelector('input').addEventListener('input', (e) => {
+          state.shares.sales[inputId] = Number(e.target.value || 0);
+          renderSharesTable();
+          renderChart();
+        });
+      });
+      $('shrTotalVested').textContent = totalVested;
+      $('shrTotalSold').textContent = totalSold;
+      $('shrTotalRemaining').textContent = totalRem;
+      $('shrTotalValue').textContent = formatCurrency(totalVal);
+      updateQuickStats();
+    }
+
+    // --------------------------- Chart ---------------------------
+    let chart;
+    function buildTimeline() {
+      const dates = new Set();
+      const gran = $('chartGranularity').value;
+      const pushDates = (schedule) => {
+        schedule.forEach(r => dates.add(roundToGranularity(r.date, gran).getTime()));
+      };
+      pushDates(state.options.schedule);
+      pushDates(state.rsu.schedule);
+      pushDates(state.shares.schedule);
+      const sorted = Array.from(dates).sort((a,b)=>a-b).map(ms => new Date(ms));
+      return sorted;
+    }
+
+    function aggregateValueOn(date, type) {
+      const include = $('includeSold').checked;
+      const price = priceAt(date);
+      if (type === 'options') {
+        const strike = parseNum($('optStrike'));
+      const vestedByDate = state.options.schedule.filter(r => r.date <= date).reduce((a,b)=>a+b.units,0);
+        const exercised = include ? 0 : Object.values(state.options.exercises).reduce((a,b)=>a+Number(b||0),0);
+        const netUnits = Math.max(0, vestedByDate - exercised);
+        return Math.max(0, price - strike) * netUnits;
+      }
+      if (type === 'rsu') {
+        const vestedByDate = state.rsu.schedule.filter(r => r.date <= date).reduce((a,b)=>a+b.units,0);
+        const sold = include ? 0 : Object.values(state.rsu.sales).reduce((a,b)=>a+Number(b||0),0);
+        const netUnits = Math.max(0, vestedByDate - sold);
+        return price * netUnits;
+      }
+      if (type === 'shares') {
+        const vestedByDate = state.shares.schedule.filter(r => r.date <= date).reduce((a,b)=>a+b.units,0);
+        const sold = include ? 0 : Object.values(state.shares.sales).reduce((a,b)=>a+Number(b||0),0);
+        const netUnits = Math.max(0, vestedByDate - sold);
+        return price * netUnits;
+      }
+      return 0;
+    }
+
+    function renderChart() {
+      // Build timeline and ensure at least one point exists when schedules have immediate single events
+      let timeline = buildTimeline();
+      if (timeline.length === 0) {
+        const candidates = [state.options.schedule, state.rsu.schedule, state.shares.schedule].flat();
+        if (candidates.length > 0) {
+          timeline = [candidates[0].date];
+        }
+      }
+      const empty = timeline.length === 0;
+      const emptyHint = document.getElementById('chartEmpty');
+      if (empty) {
+        if (chart) { chart.destroy(); chart = null; }
+        if (emptyHint) emptyHint.style.display = 'block';
+        return;
+      } else {
+        if (emptyHint) emptyHint.style.display = 'none';
+      }
+      const dataOpt = timeline.map(d => aggregateValueOn(d, 'options'));
+      const dataRSU = timeline.map(d => aggregateValueOn(d, 'rsu'));
+      const dataSHR = timeline.map(d => aggregateValueOn(d, 'shares'));
+      const labels = timeline.map(d => d.toISOString().slice(0,10));
+      const datasets = [
+        { label: 'Options', data: dataOpt, borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(), backgroundColor: 'rgba(110,168,254,0.15)', tension: 0.25, fill: true },
+        { label: 'RSUs', data: dataRSU, borderColor: getComputedStyle(document.documentElement).getPropertyValue('--success').trim(), backgroundColor: 'rgba(98,210,151,0.15)', tension: 0.25, fill: true },
+        { label: 'Shares', data: dataSHR, borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-2').trim(), backgroundColor: 'rgba(156,123,255,0.15)', tension: 0.25, fill: true },
+      ];
+      // If all datasets are zero, show empty state instead of blank chart
+      const allZero = datasets.every(ds => ds.data.every(v => (Number(v) || 0) === 0));
+      if (allZero) {
+        if (chart) { chart.destroy(); chart = null; }
+        if (emptyHint) emptyHint.style.display = 'block';
+        return;
+      }
+      if (chart) chart.destroy();
+      const canvasEl = document.getElementById('combinedChart');
+      if (!canvasEl || !canvasEl.getContext) {
+        console.error('Chart canvas not found or no context', canvasEl);
+        return;
+      }
+      chart = new Chart(canvasEl, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          },
+          plugins: {
+            legend: { 
+              labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() },
+              display: true,
+              position: 'top'
+            },
+            tooltip: { 
+              callbacks: { label: (ctx) => `${ctx.dataset.label}: ${formatCurrency(ctx.parsed.y)}` },
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff'
+            }
+          },
+          scales: {
+            x: { 
+              ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() }, 
+              grid: { color: 'rgba(0,0,0,0.1)', drawBorder: false },
+              beginAtZero: false
+            },
+            y: { 
+              ticks: { 
+                color: getComputedStyle(document.documentElement).getPropertyValue('--muted').trim(), 
+                callback: (v) => formatCurrency(v),
+                maxTicksLimit: 8
+              }, 
+              grid: { color: 'rgba(0,0,0,0.1)', drawBorder: false },
+              beginAtZero: true
+            }
+          },
+          elements: {
+            point: {
+              radius: 4,
+              hoverRadius: 6
+            },
+            line: {
+              borderWidth: 2
+            }
+          }
+        }
+      });
+    }
+
+    // --------------------------- Events & Generators ---------------------------
+    function generateOptions() {
+      const units = parseNum($('optUnits'));
+      const start = asDate($('optVestingStart').value);
+      const cliff = parseNum($('optCliffMonths'));
+      const total = parseNum($('optTotalMonths'));
+      const freq = $('optFrequency').value;
+      if (!units || (total === 0 && !start)) {
+        state.options.schedule = [];
+        state.options.exercises = {};
+        renderOptionsTable();
+        renderChart();
+        return;
+      }
+      let schedule = [];
+      if (total === 0 || $('optFrequency').value === 'immediate') {
+        const d = start || asDate($('optGrantDate').value) || new Date();
+        schedule = buildImmediateSchedule(units, d);
+      } else {
+        const periods = enumeratePeriods(start, total, cliff, freq);
+        const amounts = distributeUnits(units, periods);
+        schedule = periods.map((d, i) => ({ date: d, units: amounts[i] }));
+      }
+      state.options.schedule = schedule;
+      state.options.exercises = {};
+      renderOptionsTable();
+      renderChart();
+    }
+
+    function generateRSU() {
+      const units = parseNum($('rsuUnits'));
+      const start = asDate($('rsuVestingStart').value);
+      const cliff = parseNum($('rsuCliffMonths'));
+      const total = parseNum($('rsuTotalMonths'));
+      const freq = $('rsuFrequency').value;
+      if (!units || (total === 0 && !start)) {
+        state.rsu.schedule = [];
+        state.rsu.sales = {};
+        renderRSUTable();
+        renderChart();
+        return;
+      }
+      let schedule = [];
+      if (total === 0 || $('rsuFrequency').value === 'immediate') {
+        const d = start || asDate($('rsuGrantDate').value) || new Date();
+        schedule = buildImmediateSchedule(units, d);
+      } else {
+        const periods = enumeratePeriods(start, total, cliff, freq);
+        const amounts = distributeUnits(units, periods);
+        schedule = periods.map((d, i) => ({ date: d, units: amounts[i] }));
+      }
+      state.rsu.schedule = schedule;
+      state.rsu.sales = {};
+      renderRSUTable();
+      renderChart();
+    }
+
+    function generateShares() {
+      const units = parseNum($('shrUnits'));
+      const start = asDate($('shrVestingStart').value);
+      const cliff = parseNum($('shrCliffMonths'));
+      const total = parseNum($('shrTotalMonths'));
+      const freq = $('shrFrequency').value;
+      if (!units) {
+        state.shares.schedule = [];
+        state.shares.sales = {};
+        renderSharesTable();
+        renderChart();
+        return;
+      }
+      let schedule = [];
+      if (freq === 'immediate' || total === 0) {
+        const d = start || asDate($('shrGrantDate').value) || new Date();
+        schedule = buildImmediateSchedule(units, d);
+      } else {
+        const periods = enumeratePeriods(start, total, cliff, freq);
+        const amounts = distributeUnits(units, periods);
+        schedule = periods.map((d, i) => ({ date: d, units: amounts[i] }));
+      }
+      state.shares.schedule = schedule;
+      state.shares.sales = {};
+      renderSharesTable();
+      renderChart();
+    }
+
+    function wireGlobal() {
+      ['priceMode','startPrice','annualGrowth','chartGranularity','includeSold'].forEach(id => {
+        $(id).addEventListener('input', renderChart);
+        $(id).addEventListener('change', renderChart);
+      });
+      $('resetAll').addEventListener('click', () => {
+        state.options = { schedule: [], exercises: {} };
+        state.rsu = { schedule: [], sales: {} };
+        state.shares = { schedule: [], sales: {} };
+        renderOptionsTable();
+        renderRSUTable();
+        renderSharesTable();
+        renderChart();
+      });
+    }
+
+    function wireSections() {
+      // Buttons removed; rely on live generation via change/input handlers
+      // Also regenerate when inputs change to keep live
+      ['optUnits','optStrike','optVestingStart','optCliffMonths','optTotalMonths','optFrequency'].forEach(id => {
+        $(id).addEventListener('change', generateOptions);
+        $(id).addEventListener('input', generateOptions);
+      });
+      ['rsuUnits','rsuVestingStart','rsuCliffMonths','rsuTotalMonths','rsuFrequency','rsuSoldMode'].forEach(id => {
+        $(id).addEventListener('change', generateRSU);
+        $(id).addEventListener('input', generateRSU);
+      });
+      ['shrUnits','shrVestingStart','shrCliffMonths','shrTotalMonths','shrFrequency','shrSoldMode'].forEach(id => {
+        $(id).addEventListener('change', generateShares);
+        $(id).addEventListener('input', generateShares);
+      });
+      document.querySelectorAll('details.panel').forEach(d => {
+        d.addEventListener('toggle', () => {
+          const icon = d.querySelector('.chev');
+          if (icon) {
+            icon.style.transition = 'transform 150ms ease';
+            icon.style.transform = d.open ? 'rotate(180deg)' : 'rotate(0deg)';
+          }
+        });
+      });
+    }
+
+    // Seed example dates to today for convenience
+    function seedDefaults() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2,'0');
+      const dd = String(today.getDate()).padStart(2,'0');
+      const ymd = `${yyyy}-${mm}-${dd}`;
+      ['optGrantDate','optVestingStart','rsuGrantDate','rsuVestingStart','shrGrantDate','shrVestingStart'].forEach(id => $(id).value = ymd);
+      // Pre-populate dummy grants so the chart shows out-of-the-box
+      $('optUnits').value = 1200; $('optStrike').value = 5; $('optCliffMonths').value = 12; $('optTotalMonths').value = 48; $('optFrequency').value = 'monthly';
+      $('rsuUnits').value = 800; $('rsuCliffMonths').value = 12; $('rsuTotalMonths').value = 48; $('rsuFrequency').value = 'monthly';
+      $('shrUnits').value = 500; $('shrFrequency').value = 'immediate';
+      $('priceMode').value = 'growth'; $('startPrice').value = 20; $('annualGrowth').value = 10;
+    }
+
+    // Prevent page jumping on input focus
+    function preventPageJump() {
+      document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+          e.preventDefault();
+          // Smooth scroll to keep input visible but not jump to top
+          setTimeout(() => {
+            e.target.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center',
+              inline: 'nearest'
+            });
+          }, 100);
+        }
+      });
+      
+      // Prevent form submission that might cause page jump
+      document.addEventListener('submit', function(e) {
+        e.preventDefault();
+        return false;
+      });
+    }
+
+    // Init - wait for DOM to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+      preventPageJump();
+      seedDefaults();
+      wireGlobal();
+      wireSections();
+      generateOptions();
+      generateRSU();
+      generateShares();
+      renderChart();
+    });
+    function updateQuickStats(){
+      const vestedUnits = (state.options.schedule||[]).reduce((a,r)=>a+r.units,0) + (state.rsu.schedule||[]).reduce((a,r)=>a+r.units,0) + (state.shares.schedule||[]).reduce((a,r)=>a+r.units,0);
+      const priceNow = priceAt(new Date());
+      const unrealized = aggregateValueOn(new Date(), 'options') + aggregateValueOn(new Date(),'rsu') + aggregateValueOn(new Date(),'shares');
+      const soldEx = Object.values(state.options.exercises).reduce((a,b)=>a+Number(b||0),0) + Object.values(state.rsu.sales).reduce((a,b)=>a+Number(b||0),0) + Object.values(state.shares.sales).reduce((a,b)=>a+Number(b||0),0);
+      const netUnits = Math.max(0, vestedUnits - soldEx);
+      const qsV = document.getElementById('qsVested'); if (qsV) qsV.textContent = vestedUnits.toLocaleString();
+      const qsU = document.getElementById('qsUnrealized'); if (qsU) qsU.textContent = formatCurrency(unrealized);
+      const qsN = document.getElementById('qsNetUnits'); if (qsN) qsN.textContent = netUnits.toLocaleString();
+    }
+  </script>
+</body>
+</html>
+
+
