@@ -100,6 +100,15 @@ app.get('/grant_lifecycle_calculator.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'grant_lifecycle_calculator.html'));
 });
 
+// Route for the Grant Lifecycle Calculator V2
+app.get('/grant-lifecycle-calculator-v2', (req, res) => {
+  res.sendFile(path.join(__dirname, 'grant_lifecycle_calculator_v2.html'));
+});
+
+app.get('/grant_lifecycle_calculator_v2.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'grant_lifecycle_calculator_v2.html'));
+});
+
 // Route for the Chatbot Demo
 app.get('/chatbot-demo', (req, res) => {
   res.sendFile(path.join(__dirname, 'chatbot-demo.html'));
