@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RT0B6NXFG6');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Grant Lifecycle Calculator V2</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #0a5264;
+      --primary-light: #0d6b7a;
+      --accent: #0a5264;
+      --accent-soft: rgba(10, 82, 100, 0.1);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: var(--gray-800);
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(10, 82, 100, 0.2);
+    }
+
+    .home-btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(10, 82, 100, 0.3);
+    }
+
+    .header-content {
+      flex: 1;
+      margin-left: 20px;
+    }
+
+    .toolbar h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .by-line {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      margin-top: 4px;
+    }
+
+    .by-line a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .input-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 24px;
+    }
+
+    .input-section.subtle {
+      background: var(--gray-50);
+      border-color: var(--gray-300);
+      padding: 16px 24px;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-group label {
+      font-weight: 600;
+      color: var(--gray-700);
+      font-size: 0.875rem;
+    }
+
+    .input-group input,
+    .input-group select {
+      padding: 12px;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .vesting-schedule {
+      margin-top: 20px;
+      border-top: 1px solid var(--gray-200);
+      padding-top: 20px;
+    }
+
+    .vesting-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .vesting-toggle:hover {
+      background: var(--accent-soft);
+    }
+
+    .vesting-toggle .chevron {
+      transition: transform 0.3s ease;
+      font-size: 1.2rem;
+    }
+
+    .vesting-toggle.expanded .chevron {
+      transform: rotate(90deg);
+    }
+
+    .vesting-table {
+      margin-top: 16px;
+      overflow-x: auto;
+    }
+
+    .vesting-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .vesting-table th,
+    .vesting-table td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid var(--gray-200);
+      font-size: 0.875rem;
+    }
+
+    .vesting-table th {
+      background: var(--gray-50);
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+
+    .vesting-table tr:hover {
+      background: var(--accent-soft);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    
+    @media (max-width: 1400px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .tile {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--gray-200);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .tile::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .tile.awarded::before { background: var(--info); }
+    .tile.canceled::before { background: var(--danger); }
+    .tile.vested::before { background: var(--success); }
+    .tile.unvested::before { background: var(--warning); }
+    .tile.wtc::before { background: var(--primary); }
+    .tile.delivered::before { background: var(--accent); }
+
+    .tile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .tile-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tile-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: white;
+    }
+
+    .tile.awarded .tile-icon { background: var(--info); }
+    .tile.canceled .tile-icon { background: var(--danger); }
+    .tile.vested .tile-icon { background: var(--success); }
+    .tile.unvested .tile-icon { background: var(--warning); }
+    .tile.wtc .tile-icon { background: var(--primary); }
+    .tile.delivered .tile-icon { background: var(--accent); }
+
+    .tile-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 4px;
+    }
+
+    .tile-usd {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--success);
+      margin-bottom: 6px;
+    }
+
+    .tile-subtitle {
+      font-size: 0.7rem;
+      color: var(--gray-500);
+    }
+
+    .timeline-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 32px;
+    }
+
+    .timeline-container {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    .timeline-table {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: collapse;
+    }
+
+    .timeline-table th {
+      background: var(--gray-50);
+      color: var(--gray-700);
+      font-weight: 600;
+      padding: 12px 16px;
+      text-align: center;
+      border: 1px solid var(--gray-200);
+      font-size: 0.875rem;
+      white-space: nowrap;
+    }
+
+    .timeline-table td {
+      padding: 10px 16px;
+      text-align: center;
+      border: 1px solid var(--gray-200);
+      font-size: 0.875rem;
+      white-space: nowrap;
+    }
+
+    .timeline-table tbody tr:nth-child(even) {
+      background: var(--gray-50);
+    }
+
+    .timeline-table tbody tr:hover {
+      background: var(--accent-soft);
+    }
+
+    /* Tooltip styles */
+    .tooltip {
+      position: relative;
+      cursor: help;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      display: none;
+      width: 250px;
+      background-color: var(--gray-900);
+      color: white;
+      text-align: left;
+      border-radius: 8px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -125px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.75rem;
+      line-height: 1.4;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--gray-900) transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      display: block;
+      opacity: 1;
+    }
+
+    .year-header {
+      background: var(--accent) !important;
+      color: white !important;
+      font-weight: 700;
+      position: sticky;
+      left: 0;
+    }
+
+    .timeline-table input[type="number"] {
+      width: 100px;
+      padding: 8px;
+      border: 1px solid var(--gray-300);
+      border-radius: 4px;
+      font-size: 0.85rem;
+      text-align: center;
+      background: white;
+      box-sizing: border-box;
+    }
+
+    /* Group separators for visual clarity */
+    .group-end {
+      border-right: 2px solid var(--gray-300) !important;
+    }
+    
+    .timeline-table input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 12px;
+      padding: 32px 40px 60px 40px; /* standard space for x-axis */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 48px;
+      overflow: visible; /* allow chart to render fully */
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 520px; /* balanced height so graph fits the card */
+      margin-top: 24px;
+      padding: 0;
+      border-radius: 8px;
+    }
+    
+    .chart-wrapper canvas {
+      display: block;
+      width: 100% !important;  /* scale canvas to wrapper */
+      height: 100% !important;
+    }
+
+    .chart-controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .chart-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .chart-toggle:hover {
+      background: var(--gray-200);
+    }
+
+    .chart-toggle.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .chart-toggle.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: var(--gray-100);
+      color: var(--gray-500);
+    }
+
+    .chart-toggle.disabled:hover {
+      background: var(--gray-100);
+      transform: none;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.875rem;
+    }
+
+    .btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-200);
+    }
+
+    .author-credit {
+      text-align: center;
+      margin: 48px auto 32px;
+      padding: 20px;
+      max-width: 1400px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--gray-200);
+    }
+
+    .author-credit p {
+      margin: 0;
+      color: var(--gray-600);
+      font-size: 0.875rem;
+    }
+
+    .author-credit a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .author-credit a:hover {
+      text-decoration: underline;
+    }
+
+    /* Simple tabs */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      padding: 8px 14px;
+      border: 1px solid var(--gray-300);
+      border-radius: 8px;
+      background: var(--gray-100);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .tab-button.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--success);
+      transition: 0.3s;
+      border-radius: 26px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.3s;
+      border-radius: 50%;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background-color: var(--danger);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+      
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      
+      .tile {
+        padding: 12px;
+      }
+      
+      .tile-value {
+        font-size: 1.25rem;
+      }
+      
+      .tile-usd {
+        font-size: 0.75rem;
+      }
+      
+      .input-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .timeline-section > div:first-of-type {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+      }
+      
+      .timeline-section > div:first-of-type > div:last-child {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a href="home.html" class="home-btn">
+      <span>🏠</span>
+      Home
+    </a>
+    <div class="header-content">
+      <h1>Grant Lifecycle Calculator V2</h1>
+      <div class="by-line">
+        by <a href="https://linkedin.com/in/amalganatra" target="_blank">Amal Ganatra</a> 🔗
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Securities Tabbed Section -->
+    <div class="input-section">
+      <h2 class="section-title">Securities (cards)</h2>
+      <div id="tab-options" class="tab-pane active" style="display: block;">
+        <div class="input-grid">
+        <div class="input-group">
+          <label for="optShares">Options Granted</label>
+          <input type="number" id="optShares" value="4000" min="0">
+        </div>
+        <div class="input-group">
+          <label for="optStart">Grant Date</label>
+          <input type="date" id="optStart" value="2020-01-01">
+        </div>
+        <div class="input-group">
+          <label for="optPeriod">Vesting Period (years)</label>
+          <input type="number" id="optPeriod" value="4" min="1">
+        </div>
+        <div class="input-group">
+          <label for="optCliff">Cliff (years)</label>
+          <input type="number" id="optCliff" value="1" min="0">
+        </div>
+        <div class="input-group">
+          <label for="optFreq">Frequency</label>
+          <select id="optFreq">
+            <option value="annually" selected>Annually</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        </div>
+        <div class="vesting-schedule">
+        <div class="vesting-toggle" onclick="toggleVesting('opt')">
+          <span class="chevron">▶</span>
+          <span>View Vesting Schedule</span>
+        </div>
+        <div class="vesting-table hidden" id="optVestingTable"></div>
+        </div>
+      </div>
+
+      <div id="tab-rsus" class="tab-pane" style="display: block;">
+        <div class="input-grid">
+        <div class="input-group">
+          <label for="rsuShares">RSUs Granted</label>
+          <input type="number" id="rsuShares" value="3000" min="0">
+        </div>
+        <div class="input-group">
+          <label for="rsuStart">Grant Date</label>
+          <input type="date" id="rsuStart" value="2020-01-01">
+        </div>
+        <div class="input-group">
+          <label for="rsuPeriod">Vesting Period (years)</label>
+          <input type="number" id="rsuPeriod" value="4" min="1">
+        </div>
+        <div class="input-group">
+          <label for="rsuCliff">Cliff (years)</label>
+          <input type="number" id="rsuCliff" value="1" min="0">
+        </div>
+        <div class="input-group">
+          <label for="rsuFreq">Frequency</label>
+          <select id="rsuFreq">
+            <option value="annually" selected>Annually</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        </div>
+        <div class="vesting-schedule">
+        <div class="vesting-toggle" onclick="toggleVesting('rsu')">
+          <span class="chevron">▶</span>
+          <span>View Vesting Schedule</span>
+        </div>
+        <div class="vesting-table hidden" id="rsuVestingTable"></div>
+        </div>
+      </div>
+
+      <div id="tab-rsas" class="tab-pane" style="display: block;">
+        <div class="input-grid">
+        <div class="input-group">
+          <label for="rsaShares">Shares Granted</label>
+          <input type="number" id="rsaShares" value="3000" min="0">
+        </div>
+        <div class="input-group">
+          <label for="rsaStart">Grant Date</label>
+          <input type="date" id="rsaStart" value="2020-01-01">
+        </div>
+        <div class="input-group">
+          <label for="rsaPeriod">Vesting Period (years)</label>
+          <input type="number" id="rsaPeriod" value="4" min="1">
+        </div>
+        <div class="input-group">
+          <label for="rsaCliff">Cliff (years)</label>
+          <input type="number" id="rsaCliff" value="0" min="0">
+        </div>
+        <div class="input-group">
+          <label for="rsaFreq">Frequency</label>
+          <select id="rsaFreq">
+            <option value="annually" selected>Annually</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        </div>
+        <div class="vesting-schedule">
+        <div class="vesting-toggle" onclick="toggleVesting('rsa')">
+          <span class="chevron">▶</span>
+          <span>View Vesting Schedule</span>
+        </div>
+        <div class="vesting-table hidden" id="rsaVestingTable"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Tiles -->
+    <div class="dashboard-grid">
+      <div class="tile awarded">
+        <div class="tile-header">
+          <div class="tile-title">Awarded</div>
+          <div class="tile-icon">📊</div>
+        </div>
+        <div class="tile-value" id="awardedValue">0</div>
+        <div class="tile-usd" id="awardedUsd">$0</div>
+        <div class="tile-subtitle">Total shares awarded</div>
+      </div>
+
+      <div class="tile canceled">
+        <div class="tile-header">
+          <div class="tile-title">Canceled/Forfeited</div>
+          <div class="tile-icon">❌</div>
+        </div>
+        <div class="tile-value" id="canceledValue">0</div>
+        <div class="tile-usd" id="canceledUsd">$0</div>
+        <div class="tile-subtitle">Shares forfeited</div>
+      </div>
+
+      <div class="tile vested">
+        <div class="tile-header">
+          <div class="tile-title">Vested</div>
+          <div class="tile-icon">✅</div>
+        </div>
+        <div class="tile-value" id="vestedValue">0</div>
+        <div class="tile-usd" id="vestedUsd">$0</div>
+        <div class="tile-subtitle">Shares vested</div>
+      </div>
+
+      <div class="tile unvested">
+        <div class="tile-header">
+          <div class="tile-title">Unvested</div>
+          <div class="tile-icon">⏳</div>
+        </div>
+        <div class="tile-value" id="unvestedValue">0</div>
+        <div class="tile-usd" id="unvestedUsd">$0</div>
+        <div class="tile-subtitle">Shares pending vest</div>
+      </div>
+
+      <div class="tile wtc">
+        <div class="tile-header">
+          <div class="tile-title">Shares WTC/STC</div>
+          <div class="tile-icon">💰</div>
+        </div>
+        <div class="tile-value" id="wtcValue">0</div>
+        <div class="tile-usd" id="wtcUsd">$0</div>
+        <div class="tile-subtitle">Taxes covered</div>
+      </div>
+
+      <div class="tile delivered">
+        <div class="tile-header">
+          <div class="tile-title">Shares Delivered</div>
+          <div class="tile-icon">📦</div>
+        </div>
+        <div class="tile-value" id="deliveredValue">0</div>
+        <div class="tile-usd" id="deliveredUsd">$0</div>
+        <div class="tile-subtitle">Net shares received</div>
+      </div>
+    </div>
+
+    <!-- Timeline Section -->
+    <div class="timeline-section">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 16px; flex-wrap: wrap;">
+        <h2 class="section-title" style="margin-bottom: 0;">Yearly Timeline by Grant Type</h2>
+
+        <!-- Global Settings inline controls -->
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: white; border-radius: 8px; border: 1px solid var(--gray-300); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <div class="input-group" style="margin: 0;">
+            <label for="currentPrice" style="font-size: 0.8rem; margin-bottom: 2px;">Share Price ($)</label>
+            <input type="number" id="currentPrice" value="50" min="0" step="0.01" style="width: 120px;">
+          </div>
+          <div class="input-group" id="taxRateGroup" style="margin: 0;">
+            <label for="taxRate" style="font-size: 0.8rem; margin-bottom: 2px;">Tax Rate (%)</label>
+            <input type="number" id="taxRate" value="25" min="0" max="100" step="0.1" style="width: 100px;">
+          </div>
+          <div class="input-group" style="margin: 0;">
+            <label for="taxMethod" style="font-size: 0.8rem; margin-bottom: 2px;">Tax Method</label>
+            <select id="taxMethod" onchange="toggleTaxFields()" style="width: 200px;">
+              <option value="WTC" selected>WTC - Withhold To Cover</option>
+              <option value="STC">STC - Sell To Cover</option>
+              <option value="NONE">No tax - Yaay! 🎉</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Employment Status Toggle -->
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: white; border-radius: 8px; border: 1px solid var(--gray-300); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+          <label style="font-size: 0.875rem; color: var(--gray-600); margin: 0;">Status:</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="departedToggle" onchange="toggleDepartureStatus()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span id="statusLabel" style="font-size: 0.875rem; font-weight: 600; color: var(--success); min-width: 140px;">Currently Employed</span>
+          <div id="departureDateGroup" style="margin: 0; display: flex; align-items: center; gap: 8px; padding-left: 12px; border-left: 1px solid var(--gray-300); opacity: 0; pointer-events: none; transition: opacity 0.3s ease;">
+            <label for="departureDate" style="font-size: 0.875rem; color: var(--gray-600); margin: 0; white-space: nowrap;">Departure:</label>
+            <input type="date" id="departureDate" value="2023-06-30" onchange="updateCalculations()" style="padding: 4px 8px; font-size: 0.875rem;">
+          </div>
+        </div>
+      </div>
+      
+      <div class="timeline-container">
+        <table class="timeline-table" id="timelineTable">
+          <thead></thead>
+          <tbody id="timelineBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="chart-container">
+      <h2 class="section-title">Value Analysis</h2>
+      <div class="chart-controls">
+        <div class="chart-toggle active" onclick="toggleChart('value')">
+          <input type="checkbox" id="showValue" checked>
+          <label for="showValue">Show Value</label>
+        </div>
+        <div class="chart-toggle active" onclick="toggleChart('shares')">
+          <input type="checkbox" id="showShares" checked>
+          <label for="showShares">Show Shares</label>
+        </div>
+        <div class="chart-toggle" onclick="toggleChart('taxes')">
+          <input type="checkbox" id="showTaxes">
+          <label for="showTaxes">Show Tax Impact</label>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: white; border-radius: 8px; border: 1px solid var(--gray-300); box-shadow: 0 2px 4px rgba(0,0,0,0.05); opacity: 0.5;" title="Coming soon - Sell shares feature">
+          <label style="font-size: 0.875rem; color: var(--gray-600); margin: 0;">Include Sold:</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="includeSoldToggle" disabled>
+            <span class="toggle-slider"></span>
+          </label>
+          <span style="font-size: 0.875rem; font-weight: 600; color: var(--gray-500); min-width: 50px;">Off</span>
+        </div>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="mainChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Footer -->
+  <div class="author-credit">
+    <p>💡 Have an idea to improve this tool? <a href="https://forms.gle/QzKyMR5wFdhb4Enu5" target="_blank" rel="noopener noreferrer">Share feedback</a></p>
+  </div>
+
+  <script>
+    let chart = null;
+    let timelineData = [];
+    let exerciseInputs = {}; // Store exercise quantities by year
+    
+    function switchTab(targetId, btn) {
+      document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      const pane = document.getElementById(targetId);
+      if (pane) pane.classList.add('active');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeChart();
+      updateCalculations();
+      wireInputs();
+    });
+
+    function wireInputs() {
+      const inputs = document.querySelectorAll('input, select');
+      inputs.forEach(input => {
+        if (!input.id.startsWith('exercise_')) {
+          input.addEventListener('change', updateCalculations);
+          input.addEventListener('input', updateCalculations);
+        }
+      });
+    }
+
+    function toggleDepartureStatus() {
+      const toggle = document.getElementById('departedToggle');
+      const dateGroup = document.getElementById('departureDateGroup');
+      const statusLabel = document.getElementById('statusLabel');
+      
+      if (toggle.checked) {
+        // Departed
+        dateGroup.style.opacity = '1';
+        dateGroup.style.pointerEvents = 'auto';
+        statusLabel.textContent = 'Departed';
+        statusLabel.style.color = 'var(--danger)';
+      } else {
+        // Currently Employed
+        dateGroup.style.opacity = '0';
+        dateGroup.style.pointerEvents = 'none';
+        statusLabel.textContent = 'Currently Employed';
+        statusLabel.style.color = 'var(--success)';
+      }
+      updateCalculations();
+    }
+
+    function toggleVesting(type) {
+      const table = document.getElementById(`${type}VestingTable`);
+      const toggle = table.previousElementSibling;
+      table.classList.toggle('hidden');
+      toggle.classList.toggle('expanded');
+    }
+
+    function calculateVestingSchedule(shares, startDate, period, cliff, freq) {
+      const schedule = [];
+      const startY = startDate.getFullYear();
+      const periodsPerYear = freq === 'monthly' ? 12 : (freq === 'quarterly' ? 4 : 1);
+      const totalPeriods = period * periodsPerYear;
+      const sharesPerPeriod = shares / totalPeriods;
+      
+      // Loop through cliff years + vesting period years
+      // If cliff = 1, period = 4: years 0 (cliff), 1, 2, 3, 4 (5 total)
+      // If cliff = 0, period = 4: years 0, 1, 2, 3 (4 total)
+      const totalYears = cliff > 0 ? period + 1 : period;
+      
+      for (let y = 0; y < totalYears; y++) {
+        const year = startY + y;
+        const vestDate = new Date(startDate);
+        vestDate.setFullYear(startY + y);
+        
+        if (y < cliff) {
+          // Cliff years - no vesting
+          schedule.push({ year, vestDate, vested: 0, cumulative: 0 });
+        } else {
+          // Vesting years
+          const vestedThisYear = sharesPerPeriod * periodsPerYear;
+          const cumulative = schedule.length > 0 ? schedule[schedule.length - 1].cumulative + vestedThisYear : vestedThisYear;
+          schedule.push({ year, vestDate, vested: vestedThisYear, cumulative });
+        }
+      }
+      return schedule;
+    }
+
+    function renderVestingTable(type, schedule) {
+      const container = document.getElementById(`${type}VestingTable`);
+      if (schedule.length === 0) {
+        container.innerHTML = '<p style="padding: 10px; color: var(--gray-500);">No vesting data</p>';
+        return;
+      }
+      
+      let html = '<table><thead><tr><th>Vesting Date</th><th>Vested This Year</th><th>Cumulative Vested</th></tr></thead><tbody>';
+      schedule.forEach(row => {
+        const vestDateStr = row.vestDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        html += `<tr><td>${vestDateStr}</td><td>${row.vested.toLocaleString(undefined, {maximumFractionDigits: 2})}</td><td>${row.cumulative.toLocaleString(undefined, {maximumFractionDigits: 2})}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function toggleTaxFields() {
+      const taxMethod = document.getElementById('taxMethod').value;
+      const taxRateGroup = document.getElementById('taxRateGroup');
+      
+      if (taxMethod === 'NONE') {
+        taxRateGroup.style.display = 'none';
+        document.getElementById('taxRate').value = '0';
+      } else {
+        taxRateGroup.style.display = 'block';
+        if (document.getElementById('taxRate').value === '0') {
+          document.getElementById('taxRate').value = '25';
+        }
+      }
+      updateCalculations();
+    }
+
+    function updateCalculations() {
+      const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 50;
+      const taxMethod = document.getElementById('taxMethod').value;
+      const taxRate = taxMethod === 'NONE' ? 0 : (parseFloat(document.getElementById('taxRate').value) || 0);
+
+      // Read grant parameters
+      const opt = {
+        shares: parseInt(document.getElementById('optShares').value) || 0,
+        start: new Date(document.getElementById('optStart').value),
+        period: parseInt(document.getElementById('optPeriod').value) || 4,
+        cliff: parseInt(document.getElementById('optCliff').value) || 0,
+        freq: document.getElementById('optFreq').value
+      };
+
+      const rsu = {
+        shares: parseInt(document.getElementById('rsuShares').value) || 0,
+        start: new Date(document.getElementById('rsuStart').value),
+        period: parseInt(document.getElementById('rsuPeriod').value) || 4,
+        cliff: parseInt(document.getElementById('rsuCliff').value) || 0,
+        freq: document.getElementById('rsuFreq').value
+      };
+
+      const rsa = {
+        shares: parseInt(document.getElementById('rsaShares').value) || 0,
+        start: new Date(document.getElementById('rsaStart').value),
+        period: parseInt(document.getElementById('rsaPeriod').value) || 4,
+        cliff: parseInt(document.getElementById('rsaCliff').value) || 0,
+        freq: document.getElementById('rsaFreq').value
+      };
+
+      const departed = document.getElementById('departedToggle').checked;
+      const departureDate = departed ? new Date(document.getElementById('departureDate').value) : null;
+      const departureYear = departureDate ? departureDate.getFullYear() : 9999;
+
+      // Generate vesting schedules
+      const optSchedule = calculateVestingSchedule(opt.shares, opt.start, opt.period, opt.cliff, opt.freq);
+      const rsuSchedule = calculateVestingSchedule(rsu.shares, rsu.start, rsu.period, rsu.cliff, rsu.freq);
+      const rsaSchedule = calculateVestingSchedule(rsa.shares, rsa.start, rsa.period, rsa.cliff, rsa.freq);
+      
+      console.log('RSU Schedule:', rsuSchedule);
+      console.log('RSU Input:', rsu);
+
+      renderVestingTable('opt', optSchedule);
+      renderVestingTable('rsu', rsuSchedule);
+      renderVestingTable('rsa', rsaSchedule);
+
+      // Calculate timeline
+      const currentYear = new Date().getFullYear();
+      const minYear = Math.min(opt.start.getFullYear(), rsu.start.getFullYear(), rsa.start.getFullYear());
+      const maxYear = Math.max(
+        opt.start.getFullYear() + opt.period,
+        rsu.start.getFullYear() + rsu.period,
+        rsa.start.getFullYear() + rsa.period,
+        currentYear
+      );
+
+      timelineData = [];
+      
+      for (let year = minYear; year <= maxYear; year++) {
+        const optData = optSchedule.find(s => s.year === year) || { vested: 0, cumulative: 0, vestDate: new Date(year, 0, 1) };
+        const rsuData = rsuSchedule.find(s => s.year === year) || { vested: 0, cumulative: 0, vestDate: new Date(year, 0, 1) };
+        const rsaData = rsaSchedule.find(s => s.year === year) || { vested: 0, cumulative: 0, vestDate: new Date(year, 0, 1) };
+
+        // Apply departure logic: zero out vesting after departure year
+        let optVested = year > departureYear ? 0 : optData.vested;
+        let rsuVested = year > departureYear ? 0 : rsuData.vested;
+        let rsaVested = year > departureYear ? 0 : rsaData.vested;
+        
+        // Get vesting dates
+        const vestDate = optData.vestDate || rsuData.vestDate || rsaData.vestDate || new Date(year, 0, 1);
+
+        // Calculate exercised from inputs or default to all vested
+        const exerciseQty = exerciseInputs[year] !== undefined ? exerciseInputs[year] : optVested;
+        const optExercised = Math.min(exerciseQty, optVested);
+
+        // RSU and RSA calculations (taxes apply on vesting)
+        const rsuTax = taxRate > 0 ? rsuVested * (taxRate / 100) : 0;
+        const rsaTax = taxRate > 0 ? rsaVested * (taxRate / 100) : 0;
+        const rsuDelivered = (taxMethod === 'WTC' && taxRate > 0) ? rsuVested - rsuTax : rsuVested;
+        const rsaDelivered = (taxMethod === 'WTC' && taxRate > 0) ? rsaVested - rsaTax : rsaVested;
+
+        // Options: taxes only apply when exercised
+        const optTax = taxRate > 0 ? optExercised * (taxRate / 100) : 0;
+        const optDelivered = (taxMethod === 'WTC' && taxRate > 0) ? optExercised - optTax : optExercised;
+
+        // Total WTC/STC should be 0 if tax rate is 0
+        const totalWtc = taxRate > 0 ? (optTax + rsuTax + rsaTax) : 0;
+        const totalDelivered = optDelivered + rsuDelivered + rsaDelivered;
+        const totalVested = optVested + rsuVested + rsaVested;
+        
+        // Calculate cumulative values up to this year (needed for cancelation logic)
+        const cumulativeOptVested = timelineData.reduce((sum, d) => sum + d.optVested, 0) + optVested;
+        const cumulativeOptExercised = timelineData.reduce((sum, d) => sum + d.optExercised, 0) + optExercised;
+        const cumulativeSharesDelivered = timelineData.reduce((sum, d) => sum + d.rsuDelivered + d.rsaDelivered, 0) + rsuDelivered + rsaDelivered;
+        const cumulativeVested = timelineData.reduce((sum, d) => sum + d.optVested + d.rsuVested + d.rsaVested, 0) + totalVested;
+        
+        // Calculate canceled/forfeited at departure year
+        let canceled = 0;
+        let optionsForfeited = 0;  // Track vested but unexercised options that get forfeited
+        if (departed && year === departureYear) {
+          const totalGranted = opt.shares + rsu.shares + rsa.shares;
+          const totalVestedSoFar = cumulativeVested;
+          // Unvested securities get canceled
+          canceled = totalGranted - totalVestedSoFar;
+          // Vested but unexercised options also get forfeited
+          optionsForfeited = cumulativeOptVested - cumulativeOptExercised;
+        }
+        
+        const cumulativeCanceled = timelineData.reduce((sum, d) => sum + d.canceled, 0) + canceled;
+        const cumulativeOptionsForfeited = timelineData.reduce((sum, d) => sum + d.optionsForfeited, 0) + optionsForfeited;
+        
+        // Options Outstanding = Vested Options - Exercised Options - Forfeited Options
+        const optOutstanding = cumulativeOptVested - cumulativeOptExercised - cumulativeOptionsForfeited;
+        
+        // Shares Outstanding = Exercised Options (became shares) + Delivered RSUs + Delivered Share Grants
+        // This represents all shares you hold (not sold)
+        const cumulativeOptDelivered = timelineData.reduce((sum, d) => sum + d.optDelivered, 0) + optDelivered;
+        const sharesOutstanding = cumulativeOptDelivered + cumulativeSharesDelivered;
+        
+        // Total unvested = Total Granted - Vested - Canceled
+        const totalGranted = opt.shares + rsu.shares + rsa.shares;
+        const unvested = totalGranted - cumulativeVested - cumulativeCanceled;
+        
+        // Debug logging
+        if (year === 2024) {
+          console.log('Year 2024 Debug:', {
+            optDelivered,
+            cumulativeOptDelivered,
+            rsuDelivered,
+            rsaDelivered,
+            cumulativeSharesDelivered,
+            sharesOutstanding,
+            unvested,
+            totalDelivered
+          });
+        }
+
+        timelineData.push({
+          year,
+          vestDate,
+          optVested,
+          optExerciseQty: exerciseQty,
+          optExercised,
+          optOutstanding,
+          optDelivered,
+          rsuVested,
+          rsuDelivered,
+          rsaVested,
+          rsaDelivered,
+          canceled,
+          optionsForfeited,
+          totalWtc,
+          totalDelivered,
+          totalVested,
+          sharesOutstanding,
+          unvested
+        });
+      }
+
+      renderTimeline();
+      updateTiles(currentPrice);
+      updateChart();
+    }
+
+    function createTextCell(text, className) {
+      const td = document.createElement('td');
+      if (className) td.className = className;
+      td.textContent = (typeof text === 'number') ? text.toLocaleString(undefined, { maximumFractionDigits: 0 }) : text;
+      return td;
+    }
+
+    function createTooltipCell(value, className, tooltip) {
+      const td = document.createElement('td');
+      td.className = `tooltip ${className || ''}`.trim();
+      const text = document.createTextNode((typeof value === 'number') ? value.toLocaleString(undefined, { maximumFractionDigits: 0 }) : value);
+      const span = document.createElement('span');
+      span.className = 'tooltiptext';
+      span.textContent = tooltip || '';
+      td.appendChild(text);
+      if (tooltip) td.appendChild(span);
+      return td;
+    }
+
+    function createExerciseInputCell(year, value, max) {
+      const td = document.createElement('td');
+      td.className = 'col-options';
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.id = `exercise_${year}`;
+      input.value = (value || 0).toFixed(0);
+      input.min = '0';
+      input.max = String(max || 0);
+      input.style.width = '90px';
+      input.setAttribute('aria-label', `Exercise quantity for ${year}`);
+      input.onchange = function(){ updateExercise(year, this.value); };
+      td.appendChild(input);
+      return td;
+    }
+
+    function renderTimeline() {
+      const tbody = document.getElementById('timelineBody');
+      const thead = document.querySelector('#timelineTable thead');
+      const departed = document.getElementById('departedToggle').checked;
+      const taxMethod = document.getElementById('taxMethod').value;
+      const showTaxColumn = taxMethod !== 'NONE';
+      
+      // Update table header based on departure status and tax settings
+      thead.innerHTML = `
+        <tr>
+          <th>Vesting Date</th>
+          <th>Opt Vested</th>
+          <th>Opt Exercise Qty</th>
+          <th>Opt Exercised</th>
+          <th>Opt Outstanding</th>
+          <th>RSUs Vested</th>
+          <th>RSUs Delivered</th>
+          <th>Shares Vested</th>
+          <th>Shares Delivered</th>
+          ${departed ? '<th>Canceled</th>' : ''}
+          ${showTaxColumn ? '<th>Total WTC/STC</th>' : ''}
+          <th>Total Delivered</th>
+          <th>Shares Outstanding</th>
+        </tr>
+      `;
+      
+      tbody.innerHTML = '';
+
+      timelineData.forEach(data => {
+        const row = document.createElement('tr');
+        
+        // Column 1: Vesting Date
+        const dateCell = document.createElement('td');
+        dateCell.className = 'year-header';
+        const formattedDate = data.vestDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        dateCell.textContent = formattedDate;
+        row.appendChild(dateCell);
+        
+        // Column 2: Opt Vested
+        const optVestedCell = document.createElement('td');
+        optVestedCell.textContent = data.optVested.toLocaleString();
+        row.appendChild(optVestedCell);
+        
+        // Column 3: Opt Exercise Qty (input)
+        const exerciseQtyCell = document.createElement('td');
+        const exerciseInput = document.createElement('input');
+        exerciseInput.type = 'number';
+        exerciseInput.id = `exercise_${data.year}`;
+        exerciseInput.value = data.optExerciseQty.toFixed(0);
+        exerciseInput.min = '0';
+        exerciseInput.max = data.optVested;
+        exerciseInput.onchange = function(){ updateExercise(data.year, this.value); };
+        exerciseQtyCell.appendChild(exerciseInput);
+        row.appendChild(exerciseQtyCell);
+        
+        // Column 4: Opt Exercised
+        const optExercisedCell = document.createElement('td');
+        optExercisedCell.textContent = data.optExercised.toLocaleString();
+        row.appendChild(optExercisedCell);
+        
+        // Column 5: Opt Outstanding
+        const optOutstandingCell = document.createElement('td');
+        optOutstandingCell.textContent = data.optOutstanding.toLocaleString();
+        row.appendChild(optOutstandingCell);
+        
+        // Column 6: RSUs Vested
+        const rsuVestedCell = document.createElement('td');
+        rsuVestedCell.textContent = data.rsuVested.toLocaleString();
+        row.appendChild(rsuVestedCell);
+        
+        // Column 7: RSUs Delivered
+        const rsuDeliveredCell = document.createElement('td');
+        rsuDeliveredCell.textContent = data.rsuDelivered.toLocaleString();
+        row.appendChild(rsuDeliveredCell);
+        
+        // Column 8: Shares Vested
+        const sharesVestedCell = document.createElement('td');
+        sharesVestedCell.textContent = data.rsaVested.toLocaleString();
+        row.appendChild(sharesVestedCell);
+        
+        // Column 9: Shares Delivered
+        const sharesDeliveredCell = document.createElement('td');
+        sharesDeliveredCell.textContent = data.rsaDelivered.toLocaleString();
+        row.appendChild(sharesDeliveredCell);
+        
+        // Column 10: Canceled/Forfeited (conditional)
+        if (departed) {
+          const canceledCell = document.createElement('td');
+          // Show both unvested canceled + vested options forfeited
+          const totalCanceledForfeited = data.canceled + data.optionsForfeited;
+          canceledCell.textContent = totalCanceledForfeited.toLocaleString();
+          row.appendChild(canceledCell);
+        }
+        
+        // Column 11 (or 10): Total WTC/STC (conditional)
+        if (showTaxColumn) {
+          const wtcCell = document.createElement('td');
+          wtcCell.textContent = data.totalWtc.toLocaleString();
+          row.appendChild(wtcCell);
+        }
+        
+        // Column 12 (or 11 or 10): Total Delivered
+        const deliveredCell = document.createElement('td');
+        deliveredCell.textContent = data.totalDelivered.toLocaleString();
+        row.appendChild(deliveredCell);
+        
+        // Column 13 (or 12): Shares Outstanding
+        const sharesOutstandingCell = document.createElement('td');
+        sharesOutstandingCell.textContent = data.sharesOutstanding.toLocaleString();
+        row.appendChild(sharesOutstandingCell);
+        
+        tbody.appendChild(row);
+      });
+    }
+
+    function updateExercise(year, value) {
+      exerciseInputs[year] = parseFloat(value) || 0;
+      updateCalculations();
+    }
+
+    function updateTiles(currentPrice) {
+      const departed = document.getElementById('departedToggle').checked;
+      const totalAwarded = timelineData.length > 0 ? timelineData[0].optVested + timelineData[0].rsuVested + timelineData[0].rsaVested : 0;
+      const totalCanceled = timelineData.reduce((sum, d) => sum + d.canceled + d.optionsForfeited, 0);
+      
+      // Get cumulative values from the last row
+      const lastRow = timelineData[timelineData.length - 1];
+      
+      // Calculate cumulative vested (sum of vested each year)
+      const cumulativeOptVested = timelineData.reduce((sum, d) => sum + d.optVested, 0);
+      const cumulativeRsuVested = timelineData.reduce((sum, d) => sum + d.rsuVested, 0);
+      const cumulativeRsaVested = timelineData.reduce((sum, d) => sum + d.rsaVested, 0);
+      const totalVested = cumulativeOptVested + cumulativeRsuVested + cumulativeRsaVested;
+      
+      const totalWtc = timelineData.reduce((sum, d) => sum + d.totalWtc, 0);
+      
+      // Shares Delivered = all delivered shares (options exercised + RSUs + Share Grants) from last row
+      const totalDelivered = lastRow ? lastRow.sharesOutstanding : 0;
+      const currentUnvested = lastRow?.unvested || 0;
+
+      const opt = { shares: parseInt(document.getElementById('optShares').value) || 0 };
+      const rsu = { shares: parseInt(document.getElementById('rsuShares').value) || 0 };
+      const rsa = { shares: parseInt(document.getElementById('rsaShares').value) || 0 };
+      const totalAwardedActual = opt.shares + rsu.shares + rsa.shares;
+
+      document.getElementById('awardedValue').textContent = totalAwardedActual.toLocaleString();
+      document.getElementById('awardedUsd').textContent = '$' + (totalAwardedActual * currentPrice).toLocaleString();
+      
+      // Show/hide canceled tile based on departure status
+      const canceledTile = document.querySelector('.tile.canceled');
+      if (departed) {
+        canceledTile.style.display = 'block';
+        document.getElementById('canceledValue').textContent = totalCanceled.toLocaleString();
+        document.getElementById('canceledUsd').textContent = '$' + (totalCanceled * currentPrice).toLocaleString();
+      } else {
+        canceledTile.style.display = 'none';
+      }
+      
+      document.getElementById('vestedValue').textContent = totalVested.toLocaleString();
+      document.getElementById('vestedUsd').textContent = '$' + (totalVested * currentPrice).toLocaleString();
+      
+      document.getElementById('unvestedValue').textContent = currentUnvested.toLocaleString();
+      document.getElementById('unvestedUsd').textContent = '$' + (currentUnvested * currentPrice).toLocaleString();
+      
+      // Show/hide WTC/STC tile based on tax method
+      const taxMethod = document.getElementById('taxMethod').value;
+      const wtcTile = document.querySelector('.tile.wtc');
+      if (taxMethod === 'NONE') {
+        wtcTile.style.display = 'none';
+      } else {
+        wtcTile.style.display = 'block';
+        document.getElementById('wtcValue').textContent = totalWtc.toLocaleString();
+        document.getElementById('wtcUsd').textContent = '$' + (totalWtc * currentPrice).toLocaleString();
+      }
+      
+      document.getElementById('deliveredValue').textContent = totalDelivered.toLocaleString();
+      document.getElementById('deliveredUsd').textContent = '$' + (totalDelivered * currentPrice).toLocaleString();
+    }
+
+    function initializeChart() {
+      const ctx = document.getElementById('mainChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              top: 8,
+              right: 18,
+              bottom: 28,
+              left: 12
+            }
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: 'Grant Lifecycle Analysis',
+              font: { size: 16, weight: 'bold' },
+              padding: { bottom: 20 }
+            },
+            legend: { 
+              position: 'top',
+              labels: { padding: 15 }
+            }
+          },
+          scales: {
+            x: { 
+              title: { display: true, text: 'Year' },
+              ticks: { padding: 5 }
+            },
+            y: { 
+              title: { display: true, text: 'Value ($)' }, 
+              beginAtZero: true,
+              ticks: { padding: 8 }
+            }
+          },
+          interaction: { intersect: false, mode: 'index' }
+        }
+      });
+    }
+
+    function updateChart() {
+      if (!chart) return;
+
+      const currentPrice = parseFloat(document.getElementById('currentPrice').value) || 50;
+      const years = timelineData.map(d => d.year.toString());
+      const datasets = [];
+
+      if (document.getElementById('showValue').checked) {
+        datasets.push({
+          label: 'Total Value',
+          data: timelineData.map(d => d.sharesOutstanding * currentPrice),
+          borderColor: '#0a5264',
+          backgroundColor: 'rgba(10, 82, 100, 0.1)',
+          tension: 0.4,
+          fill: true
+        });
+      }
+
+      if (document.getElementById('showShares').checked) {
+        datasets.push({
+          label: 'Shares Outstanding',
+          data: timelineData.map(d => d.sharesOutstanding),
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          tension: 0.4,
+          yAxisID: 'y1'
+        });
+      }
+
+      if (document.getElementById('showTaxes').checked) {
+        datasets.push({
+          label: 'Tax Withholding Value',
+          data: timelineData.map(d => d.totalWtc * currentPrice),
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          tension: 0.4
+        });
+      }
+
+      chart.data.labels = years;
+      chart.data.datasets = datasets;
+
+      const showValue = document.getElementById('showValue').checked;
+      const showShares = document.getElementById('showShares').checked;
+
+      chart.options.scales.y = {
+        type: 'linear',
+        display: showValue,
+        position: 'left',
+        title: { display: showValue, text: 'Value ($)', color: '#0a5264' },
+        ticks: {
+          color: '#0a5264',
+          callback: function(value) { return '$' + value.toLocaleString(); }
+        },
+        beginAtZero: true
+      };
+
+      chart.options.scales.y1 = {
+        type: 'linear',
+        display: showShares,
+        position: 'right',
+        title: { display: showShares, text: 'Shares', color: '#10b981' },
+        ticks: { color: '#10b981' },
+        grid: { drawOnChartArea: false },
+        beginAtZero: true
+      };
+
+      chart.update();
+    }
+
+    function toggleChart(type) {
+      const checkbox = document.getElementById(`show${type.charAt(0).toUpperCase() + type.slice(1)}`);
+      checkbox.checked = !checkbox.checked;
+      const toggle = checkbox.closest('.chart-toggle');
+      toggle.classList.toggle('active', checkbox.checked);
+      updateChart();
+    }
+  </script>
+</body>
+</html>
