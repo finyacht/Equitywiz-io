@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-RT0B6NXFG6');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Timeline</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/mobile-responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+  <style>
+    body { margin: 0; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #1f2937; background: #f8fafc; }
+    .toolbar { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid #e5e7eb; padding: 12px 20px; display:flex; align-items:center; gap:16px; }
+    .home-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; background:#0a5264; color:#fff; text-decoration:none; border-radius:8px; font-weight:600; }
+    .header-content { flex:1; }
+    .title { margin:0; font-size:1.25rem; color:#0a5264; font-weight:800; }
+    .byline { font-size:0.9rem; color:#6b7280; }
+    .byline a { color:#0a5264; text-decoration:none; font-weight:700; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .card { background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); padding:20px; margin-bottom:20px; }
+    .section-title { margin:0 0 10px 0; font-size:1.1rem; font-weight:800; color:#111827; display:flex; align-items:center; gap:10px; }
+    .grid { display:grid; grid-template-columns: repeat(3,1fr); gap:16px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .stat { display:flex; flex-direction:column; gap:6px; }
+    .stat .label { font-size:0.8rem; color:#6b7280; font-weight:600; }
+    .stat .value { font-size:1.5rem; font-weight:800; color:#111827; }
+    .inputs { display:flex; gap:12px; flex-wrap:wrap; }
+    .input-group { display:flex; flex-direction:column; gap:6px; }
+    .input-group input, .securities-table input { padding:10px; border:1px solid #d1d5db; border-radius:8px; width:140px; }
+    .input-readonly { background:#f3f4f6; }
+    .chart-wrapper { height: 380px; }
+    .journey-wrapper { height: 320px; }
+    .footer { text-align:center; margin: 32px auto 24px; padding: 16px; max-width:1200px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; }
+    .footer a { color:#0a5264; font-weight:700; text-decoration:none; }
+    .securities-table { width: 100%; border-collapse: collapse; }
+    .securities-table th, .securities-table td { text-align:left; padding:10px; border:1px solid #e5e7eb; font-size:0.9rem; }
+    .securities-table th { background:#f8fafc; font-weight:700; color:#374151; }
+    .row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .spacer { flex:1; }
+    .segmented { display:inline-flex; align-items:center; gap:0; padding:4px; border:1px solid #e5e7eb; border-radius:12px; background:#f8fafc; box-shadow: 0 1px 2px rgba(0,0,0,0.04) inset; }
+    .segmented button { padding:8px 14px; border:0; background:transparent; cursor:pointer; font-weight:700; color:#334155; border-radius:8px; transition: background-color .15s ease, color .15s ease; }
+    .segmented button:hover { background:#eef2f7; }
+    .segmented button.active { background:#0a5264; color:#fff; box-shadow: 0 2px 6px rgba(10,82,100,.25); }
+    .kpi { background:#0a5264; color:#fff; padding:12px 16px; border-radius:12px; display:flex; align-items:center; gap:12px; box-shadow: 0 6px 16px rgba(10,82,100,.15); }
+    .kpi .label { font-size:.8rem; opacity:.9; }
+    .kpi .value { font-size:1.4rem; font-weight:800; letter-spacing:.2px; }
+    .mini { font-size:.8rem; color:#6b7280; }
+    .list { width:100%; border-collapse:collapse; }
+    .list th, .list td { border-bottom:1px solid #e5e7eb; padding:10px; text-align:left; }
+    .list th { background:#f8fafc; font-weight:700; color:#374151; }
+    .pill { display:inline-block; padding:4px 8px; border-radius:999px; font-weight:700; font-size:.75rem; }
+    .pill.active { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+    .pill.cancelled { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+    .group-row { font-weight:700; cursor:pointer; }
+    .group-row .chev { display:inline-block; transform: rotate(0deg); transition: transform .2s ease; margin-right:8px; color:#64748b; }
+    .group-row.expanded .chev { transform: rotate(90deg); }
+    .detail-row { background:#fcfcfd; }
+    .hidden { display:none; }
+    .badge { display:inline-block; padding:8px 12px; background:#f1f5f9; border:1px solid #e5e7eb; border-radius:8px; font-weight:700; color:#111827; min-width:90px; text-align:center; }
+    /* Visual timeline - per-type lanes */
+    .event-timeline { position: relative; padding: 8px 8px 4px; overflow: hidden; }
+    .lanes { display: grid; gap: 10px; }
+    .lane { display: grid; grid-template-columns: 140px 1fr; align-items: center; gap: 8px; }
+    .lane-label { font-weight: 800; color:#0f172a; font-size: 0.9rem; }
+    .lane-header .lane-label { color:#475569; font-weight: 700; }
+    .lane-grid { display: grid; column-gap: 8px; position: relative; }
+    .year-head { text-align:center; font-size: 12px; color:#64748b; font-weight:700; padding: 2px 0; }
+    .year-cell { position: relative; height: 44px; border:1px dashed #e5e7eb; border-radius: 10px; background: linear-gradient(180deg, rgba(248,250,252,0.6), rgba(255,255,255,0.6)); }
+    .markers { position: absolute; top: 50%; left: 6px; right: 6px; transform: translateY(-50%); display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap: wrap; }
+    .m { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+    .m.grant { background:#64748b; }
+    .m.vest { background:#22c55e; }
+    .m.delivered { background:#0a5264; }
+    .more { font-size: 10px; color:#475569; font-weight:700; }
+    .legend { display:flex; gap:14px; align-items:center; padding-top: 6px; color:#475569; font-size:12px; }
+    .legend-item { display:flex; gap:6px; align-items:center; }
+    .legend .m { width:10px; height:10px; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a href="home.html" class="home-btn">🏠 Home</a>
+    <div class="header-content">
+      <div class="title">Portfolio Timeline</div>
+      <div class="byline">by <a href="https://linkedin.com/in/amalganatra" target="_blank" rel="noopener noreferrer">Amal Ganatra</a>
+        <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer" style="margin-left:6px; color:#0a5264; display:inline-flex; align-items:center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="row">
+        <div class="segmented" id="filterToggle">
+          <button data-filter="all" class="active">All Grants</button>
+          <button data-filter="active">Active Only</button>
+        </div>
+        <div class="spacer"></div>
+        <div class="input-group">
+          <label class="label" for="currentPriceInput">Share Price ($)</label>
+          <input type="number" id="currentPriceInput" value="50" min="0" step="0.01">
+        </div>
+        <div class="spacer"></div>
+        <div class="kpi">
+          <div>
+            <div class="label">Total Value Delivered</div>
+            <div class="value" id="kpiDeliveredValue">$0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <div class="card">
+      <div class="section-title">Grant Breakdown by Type</div>
+      <table class="list" id="breakdownTable">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Type</th>
+            <th>Granted</th>
+            <th>Vested</th>
+            <th>Status</th>
+            <th>Sell to Cover (Units)</th>
+            <th>Sell to Cover ($)</th>
+            <th>Withhold to Cover (Units)</th>
+            <th>Withhold to Cover ($)</th>
+            <th>Delivered (Units)</th>
+            <th>Delivered ($)</th>
+          </tr>
+        </thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Portfolio Journey (Past • Present • Future)</div>
+      <div class="journey-wrapper">
+        <canvas id="journeyChart"></canvas>
+      </div>
+      <div class="mini">Cumulative delivered and vested value with subtle shading for past/present/future.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>💡 Have an idea to improve this tool? <a href="https://forms.gle/QzKyMR5wFdhb4Enu5" target="_blank" rel="noopener noreferrer">Submit feedback</a></p>
+  </div>
+
+  <script>
+    let journeyChart;
+    let filter = 'all';
+    let grants = [
+      { date: '2021-03', type: 'Stock Options', granted: 3000, vested: 2200, delivered: 2000, active: true },
+      { date: '2022-07', type: 'RSUs',          granted: 2500, vested: 1500, delivered: 1400, active: true },
+      { date: '2023-02', type: 'RSUs',          granted: 1200, vested:  600, delivered:  400, active: true },
+      { date: '2020-10', type: 'Share Grants',  granted: 1500, vested: 1500, delivered: 1500, active: false },
+      { date: '2019-06', type: 'Stock Options', granted: 1000, vested: 1000, delivered:  800, active: false }
+    ];
+    // Placeholder coverage rates; replace with values from your data source when available
+    const STC_RATE = 0.20; // 20% of delivered sold to cover
+    const WTC_RATE = 0.10; // 10% of delivered withheld to cover
+
+    function toCurrency(n){ return '$' + (Math.max(0, Math.round(n)) || 0).toLocaleString(); }
+
+    function filteredGrants(){
+      return filter === 'active' ? grants.filter(g => g.active) : grants.slice();
+    }
+
+    function totalsByType(gs){
+      const agg = {};
+      for (const g of gs){
+        const key = g.type;
+        if (!agg[key]) agg[key] = { granted: 0, vested: 0, delivered: 0 };
+        agg[key].granted += g.granted;
+        agg[key].vested += g.vested;
+        agg[key].delivered += g.delivered;
+      }
+      return agg;
+    }
+
+    function computeYears(gs){
+      const years = gs.map(g => parseInt(g.date.slice(0,4), 10));
+      const first = Math.min(...years);
+      const minY = Math.min(first, new Date().getFullYear()-4);
+      const maxY = Math.max(...years, new Date().getFullYear()+5);
+      const labels = [];
+      for (let y=minY; y<=maxY; y++) labels.push(String(y));
+      return labels;
+    }
+
+    function buildTimeline(gs){
+      const labels = computeYears(gs);
+      const byYearDelivered = labels.map(() => 0);
+      const byYearVested = labels.map(() => 0);
+      for (const g of gs){
+        const y = g.date.slice(0,4);
+        const idx = labels.indexOf(y);
+        if (idx >= 0){
+          byYearDelivered[idx] += g.delivered;
+          byYearVested[idx] += g.vested;
+        }
+      }
+      // Convert to cumulative to better match the screenshot feel
+      for (let i=1;i<labels.length;i++){
+        byYearDelivered[i] += byYearDelivered[i-1];
+        byYearVested[i] += byYearVested[i-1];
+      }
+      return { labels, byYearDelivered, byYearVested };
+    }
+
+    function renderKPI(){
+      const price = currentPrice();
+      const gs = filteredGrants();
+      const deliveredShares = gs.reduce((s,g)=>s+g.delivered,0);
+      document.getElementById('kpiDeliveredValue').textContent = toCurrency(deliveredShares * price);
+    }
+
+    function renderBreakdown(){
+      const price = currentPrice();
+      const tbody = document.getElementById('breakdownBody');
+      tbody.innerHTML = '';
+      const agg = totalsByType(filteredGrants());
+      const types = ['Stock Options','RSUs','Share Grants'];
+      for (const t of types){
+        const row = document.createElement('tr');
+        const a = agg[t] || { granted:0, vested:0, delivered:0 };
+        const stcUnits = Math.round(a.delivered * STC_RATE);
+        const wtcUnits = Math.round(a.delivered * WTC_RATE);
+        row.className = 'group-row';
+        row.innerHTML = `
+          <td class="chev">▸</td>
+          <td>${t}</td>
+          <td>${a.granted.toLocaleString()}</td>
+          <td>${a.vested.toLocaleString()}</td>
+          <td>-</td>
+          <td>${stcUnits.toLocaleString()}</td>
+          <td>${toCurrency(stcUnits * price)}</td>
+          <td>${wtcUnits.toLocaleString()}</td>
+          <td>${toCurrency(wtcUnits * price)}</td>
+          <td>${a.delivered.toLocaleString()}</td>
+          <td>${toCurrency(a.delivered * price)}</td>
+        `;
+        tbody.appendChild(row);
+
+        // detail rows per grant for this type
+        filteredGrants().filter(g=>g.type===t).forEach(g => {
+          const stc = Math.round(g.delivered * STC_RATE);
+          const wtc = Math.round(g.delivered * WTC_RATE);
+          const dr = document.createElement('tr');
+          dr.className = 'detail-row hidden';
+          dr.innerHTML = `
+            <td></td>
+            <td>${formatMonth(g.date)}</td>
+            <td>${g.granted.toLocaleString()}</td>
+            <td>${g.vested.toLocaleString()}</td>
+            <td>${g.active ? '<span class="pill active">Active</span>' : '<span class="pill cancelled">Cancelled</span>'}</td>
+            <td>${stc.toLocaleString()}</td>
+            <td>${toCurrency(stc * price)}</td>
+            <td>${wtc.toLocaleString()}</td>
+            <td>${toCurrency(wtc * price)}</td>
+            <td>${g.delivered.toLocaleString()}</td>
+            <td>${toCurrency(g.delivered * price)}</td>
+          `;
+          tbody.appendChild(dr);
+        });
+
+        // toggle behavior
+        row.addEventListener('click', () => {
+          row.classList.toggle('expanded');
+          const chev = row.querySelector('.chev');
+          if (chev) chev.textContent = row.classList.contains('expanded') ? '▾' : '▸';
+          let next = row.nextElementSibling;
+          while (next && next.classList.contains('detail-row')){
+            next.classList.toggle('hidden');
+            next = next.nextElementSibling;
+          }
+        });
+      }
+    }
+
+    function renderGrantsTable(){
+      const tbody = document.querySelector('#grantsTable tbody');
+      tbody.innerHTML = '';
+      const gs = filteredGrants();
+      gs.forEach((g, idx) => {
+        const tr = document.createElement('tr');
+        const stcUnits = Math.round(g.delivered * STC_RATE);
+        const wtcUnits = Math.round(g.delivered * WTC_RATE);
+        const price = currentPrice();
+        tr.innerHTML = `
+          <td>${formatMonth(g.date)}</td>
+          <td>${g.type}</td>
+          <td>${g.granted.toLocaleString()}</td>
+          <td>${g.vested.toLocaleString()}</td>
+          <td>${g.active ? '<span class="pill active">Active</span>' : '<span class="pill cancelled">Cancelled</span>'}</td>
+          <td>${stcUnits.toLocaleString()}</td>
+          <td>${toCurrency(stcUnits * price)}</td>
+          <td>${wtcUnits.toLocaleString()}</td>
+          <td>${toCurrency(wtcUnits * price)}</td>
+          <td>${g.delivered.toLocaleString()}</td>
+          <td>${toCurrency(g.delivered * price)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function formatMonth(yyyyMm){
+      const [y,m] = yyyyMm.split('-');
+      const date = new Date(parseInt(y,10), parseInt(m,10)-1, 1);
+      return date.toLocaleString(undefined, { month: 'long', year: 'numeric' });
+    }
+
+    function initChart(){
+      // Journey chart only
+      const jc = document.getElementById('journeyChart');
+      if (!jc) return;
+      const jctx = jc.getContext('2d');
+      journeyChart = new Chart(jctx, {
+        type: 'line',
+        data: { labels: [], datasets: [] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: true },
+            title: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: 'Value ($)' } }
+          }
+        }
+      });
+    }
+
+    function updateChart(){
+      const price = currentPrice();
+      const data = buildTimeline(filteredGrants());
+      // Update journey chart with past/present/future shading
+      if (journeyChart){
+        const labels = data.labels;
+        const delivered = data.byYearDelivered.map(s=>s*price);
+        const vested = data.byYearVested.map(s=>s*price);
+        journeyChart.data.labels = labels;
+        journeyChart.data.datasets = [
+          { label: 'Delivered', data: delivered, borderColor: '#0a5264', backgroundColor: 'rgba(10,82,100,0.18)', tension: 0.3, fill: true },
+          { label: 'Vested', data: vested, borderColor: '#94a3b8', backgroundColor: 'rgba(148,163,184,0.18)', tension: 0.3, fill: true }
+        ];
+        journeyChart.update();
+      }
+    }
+
+    function currentPrice(){
+      const el = document.getElementById('currentPriceInput');
+      const n = parseFloat(el && el.value);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function refresh(){
+      renderKPI();
+      renderBreakdown();
+      updateChart();
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      // Filter toggle
+      document.querySelectorAll('#filterToggle button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#filterToggle button').forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          filter = btn.getAttribute('data-filter');
+          refresh();
+        });
+      });
+
+      // Price input listeners
+      const priceEl = document.getElementById('currentPriceInput');
+      if (priceEl){
+        priceEl.addEventListener('input', refresh);
+        priceEl.addEventListener('change', refresh);
+      }
+
+      initChart();
+      refresh();
+    });
+  </script>
+</body>
+</html>
