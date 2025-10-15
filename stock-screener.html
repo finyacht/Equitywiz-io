@@ -10,22 +10,22 @@
         
         /* CSS Variables for Design Consistency */
         :root {
-            /* Colors - Professional Orange Palette */
-            --primary-orange: #f97316;
-            --primary-orange-dark: #ea580c;
-            --primary-orange-light: #ffedd5;
-            
+            /* Colors - Professional Blue Palette (aligned with home tool button) */
+            --primary-orange: #4a6cf7; /* primary blue */
+            --primary-orange-dark: #2f55d4; /* darker blue */
+            --primary-orange-light: #eaf0ff; /* light blue background accent */
+
             --secondary-slate: #334155;
             --secondary-slate-light: #64748b;
             --secondary-slate-lighter: #94a3b8;
             
-            --neutral-50: #fff7ed;
-            --neutral-100: #ffedd5;
-            --neutral-200: #fed7aa;
-            --neutral-300: #fdba74;
-            --neutral-700: #c2410c;
-            --neutral-800: #9a3412;
-            --neutral-900: #7c2d12;
+            --neutral-50: #eef2ff;   /* lightest background */
+            --neutral-100: #e0e7ff;
+            --neutral-200: #c7d2fe;
+            --neutral-300: #a5b4fc;
+            --neutral-700: #1d4ed8;  /* deep blue accents */
+            --neutral-800: #1e40af;
+            --neutral-900: #1e3a8a;
             
             --success-green: #16a34a;
             --success-green-light: #dcfce7;
@@ -884,7 +884,7 @@
             console.log('✅ Stock Market Screener fully initialized with live data!');
         });
 
-        // Live Polygon.io API Integration
+        // Polygon.io Integration via Netlify functions
         class PolygonAPI {
             constructor() {
                 this.baseUrl = window.location.origin; // Use same domain for Netlify functions
@@ -1096,6 +1096,12 @@
                     }
                 }
                 
+                // Fallback: ensure SP500 price not zero using intraday series
+                if (summary && sp500Data && (!summary.sp500 || !summary.sp500.price || summary.sp500.price === 0)) {
+                    const last = Array.isArray(sp500Data.data) && sp500Data.data.length ? sp500Data.data[sp500Data.data.length - 1] : 0;
+                    summary.sp500 = { price: Number(last) || 0, change: 0, changePercent: 0 };
+                }
+
                 // Update market summary
                 if (summary) {
                     updateMarketSummaryDisplay(summary);
@@ -1159,5 +1165,10 @@
             indicators.forEach(el => el.style.opacity = '1');
         }
     </script>
+    <div style="max-width:1800px;margin:0 auto;padding:0 20px 30px 20px;">
+        <p style="text-align:center; color:#64748b; font-size:14px;">
+            💡 Have an idea to improve this tool? <a href="https://forms.gle/QzKyMR5wFdhb4Enu5" target="_blank" rel="noopener noreferrer">Share feedback</a>
+        </p>
+    </div>
 </body>
 </html> 

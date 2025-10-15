@@ -163,6 +163,8 @@
             border-radius: 10px;
             display: none;
             text-align: center;
+            z-index: 200; /* Ensure above touch overlays */
+            pointer-events: auto;
         }
 
         #gameOver h2 {
@@ -659,6 +661,7 @@
             opacity: 0;
             z-index: 50;
             display: none;
+            pointer-events: auto; /* allow touches when visible */
         }
 
         #touchLeft {
@@ -981,7 +984,7 @@
             <h2>GAME OVER</h2>
             <div id="winner"></div>
             <div>Your Score: <span id="finalScore">0</span></div>
-            <button class="btn" onclick="backToMenu()">PLAY AGAIN</button>
+            <button class="btn" id="playAgainBtn">PLAY AGAIN</button>
         </div>
     </div>
 
@@ -2077,6 +2080,12 @@
             document.getElementById('touchRight').style.display = 'none';
             hideNotifications();
             hideAICommentary();
+            // Reset input state for mobile browsers
+            ['ArrowLeft','ArrowRight'].forEach(k => keys[k] = false);
+            // Blur any focused element to ensure button taps register
+            if (document.activeElement && document.activeElement.blur) {
+                document.activeElement.blur();
+            }
         }
         
         function showBotEliminationNotification(bot) {
@@ -2112,6 +2121,19 @@
         function hideNotifications() {
             document.getElementById('notifications').classList.add('hidden');
         }
+
+        // Ensure Play Again works on mobile: attach click & touchend, and stop overlays from intercepting
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('playAgainBtn');
+            if (!btn) return;
+            const handler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                backToMenu();
+            };
+            btn.addEventListener('click', handler, { passive: false });
+            btn.addEventListener('touchend', handler, { passive: false });
+        });
     </script>
 </body>
 </html> 
