@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} 
+      gtag('js', new Date());
+      gtag('config', 'G-RT0B6NXFG6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Systematic Investment Plan (SIP) Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/mobile-responsive.css">
+    <style>
+        :root {
+            --primary-color: #0ea5e9;
+            --primary-dark: #0369a1;
+            --accent: #10b981;
+            --surface: #ffffff;
+            --muted: #64748b;
+            --text: #0f172a;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-700: #334155;
+            --shadow-1: 0 4px 12px rgba(2, 6, 23, 0.08);
+            --shadow-2: 0 8px 24px rgba(2, 6, 23, 0.12);
+        }
+
+        body { margin: 0; background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 100%); color: var(--text); font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+        .nav-bar {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-2);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .nav-bar a { color: white; text-decoration: none; display: flex; align-items: center; font-weight: 600; gap: 8px; }
+        .nav-bar a:hover { opacity: 0.95; }
+        .nav-title { font-weight: 800; letter-spacing: .5px; text-shadow: 0 2px 4px rgba(0,0,0,.2); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 12px; padding: 24px; margin: 20px 0; box-shadow: var(--shadow-1); }
+        .card:hover { box-shadow: var(--shadow-2); }
+        .card h2 { margin: 0 0 18px 0; color: var(--gray-700); font-size: 1.4rem; }
+
+        .side-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+        @media (max-width: 992px) { .side-grid { grid-template-columns: 1fr; } }
+
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+
+        .form-group { position: relative; background: #fff; border: 1px solid var(--gray-200); border-radius: 10px; padding: 14px; transition: all 0.2s ease; }
+        .form-group:hover { border-color: var(--primary-color); box-shadow: 0 2px 8px rgba(14,165,233,0.12); }
+        .form-group label { display: block; font-weight: 600; color: var(--muted); margin-bottom: 8px; font-size: .9rem; }
+        .inline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .inline input[type="number"], .inline select { flex: 0 1 180px; min-width: 140px; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: .95rem; }
+        .inline input[type="range"] { flex: 1 1 260px; }
+
+        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        @media (max-width: 560px) { .result-grid { grid-template-columns: 1fr; } }
+        .result-card { background: linear-gradient(135deg, var(--gray-50), #fff); border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px; text-align: center; position: relative; overflow: hidden; transition: all 0.2s ease; }
+        .result-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(14,165,233,0.15); }
+        .result-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary-color), var(--accent)); }
+        .result-label { color: var(--muted); font-weight: 600; font-size: .85rem; margin-bottom: 8px; }
+        .result-value { color: var(--primary-dark); font-weight: 800; font-size: 1.5rem; margin-top: 4px; }
+
+        .chart-card { border-top: 4px solid var(--accent); }
+        .chart-container { position: relative; height: 480px; }
+
+        .disclaimer { background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(2,6,23,0.45); display: none; align-items: center; justify-content: center; z-index: 1200; }
+        .modal { background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; width: 90%; max-width: 420px; box-shadow: var(--shadow-2); }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--gray-200); }
+        .modal-body { padding: 16px; }
+        .icon-btn { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: .9rem; transition: all 0.2s ease; }
+        .icon-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+        .close-btn { background: #fff; border: 1px solid var(--gray-300); color: var(--gray-700); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s ease; }
+        .close-btn:hover { background: var(--gray-100); }
+
+        .mini-logo { width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, var(--primary-color), var(--accent)); box-shadow: 0 6px 14px rgba(2,6,23,0.12); position: relative; overflow: hidden; }
+        .mini-logo::before { content: ""; position: absolute; width: 22px; height: 22px; top: 8px; left: 8px; background: #fff; opacity: .85; clip-path: polygon(0 0, 100% 0, 100% 20%, 20% 20%, 20% 100%, 0 100%); }
+        .mini-logo::after { content: ""; position: absolute; width: 12px; height: 12px; right: 8px; bottom: 8px; background: #fff; opacity: .7; clip-path: polygon(0 0, 100% 0, 100% 100%, 80% 100%, 80% 80%, 0 80%); }
+        
+        .author-info { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .9rem; padding: 8px 0 0 0; justify-content: flex-start; }
+        .author-info a { color: var(--primary-color); transition: all 0.2s ease; }
+        .author-info a:hover { opacity: 0.8; }
+        
+        /* Modern Toggle Switch */
+        .toggle-switch { position: relative; display: inline-block; width: 60px; height: 32px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 32px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 24px; width: 24px; left: 4px; bottom: 4px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .toggle-switch input:checked + .toggle-slider { background-color: var(--primary-color); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(28px); }
+        .toggle-switch input:focus + .toggle-slider { box-shadow: 0 0 1px var(--primary-color); }
+        
+        @media (max-width: 560px) {
+            .toggle-switch { width: 52px; height: 28px; }
+            .toggle-slider:before { height: 20px; width: 20px; }
+            .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="home.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Home
+        </a>
+        <span class="nav-title">SIP CALCULATOR</span>
+    </div>
+
+    <div class="container">
+        <div class="card" style="border-left: 5px solid var(--primary-color);">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                <div class="mini-logo"></div>
+                <h2 style="margin:0;">Systematic Investment Plan (SIP)</h2>
+            </div>
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                <p style="margin:0; color: var(--muted); line-height:1.6; flex:1; min-width:250px;">Plan recurring investments with flexible frequency, currency, and projected returns. Visualize growth vs total contributions.</p>
+                <button id="settingsBtn" class="icon-btn" title="Settings" style="flex-shrink:0; background:var(--primary-color); border:none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0A1.65 1.65 0 0 0 9 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 .33h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0c.2.44.59.78 1.05.9H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+                    Settings
+                </button>
+            </div>
+            <div class="author-info">
+                <span>By <strong>Amal Ganatra</strong></span>
+                <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Inputs & Results</h2>
+            <div class="side-grid">
+                <div>
+                    <h3 style="margin:0 0 12px 0; color:var(--gray-700); font-size:1.1rem;">Inputs</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="amount">
+                                <span style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                                    <span>Contribution & Frequency <span title="Your recurring contribution amount and how often you invest. Toggle Lumpsum for one-time investment." style="cursor:help; color:var(--muted);">ⓘ</span></span>
+                                    <label style="display:flex; align-items:center; gap:6px; font-weight:normal; cursor:pointer; font-size:0.9rem;">
+                                        <input type="checkbox" id="lumpsumToggle" style="cursor:pointer;">
+                                        <span>Lumpsum</span>
+                                        <span title="Enable Lumpsum mode for a one-time investment instead of recurring contributions. The frequency selector will be disabled in this mode." style="cursor:help; color:var(--muted); font-size:0.85rem;">ⓘ</span>
+                                    </label>
+                                </span>
+                            </label>
+                            <div class="inline">
+                                <input id="amountRange" type="range" min="0" max="100000" step="500" value="25000">
+                                <input id="amount" type="number" min="0" step="1" value="25000" title="Contribution per period">
+                                <select id="frequency" title="How often you invest">
+                                    <option value="monthly" selected>Monthly</option>
+                                    <option value="bi-monthly">Bi-monthly (every 2 months)</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="return">Expected return (per annum, %) <span title="Annualized return assumption applied to each period." style="cursor:help; color:var(--muted);">ⓘ</span></label>
+                            <div class="inline">
+                                <input id="returnRange" type="range" min="0" max="30" step="0.1" value="12">
+                                <input id="return" type="number" min="0" max="100" step="0.1" value="12" title="Expected annual return (%)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Time period <span title="Investment duration with units." style="cursor:help; color:var(--muted);">ⓘ</span></label>
+                            <div class="inline">
+                                <input id="timeRange" type="range" min="1" max="50" step="1" value="10">
+                                <input id="time" type="number" min="1" step="1" value="10" title="How long you invest">
+                                <select id="timeUnit" title="Time unit">
+                                    <option value="months">Months</option>
+                                    <option value="years" selected>Years</option>
+                                    <option value="days">Days</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="inflationInputGroup" style="display:none;">
+                            <label for="inflation">Inflation rate (per annum, %) <span title="Expected annual inflation rate to calculate real value of money. This shows purchasing power erosion over time." style="cursor:help; color:var(--muted);">ⓘ</span></label>
+                            <div class="inline">
+                                <input id="inflationRange" type="range" min="0" max="15" step="0.1" value="7">
+                                <input id="inflation" type="number" min="0" max="100" step="0.1" value="7" title="Expected annual inflation (%)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="margin:0 0 12px 0; color:var(--gray-700); font-size:1.1rem;">Results</h3>
+                    <div class="result-grid">
+                        <div class="result-card" title="Total amount contributed across all periods">
+                            <div class="result-label">Total Invested</div>
+                            <div class="result-value" id="investedOut">$0</div>
+                        </div>
+                        <div class="result-card" title="Projected portfolio value at the end of the horizon">
+                            <div class="result-label">Projected Value</div>
+                            <div class="result-value" id="valueOut">$0</div>
+                        </div>
+                        <div class="result-card" title="Projected value minus total invested">
+                            <div class="result-label">Estimated Gain</div>
+                            <div class="result-value" id="gainOut">$0</div>
+                        </div>
+                        <div class="result-card" title="Your investment time horizon">
+                            <div class="result-label">Investment Tenure</div>
+                            <div class="result-value" id="periodsOut">0</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Inflation Toggle (Compact) -->
+                    <div style="margin-top:16px; display:flex; align-items:center; justify-content:flex-end; gap:12px;">
+                        <span style="color:var(--muted); font-size:0.9rem; font-weight:500;">Compare with Inflation</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="inflationToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div id="inflationComparisonSection" style="margin-top:20px; padding:16px; background:linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius:12px; border:2px solid #cbd5e1; display:none;">
+                        <h3 style="margin:0 0 12px 0; color:var(--gray-700); font-size:1.1rem; display:flex; align-items:center; gap:8px;">
+                            <span>💰</span>
+                            <span>Real Value After Inflation</span>
+                        </h3>
+                        <div class="result-grid">
+                            <div class="result-card" style="cursor:help;" title="Formula: Projected Value ÷ (1 + Inflation Rate)^Periods&#013;&#013;This shows what your future money will be worth in today's purchasing power. For example, ₹54L in 10 years might only buy what ₹28L buys today due to 7% annual inflation.">
+                                <div class="result-label">Projected Value (Inflation Adjusted)</div>
+                                <div class="result-value" id="realValueOut">$0</div>
+                            </div>
+                            <div class="result-card" style="cursor:help;" title="Formula: Inflation-Adjusted Value - Total Invested&#013;&#013;This is your actual profit/loss in today's money. Positive = You gained purchasing power. Negative = Inflation ate more than your investment growth.">
+                                <div class="result-label" id="realGainLabel">Real Gain/Loss</div>
+                                <div class="result-value" id="realGainOut" style="font-weight:700;">$0</div>
+                            </div>
+                        </div>
+                        <div id="inflationIndicator" style="margin-top:16px; padding:14px; border-radius:8px; text-align:center; font-weight:600; font-size:1rem; display:flex; align-items:center; justify-content:center; gap:10px;">
+                            <!-- Dynamic content will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card chart-card">
+            <h2 style="margin-bottom: 10px;">Growth Over Time</h2>
+            <div class="chart-container">
+                <canvas id="sipChart"></canvas>
+            </div>
+            <p style="color: var(--muted); margin-top: 12px; font-size:.9rem; line-height:1.6;">Projected portfolio value vs total contributions over time. Enable inflation comparison to see the orange dashed line showing what your money is actually worth in today's terms.</p>
+        </div>
+
+        <div class="card disclaimer">
+            <strong>Disclaimer:</strong> This SIP calculator provides illustrative projections only and does not constitute financial advice. Actual results may vary.
+            <div style="margin-top:12px; padding-top:12px; border-top:1px solid #e2e8f0;">
+                💡 Have an idea to improve this tool? <a href="https://forms.gle/QzKyMR5wFdhb4Enu5" target="_blank" rel="noopener noreferrer" style="color:#0ea5e9; text-decoration:underline;">Share feedback</a>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal-backdrop" aria-hidden="true">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+                <div class="modal-header">
+                    <h3 id="settingsTitle" style="margin:0; font-size:1rem; color:var(--gray-700);">Settings</h3>
+                    <button id="closeSettings" class="close-btn" aria-label="Close settings">Close</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="margin:0;">
+                        <label for="currency">Currency</label>
+                        <div class="inline">
+                            <select id="currency" aria-label="Currency" style="width:100%; max-width:100%;">
+                                <option value="INR" selected>INR - Indian Rupee (₹)</option>
+                                <option value="USD">USD - US Dollar ($)</option>
+                                <option value="EUR">EUR - Euro (€)</option>
+                                <option value="GBP">GBP - British Pound (£)</option>
+                                <option value="AUD">AUD - Australian Dollar (A$)</option>
+                                <option value="CAD">CAD - Canadian Dollar (C$)</option>
+                                <option value="SGD">SGD - Singapore Dollar (S$)</option>
+                                <option value="JPY">JPY - Japanese Yen (¥)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const $ = (id) => document.getElementById(id);
+            const currencyEl = $('currency');
+            const freqEl = $('frequency');
+            const amountEl = $('amount');
+            const amountRangeEl = $('amountRange');
+            const retEl = $('return');
+            const retRangeEl = $('returnRange');
+            const timeEl = $('time');
+            const timeRangeEl = $('timeRange');
+            const timeUnitEl = $('timeUnit');
+            const lumpsumToggleEl = $('lumpsumToggle');
+            const inflationEl = $('inflation');
+            const inflationRangeEl = $('inflationRange');
+            const inflationToggleEl = $('inflationToggle');
+            const inflationComparisonSection = $('inflationComparisonSection');
+            const inflationInputGroup = $('inflationInputGroup');
+
+            const investedOut = $('investedOut');
+            const valueOut = $('valueOut');
+            const gainOut = $('gainOut');
+            const periodsOut = $('periodsOut');
+            const realValueOut = $('realValueOut');
+            const realGainOut = $('realGainOut');
+            const realGainLabel = $('realGainLabel');
+            const inflationIndicator = $('inflationIndicator');
+
+            const currencyLocale = {
+                INR: { locale: 'en-IN', symbol: 'INR' },
+                USD: { locale: 'en-US', symbol: 'USD' },
+                EUR: { locale: 'de-DE', symbol: 'EUR' },
+                GBP: { locale: 'en-GB', symbol: 'GBP' },
+                AUD: { locale: 'en-AU', symbol: 'AUD' },
+                CAD: { locale: 'en-CA', symbol: 'CAD' },
+                SGD: { locale: 'en-SG', symbol: 'SGD' },
+                JPY: { locale: 'ja-JP', symbol: 'JPY' }
+            };
+
+            function fmt(n) {
+                const code = currencyEl.value;
+                const c = currencyLocale[code] || currencyLocale.USD;
+                return new Intl.NumberFormat(c.locale, { style: 'currency', currency: c.symbol, maximumFractionDigits: 0 }).format(n || 0);
+            }
+
+            function periodsPerYear(freq) {
+                if (freq === 'monthly') return 12;
+                if (freq === 'bi-monthly') return 6;
+                if (freq === 'quarterly') return 4;
+                if (freq === 'yearly') return 1;
+                return 12;
+            }
+
+            function totalYears(value, unit) {
+                if (unit === 'years') return value;
+                if (unit === 'months') return value / 12;
+                if (unit === 'days') return value / 365;
+                return value / 12;
+            }
+
+            function sync(a, b) {
+                a.addEventListener('input', () => { b.value = a.value; compute(); });
+                b.addEventListener('input', () => { a.value = b.value; compute(); });
+            }
+            sync(amountRangeEl, amountEl);
+            sync(retRangeEl, retEl);
+            sync(timeRangeEl, timeEl);
+            sync(inflationRangeEl, inflationEl);
+
+            [currencyEl, freqEl, timeUnitEl].forEach(el => el.addEventListener('change', compute));
+            
+            // Handle lumpsum toggle
+            lumpsumToggleEl.addEventListener('change', function() {
+                if (lumpsumToggleEl.checked) {
+                    freqEl.disabled = true;
+                    freqEl.style.opacity = '0.5';
+                    freqEl.style.cursor = 'not-allowed';
+                } else {
+                    freqEl.disabled = false;
+                    freqEl.style.opacity = '1';
+                    freqEl.style.cursor = 'pointer';
+                }
+                compute();
+            });
+
+            // Handle inflation comparison toggle
+            inflationToggleEl.addEventListener('change', function() {
+                if (inflationToggleEl.checked) {
+                    inflationComparisonSection.style.display = 'block';
+                    inflationInputGroup.style.display = 'block';
+                } else {
+                    inflationComparisonSection.style.display = 'none';
+                    inflationInputGroup.style.display = 'none';
+                }
+                compute();
+            });
+
+            let chart;
+            function ensureChart() {
+                if (chart) return chart;
+                const ctx = document.getElementById('sipChart');
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: [], datasets: [
+                        { label: 'Projected Value', data: [], borderColor: '#0ea5e9', backgroundColor: 'rgba(14,165,233,.15)', tension: .3, fill: true, borderWidth: 2 },
+                        { label: 'Real Value (Inflation-Adjusted)', data: [], borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.12)', tension: .3, fill: false, borderWidth: 2, borderDash: [5, 5] },
+                        { label: 'Total Invested', data: [], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,.12)', tension: .3, fill: true, borderWidth: 2 }
+                    ]},
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        interaction: { intersect: false, mode: 'index' },
+                        plugins: { 
+                            legend: { 
+                                position: 'top', 
+                                labels: { 
+                                    padding: 15, 
+                                    font: { size: 13, weight: '600' },
+                                    filter: function(item, chart) {
+                                        // Hide inflation-adjusted line from legend if toggle is off
+                                        if (item.datasetIndex === 1) {
+                                            return inflationToggleEl.checked;
+                                        }
+                                        return true;
+                                    }
+                                } 
+                            },
+                            tooltip: { 
+                                backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                                padding: 12,
+                                titleFont: { size: 14, weight: '700' },
+                                bodyFont: { size: 13 },
+                                callbacks: { 
+                                    title: (tooltipItems) => {
+                                        // Show period number with unit label
+                                        const timeUnit = timeUnitEl.value;
+                                        const period = tooltipItems[0].label;
+                                        let unit = '';
+                                        if (timeUnit === 'years') unit = period == 1 ? 'Year' : 'Years';
+                                        else if (timeUnit === 'months') unit = period == 1 ? 'Month' : 'Months';
+                                        else if (timeUnit === 'days') unit = period == 1 ? 'Day' : 'Days';
+                                        return period + ' ' + unit;
+                                    },
+                                    label: (ctx) => ctx.dataset.label + ': ' + fmt(ctx.parsed.y) 
+                                } 
+                            } 
+                        },
+                        scales: { 
+                            x: { 
+                                title: { display: true, text: 'Months', font: { size: 13, weight: '600' } },
+                                grid: { display: false },
+                                ticks: { maxTicksLimit: 12, font: { size: 11 } }
+                            }, 
+                            y: { 
+                                beginAtZero: true, 
+                                ticks: { callback: (v) => fmt(v), font: { size: 11 } },
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            } 
+                        }
+                    }
+                });
+                return chart;
+            }
+
+            function compute() {
+                const P = Math.max(0, Number(amountEl.value || 0));
+                const annual = Math.max(0, Number(retEl.value || 0)) / 100;
+                const isLumpsum = lumpsumToggleEl.checked;
+                const freq = freqEl.value;
+                const ppy = periodsPerYear(freq);
+                const years = Math.max(0, totalYears(Number(timeEl.value || 0), timeUnitEl.value));
+                const n = Math.floor(ppy * years);
+                const r = Math.pow(1 + annual, 1 / ppy) - 1;
+
+                let fv, invested;
+                
+                if (isLumpsum) {
+                    // Lumpsum: FV = P * (1 + r)^n
+                    fv = P * Math.pow(1 + r, n);
+                    invested = P;
+                } else {
+                    // SIP: FV = P * [((1 + r)^n - 1) / r] * (1 + r)
+                    if (r === 0) {
+                        fv = P * n;
+                    } else {
+                        fv = P * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+                    }
+                    invested = P * n;
+                }
+                
+                const gain = Math.max(0, fv - invested);
+                const gainPercentage = invested > 0 ? ((gain / invested) * 100).toFixed(2) : 0;
+
+                investedOut.textContent = fmt(invested);
+                valueOut.textContent = fmt(fv);
+                gainOut.innerHTML = `${fmt(gain)}<br><span style="font-size:0.85rem; opacity:0.9;">(+${gainPercentage}%)</span>`;
+                
+                const timeUnit = timeUnitEl.value;
+                const timeValue = Number(timeEl.value || 0);
+                const unitLabel = timeUnit === 'years' ? (timeValue === 1 ? 'Year' : 'Years') : (timeUnit === 'days' ? (timeValue === 1 ? 'Day' : 'Days') : (timeValue === 1 ? 'Month' : 'Months'));
+                periodsOut.textContent = timeValue.toLocaleString() + ' ' + unitLabel;
+
+                // Inflation-adjusted calculations (only if toggle is enabled)
+                if (inflationToggleEl.checked) {
+                    const inflationRate = Math.max(0, Number(inflationEl.value || 0)) / 100;
+                    const inflationPerPeriod = Math.pow(1 + inflationRate, 1 / ppy) - 1;
+                    
+                    // Real value = FV / (1 + inflation)^n (what your money is actually worth in today's terms)
+                    const realValue = fv / Math.pow(1 + inflationPerPeriod, n);
+                    
+                    // Real gain = Real value - Total invested (your actual profit in today's money)
+                    const realGain = realValue - invested;
+                    
+                    // Inflation impact = How much value inflation ate away
+                    const inflationImpact = fv - realValue;
+                    
+                    realValueOut.textContent = fmt(realValue);
+                    
+                    // Calculate percentage gain/loss
+                    const realGainPercentage = ((realGain / invested) * 100).toFixed(2);
+                    const percentageSign = realGain >= 0 ? '+' : '';
+                    
+                    // Display with percentage
+                    realGainOut.innerHTML = `${fmt(realGain)}<br><span style="font-size:0.85rem; opacity:0.9;">(${percentageSign}${realGainPercentage}%)</span>`;
+                    
+                    // Dynamic label and color for Real Gain/Loss
+                    if (realGain >= 0) {
+                        realGainLabel.textContent = 'Real Gain';
+                        realGainLabel.style.color = '#10b981';
+                        realGainOut.style.color = '#10b981'; // Green for positive
+                    } else {
+                        realGainLabel.textContent = 'Real Loss';
+                        realGainLabel.style.color = '#ef4444';
+                        realGainOut.style.color = '#ef4444'; // Red for negative
+                    }
+                    
+                    // Simple truth: Are you making or losing money in real terms?
+                    const actuallyWinning = realGain > 0;
+                    
+                    // Clear messaging based ONLY on real gain/loss
+                    const fvLakhs = (fv / 100000).toFixed(1);
+                    const realValueLakhs = (realValue / 100000).toFixed(1);
+                    
+                    if (actuallyWinning) {
+                        inflationIndicator.innerHTML = `
+                            <span style="font-size:2rem;">🎉</span>
+                            <div style="text-align:left;">
+                                <div style="color:#10b981; font-size:1.1rem; margin-bottom:8px;">✓ You're Making Real Profit!</div>
+                                <div style="font-size:0.9rem; color:#059669; line-height:1.6;">
+                                    <strong>The Bottom Line:</strong><br>
+                                    • You invest ${fmt(invested)} and get ${fmt(fv)} in ${years.toFixed(0)} years<br>
+                                    • Although your money grows to ${fmt(fv)}, it will buy you only what ${fmt(realValue)} can buy today — due to inflation<br>
+                                    • Your real profit (in today's money): ${fmt(realGain)} ✅<br>
+                                    • Great! Your returns beat inflation enough to make actual profit 💪
+                                </div>
+                            </div>
+                        `;
+                        inflationIndicator.style.background = 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)';
+                        inflationIndicator.style.border = '2px solid #10b981';
+                    } else {
+                        // Losing money in real terms
+                        inflationIndicator.innerHTML = `
+                            <span style="font-size:2rem;">⚠️</span>
+                            <div style="text-align:left;">
+                                <div style="color:#ef4444; font-size:1.1rem; margin-bottom:8px;">⚠️ You're Losing Money in Real Terms</div>
+                                <div style="font-size:0.9rem; color:#dc2626; line-height:1.6;">
+                                    <strong>The Bottom Line:</strong><br>
+                                    • You invest ${fmt(invested)} and get ${fmt(fv)} in ${years.toFixed(0)} years<br>
+                                    • Although your money grows to ${fmt(fv)}, it will buy you only what ${fmt(realValue)} can buy today — due to inflation<br>
+                                    • Your real loss (in today's money): ${fmt(Math.abs(realGain))} (${realGainPercentage}%) ❌<br>
+                                    • Problem: ${(inflationRate * 100).toFixed(1)}% inflation eats away too much of your ${(annual * 100).toFixed(1)}% returns<br>
+                                    • <strong>Solution: Increase returns OR invest longer to beat inflation</strong>
+                                </div>
+                            </div>
+                        `;
+                        inflationIndicator.style.background = 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)';
+                        inflationIndicator.style.border = '2px solid #ef4444';
+                    }
+                }
+
+                const labels = [];
+                const proj = [];
+                const realVal = [];
+                const contrib = [];
+                
+                // Calculate inflation per period for chart
+                const inflationRate = Math.max(0, Number(inflationEl.value || 0)) / 100;
+                const inflationPerPeriod = Math.pow(1 + inflationRate, 1 / ppy) - 1;
+                
+                if (isLumpsum) {
+                    // Lumpsum mode: principal stays constant, only growth compounds
+                    let runningFV = P;
+                    for (let i = 1; i <= n; i++) {
+                        runningFV = runningFV * (1 + r);
+                        proj.push(runningFV);
+                        // Real value at period i (only if inflation toggle is on)
+                        if (inflationToggleEl.checked) {
+                            realVal.push(runningFV / Math.pow(1 + inflationPerPeriod, i));
+                        }
+                        contrib.push(P);
+                        labels.push(i);
+                    }
+                } else {
+                    // SIP mode: periodic contributions with compounding
+                    let runningFV = 0;
+                    for (let i = 1; i <= n; i++) {
+                        runningFV = runningFV * (1 + r) + P;
+                        proj.push(runningFV);
+                        // Real value at period i (only if inflation toggle is on)
+                        if (inflationToggleEl.checked) {
+                            realVal.push(runningFV / Math.pow(1 + inflationPerPeriod, i));
+                        }
+                        contrib.push(P * i);
+                        labels.push(i);
+                    }
+                }
+
+                const ch = ensureChart();
+                ch.data.labels = labels;
+                ch.data.datasets[0].data = proj;
+                ch.data.datasets[1].data = inflationToggleEl.checked ? realVal : [];
+                ch.data.datasets[2].data = contrib;
+                
+                // Update chart labels and visibility based on mode
+                ch.data.datasets[0].label = 'Projected Value';
+                ch.data.datasets[1].label = 'Real Value (Inflation-Adjusted)';
+                ch.data.datasets[1].hidden = !inflationToggleEl.checked;
+                ch.data.datasets[2].label = isLumpsum ? 'Principal Amount' : 'Total Invested';
+                
+                if (ch.options && ch.options.scales && ch.options.scales.x && ch.options.scales.x.title) {
+                    ch.options.scales.x.title.text = unitLabel;
+                }
+                ch.update();
+            }
+
+            compute();
+
+            const settingsBtn = $('settingsBtn');
+            const settingsModal = $('settingsModal');
+            const closeSettings = $('closeSettings');
+            function openModal(){ settingsModal.style.display = 'flex'; settingsModal.setAttribute('aria-hidden','false'); }
+            function closeModal(){ settingsModal.style.display = 'none'; settingsModal.setAttribute('aria-hidden','true'); }
+            if (settingsBtn) settingsBtn.addEventListener('click', openModal);
+            if (closeSettings) closeSettings.addEventListener('click', closeModal);
+            if (settingsModal) settingsModal.addEventListener('click', function(e){ if (e.target === settingsModal) closeModal(); });
+            document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+        })();
+    </script>
+
+    <script src="js/chatbotWidget.js"></script>
+    <script>
+        if (window.YikesAIChatbot && !document.querySelector('.gs-chatbot-widget')) {
+            window.yikesAIChatbot = new YikesAIChatbot({ apiKey: 'AIzaSyB4ix_spZPsxIw_A3T6X0y6dc33fCmkvqk', position: 'bottom-right' });
+        }
+    </script>
+</body>
+</html>
