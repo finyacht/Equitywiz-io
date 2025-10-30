@@ -327,8 +327,6 @@
             
             <div class="ai-actions">
                 <button id="aiCalculateGoal" class="btn-secondary">💰 Calculate Required SIP</button>
-                <button id="aiCompareScenarios" class="btn-secondary">📊 Compare 3 Scenarios</button>
-                <button id="aiOptimizePlan" class="btn-secondary">⚡ Optimize My Plan</button>
             </div>
             
             <div id="aiGoalOutput" class="ai-output"></div>
@@ -890,58 +888,6 @@ TASK:
 7. Is this goal realistic given the ${expectedReturn}% return assumption?
 
 CRITICAL: Use EXACTLY ${expectedReturn}% returns - this is what the user explicitly specified. Don't recalculate with different rates!`);
-            });
-            
-            document.getElementById('aiCompareScenarios').addEventListener('click', () => {
-                if (!validateGoalInputs()) return;
-                
-                const rawAmount = goalAmountEl.dataset.rawValue || goalAmountEl.value.replace(/,/g, '');
-                const amount = parseFloat(rawAmount);
-                const timeframe = parseFloat(goalTimeframeEl.value);
-                const purpose = goalPurposeEl.value || 'my goal';
-                const expectedReturn = parseFloat(goalExpectedReturnEl.value || '12');
-                const context = getCurrentContext();
-                
-                // Calculate scenario returns based on user's base return
-                const conservativeReturn = Math.max(6, expectedReturn - 3);
-                const baseReturn = expectedReturn;
-                const aggressiveReturn = Math.min(18, expectedReturn + 3);
-                
-                callGeminiGoal(`Compare 3 different return scenarios to reach ${amount} ${context.currency} in ${timeframe} years for ${purpose}:
-
-Scenario 1: Conservative (${conservativeReturn}% returns)
-Scenario 2: Base Case (${baseReturn}% returns) ← Your current assumption
-Scenario 3: Aggressive (${aggressiveReturn}% returns)
-
-For each scenario, show:
-• Required monthly SIP
-• Total invested
-• Wealth created
-• Risk level (Low/Medium/High)
-• Suitable investment types
-
-Then recommend which scenario is most realistic. Format clearly with numbers aligned.`);
-            });
-            
-            document.getElementById('aiOptimizePlan').addEventListener('click', () => {
-                const context = getCurrentContext();
-                
-                callGeminiGoal(`Analyze my current SIP plan and suggest optimizations:
-
-Current Plan:
-• SIP Amount: ${context.currentSIP} ${context.currency}
-• Frequency: ${context.frequency}
-• Expected Return: ${context.expectedReturn}%
-• Time Period: ${context.timePeriod} ${context.timeUnit}
-• Inflation: ${context.inflationRate}%
-
-Provide 3-4 specific optimization strategies:
-1. How to increase returns without increasing risk significantly
-2. Tax-efficient investment options
-3. Should I use step-up SIPs (annual increase)?
-4. Asset allocation recommendations
-
-Be specific with actionable advice.`, false);
             });
             
             document.getElementById('aiGoalAskBtn').addEventListener('click', () => {
