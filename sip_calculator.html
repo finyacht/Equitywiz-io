@@ -109,6 +109,26 @@
             .toggle-slider:before { height: 20px; width: 20px; }
             .toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); }
         }
+        
+        /* AI Goal Planning Styles */
+        .ai-card { background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border: 2px solid #fbbf24; }
+        .ai-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+        .btn-secondary { background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(14,165,233,0.25); }
+        .btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(14,165,233,0.35); }
+        .btn-secondary:active { transform: translateY(0); }
+        .ai-output { background: #fff; border: 2px solid #e2e8f0; border-radius: 10px; padding: 18px; min-height: 80px; color: var(--text); line-height: 1.7; font-size: 0.95rem; white-space: pre-wrap; }
+        .ai-output:empty::before { content: "🎯 Ready to plan your financial goal! Click a button above to get started."; color: var(--muted); font-style: italic; }
+        .ai-inline { display: flex; gap: 10px; margin-top: 12px; align-items: stretch; }
+        .ai-inline input { flex: 1; padding: 12px; border: 2px solid var(--gray-300); border-radius: 8px; font-size: 0.95rem; }
+        .ai-inline input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(14,165,233,0.1); }
+        .spinner { display: none; text-align: center; margin-top: 12px; color: var(--primary-color); font-weight: 600; animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .goal-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+        @media (max-width: 560px) { .goal-inputs { grid-template-columns: 1fr; } }
+        .goal-input-group { background: #fff; padding: 12px; border-radius: 8px; border: 2px solid #e2e8f0; }
+        .goal-input-group label { display: block; font-weight: 600; color: var(--muted); margin-bottom: 6px; font-size: 0.85rem; }
+        .goal-input-group input, .goal-input-group select { width: 100%; padding: 10px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 0.95rem; box-sizing: border-box; }
+        .goal-input-group input::placeholder { color: #94a3b8; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -259,6 +279,62 @@
                 <canvas id="sipChart"></canvas>
             </div>
             <p style="color: var(--muted); margin-top: 12px; font-size:.9rem; line-height:1.6;">Projected portfolio value vs total contributions over time. Enable inflation comparison to see the orange dashed line showing what your money is actually worth in today's terms.</p>
+        </div>
+
+        <!-- AI Goal-Based Planning -->
+        <div class="card ai-card">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <span style="font-size:2rem;">🎯</span>
+                <h2 style="margin:0;">AI Goal-Based Planning</h2>
+            </div>
+            <p style="margin:8px 0 16px 0; color:var(--gray-700); line-height:1.6;">
+                <strong>Start with your goal, not guesswork.</strong> Dream of a home? Planning your child's education? Building retirement wealth? 
+                Tell AI your goal, and it will calculate the <em>exact monthly SIP</em> you need—adjusted for inflation, time, and market realities. 
+                <span style="color:#0ea5e9; font-weight:600;">Try the example below, then customize it!</span>
+            </p>
+            
+            <div class="goal-inputs">
+                <div class="goal-input-group">
+                    <label for="goalAmount">Target Amount 🎯</label>
+                    <input id="goalAmount" type="number" value="10000000" min="0" step="100000" />
+                </div>
+                <div class="goal-input-group">
+                    <label for="goalTimeframe">Time to Achieve (Years) ⏱️</label>
+                    <input id="goalTimeframe" type="number" value="15" min="1" max="50" step="1" />
+                </div>
+                <div class="goal-input-group">
+                    <label for="goalPurpose">Purpose (Optional) 💭</label>
+                    <input id="goalPurpose" type="text" value="Child's education abroad" maxlength="100" />
+                </div>
+                <div class="goal-input-group">
+                    <label for="goalRiskProfile">Risk Tolerance ⚖️</label>
+                    <select id="goalRiskProfile">
+                        <option value="conservative">Conservative (8-10% returns)</option>
+                        <option value="moderate" selected>Moderate (10-12% returns)</option>
+                        <option value="aggressive">Aggressive (12-15% returns)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="background:#fff; padding:10px 14px; border-radius:8px; border-left:4px solid #0ea5e9; margin:12px 0; font-size:0.9rem; color:#475569;">
+                <strong>💡 Quick Start:</strong> The example shows planning for ₹1 crore (₹1,00,00,000) in 15 years for child's education. 
+                Click <strong>"Calculate Required SIP"</strong> to see the magic! Then change the numbers to match YOUR dream.
+            </div>
+            
+            <div class="ai-actions">
+                <button id="aiCalculateGoal" class="btn-secondary">💰 Calculate Required SIP</button>
+                <button id="aiCompareScenarios" class="btn-secondary">📊 Compare 3 Scenarios</button>
+                <button id="aiOptimizePlan" class="btn-secondary">⚡ Optimize My Plan</button>
+            </div>
+            
+            <div id="aiGoalOutput" class="ai-output"></div>
+            
+            <div class="ai-inline">
+                <input id="aiGoalAsk" type="text" placeholder="Ask anything about your goal (e.g., What if I increase SIP by 10% every year?)" />
+                <button id="aiGoalAskBtn" class="btn-secondary">Ask</button>
+            </div>
+            
+            <div id="aiGoalSpinner" class="spinner">🤔 AI is crunching your numbers...</div>
         </div>
 
         <div class="card disclaimer">
@@ -642,6 +718,274 @@
             if (closeSettings) closeSettings.addEventListener('click', closeModal);
             if (settingsModal) settingsModal.addEventListener('click', function(e){ if (e.target === settingsModal) closeModal(); });
             document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+        })();
+    </script>
+
+    <script>
+        // AI Goal-Based Planning
+        (function() {
+            const goalAmountEl = document.getElementById('goalAmount');
+            const goalTimeframeEl = document.getElementById('goalTimeframe');
+            const goalPurposeEl = document.getElementById('goalPurpose');
+            const goalRiskProfileEl = document.getElementById('goalRiskProfile');
+            const aiGoalOutput = document.getElementById('aiGoalOutput');
+            const aiGoalSpinner = document.getElementById('aiGoalSpinner');
+            
+            // Helper to get current calculator context
+            function getCurrentContext() {
+                const currencyEl = document.getElementById('currency');
+                const amountEl = document.getElementById('amount');
+                const frequencyEl = document.getElementById('frequency');
+                const returnEl = document.getElementById('return');
+                const timeEl = document.getElementById('time');
+                const timeUnitEl = document.getElementById('timeUnit');
+                const inflationEl = document.getElementById('inflation');
+                const inflationToggleEl = document.getElementById('inflationToggle');
+                
+                return {
+                    currency: currencyEl ? currencyEl.value : 'INR',
+                    currentSIP: amountEl ? amountEl.value : '0',
+                    frequency: frequencyEl ? frequencyEl.value : 'monthly',
+                    expectedReturn: returnEl ? returnEl.value : '12',
+                    timePeriod: timeEl ? timeEl.value : '10',
+                    timeUnit: timeUnitEl ? timeUnitEl.value : 'years',
+                    inflationRate: inflationEl ? inflationEl.value : '7',
+                    inflationEnabled: inflationToggleEl ? inflationToggleEl.checked : false
+                };
+            }
+            
+            // Call Gemini AI via Netlify function
+            async function callGeminiGoal(prompt, includeGoalInputs = true) {
+                const spinner = aiGoalSpinner;
+                const output = aiGoalOutput;
+                
+                try {
+                    spinner.style.display = 'block';
+                    output.textContent = '';
+                    
+                    const context = getCurrentContext();
+                    let contextData = { ...context };
+                    
+                    if (includeGoalInputs) {
+                        contextData.goal = {
+                            targetAmount: goalAmountEl.value || 'Not specified',
+                            timeframe: goalTimeframeEl.value || 'Not specified',
+                            purpose: goalPurposeEl.value || 'Not specified',
+                            riskProfile: goalRiskProfileEl.value || 'moderate'
+                        };
+                    }
+                    
+                    const systemContext = `You are a financial planning AI assistant helping users achieve their investment goals through SIP (Systematic Investment Plan).
+
+IMPORTANT RESPONSE RULES:
+1. Be direct and actionable - start with the answer, not preambles
+2. Use bullet points (•) for clarity
+3. Always show specific numbers with currency symbols
+4. Format large numbers with commas (Indian style for INR: 10,00,000)
+5. When calculating required SIP, show the formula/logic briefly
+6. Consider inflation impact in all calculations
+7. Provide 2-3 actionable recommendations
+8. Keep responses concise (under 250 words)
+9. Use emojis sparingly for emphasis (✅ ⚠️ 💡)
+
+CALCULATION GUIDELINES:
+- Conservative returns: 8-10% p.a.
+- Moderate returns: 10-12% p.a.
+- Aggressive returns: 12-15% p.a.
+- Default inflation: 7% p.a. (India), 3% p.a. (US/Global)
+- Use compound interest formula: FV = P × [(1+r)^n - 1] / r × (1+r)
+- For goal planning, work backwards: Required SIP = Goal / [(1+r)^n - 1] / r × (1+r)
+
+Current Calculator Context:
+${JSON.stringify(contextData, null, 2)}`;
+
+                    const res = await fetch('/.netlify/functions/gemini-chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `${systemContext}\n\nUser Query: ${prompt}`
+                        })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (res.ok && data.response) {
+                        output.textContent = data.response;
+                    } else {
+                        output.textContent = '⚠️ AI is temporarily unavailable. Please try again in a moment.';
+                    }
+                } catch (e) {
+                    console.error('AI Goal Planning Error:', e);
+                    output.textContent = '❌ Unable to connect to AI service. Please check your connection and try again.';
+                } finally {
+                    spinner.style.display = 'none';
+                }
+            }
+            
+            // Validation helper
+            function validateGoalInputs() {
+                // Get raw value (without commas)
+                const rawAmount = goalAmountEl.dataset.rawValue || goalAmountEl.value.replace(/,/g, '');
+                const amount = parseFloat(rawAmount);
+                const timeframe = parseFloat(goalTimeframeEl.value);
+                
+                if (!amount || amount <= 0) {
+                    aiGoalOutput.textContent = '⚠️ Please enter a valid target amount (e.g., 10000000 for ₹1 crore)';
+                    return false;
+                }
+                
+                if (!timeframe || timeframe <= 0 || timeframe > 50) {
+                    aiGoalOutput.textContent = '⚠️ Please enter a valid timeframe between 1 and 50 years';
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // Event Listeners
+            document.getElementById('aiCalculateGoal').addEventListener('click', () => {
+                if (!validateGoalInputs()) return;
+                
+                const rawAmount = goalAmountEl.dataset.rawValue || goalAmountEl.value.replace(/,/g, '');
+                const amount = parseFloat(rawAmount);
+                const timeframe = parseFloat(goalTimeframeEl.value);
+                const purpose = goalPurposeEl.value || 'my financial goal';
+                const risk = goalRiskProfileEl.value;
+                
+                callGeminiGoal(`I want to accumulate ${amount} in ${timeframe} years for ${purpose}. My risk tolerance is ${risk}.
+
+Calculate:
+1. Required monthly SIP (considering 7% inflation)
+2. Total amount I'll invest
+3. Wealth created (gain)
+4. Real value after inflation
+5. Is this goal realistic? Any red flags?
+
+Be specific with numbers and show the monthly SIP amount prominently.`);
+            });
+            
+            document.getElementById('aiCompareScenarios').addEventListener('click', () => {
+                if (!validateGoalInputs()) return;
+                
+                const rawAmount = goalAmountEl.dataset.rawValue || goalAmountEl.value.replace(/,/g, '');
+                const amount = parseFloat(rawAmount);
+                const timeframe = parseFloat(goalTimeframeEl.value);
+                const purpose = goalPurposeEl.value || 'my goal';
+                
+                callGeminiGoal(`Compare 3 different SIP scenarios to reach ${amount} in ${timeframe} years for ${purpose}:
+
+Scenario 1: Conservative approach (8-9% returns)
+Scenario 2: Moderate approach (11-12% returns)  
+Scenario 3: Aggressive approach (14-15% returns)
+
+For each scenario, show:
+• Required monthly SIP
+• Total invested
+• Risk level
+• Suitable investment types
+
+Then recommend which scenario fits best and why. Format as a comparison table if possible.`);
+            });
+            
+            document.getElementById('aiOptimizePlan').addEventListener('click', () => {
+                const context = getCurrentContext();
+                
+                callGeminiGoal(`Analyze my current SIP plan and suggest optimizations:
+
+Current Plan:
+• SIP Amount: ${context.currentSIP} ${context.currency}
+• Frequency: ${context.frequency}
+• Expected Return: ${context.expectedReturn}%
+• Time Period: ${context.timePeriod} ${context.timeUnit}
+• Inflation: ${context.inflationRate}%
+
+Provide 3-4 specific optimization strategies:
+1. How to increase returns without increasing risk significantly
+2. Tax-efficient investment options
+3. Should I use step-up SIPs (annual increase)?
+4. Asset allocation recommendations
+
+Be specific with actionable advice.`, false);
+            });
+            
+            document.getElementById('aiGoalAskBtn').addEventListener('click', () => {
+                const query = document.getElementById('aiGoalAsk').value.trim();
+                if (!query) {
+                    aiGoalOutput.textContent = '💭 Please type your question first!';
+                    return;
+                }
+                
+                callGeminiGoal(query, true);
+                document.getElementById('aiGoalAsk').value = ''; // Clear input
+            });
+            
+            // Allow Enter key in ask input
+            document.getElementById('aiGoalAsk').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('aiGoalAskBtn').click();
+                }
+            });
+            
+            // Format Goal Amount with locale-specific comma separators
+            function formatGoalAmount() {
+                const currencyEl = document.getElementById('currency');
+                const currency = currencyEl ? currencyEl.value : 'INR';
+                const rawValue = goalAmountEl.value.replace(/,/g, ''); // Remove existing commas
+                
+                if (!rawValue || isNaN(rawValue)) return;
+                
+                const numValue = parseFloat(rawValue);
+                let locale = 'en-IN'; // Default to Indian format
+                
+                // Map currency to locale
+                const localeMap = {
+                    'INR': 'en-IN',  // 1,00,00,000
+                    'USD': 'en-US',  // 10,000,000
+                    'EUR': 'de-DE',  // 10.000.000
+                    'GBP': 'en-GB',  // 10,000,000
+                    'AUD': 'en-AU',  // 10,000,000
+                    'CAD': 'en-CA',  // 10,000,000
+                    'SGD': 'en-SG',  // 10,000,000
+                    'JPY': 'ja-JP'   // 10,000,000
+                };
+                
+                locale = localeMap[currency] || 'en-US';
+                
+                // Format without decimals
+                const formatted = new Intl.NumberFormat(locale, {
+                    maximumFractionDigits: 0,
+                    useGrouping: true
+                }).format(numValue);
+                
+                // Store the raw value as a data attribute
+                goalAmountEl.dataset.rawValue = rawValue;
+                goalAmountEl.value = formatted;
+            }
+            
+            // Remove commas on focus (for editing)
+            goalAmountEl.addEventListener('focus', () => {
+                const rawValue = goalAmountEl.dataset.rawValue || goalAmountEl.value.replace(/,/g, '');
+                goalAmountEl.value = rawValue;
+            });
+            
+            // Format on blur
+            goalAmountEl.addEventListener('blur', formatGoalAmount);
+            
+            // Listen for currency changes to reformat
+            const currencyEl = document.getElementById('currency');
+            if (currencyEl) {
+                currencyEl.addEventListener('change', () => {
+                    if (goalAmountEl.value) {
+                        formatGoalAmount();
+                    }
+                });
+            }
+            
+            // Format on page load
+            if (goalAmountEl.value) {
+                goalAmountEl.dataset.rawValue = goalAmountEl.value;
+                formatGoalAmount();
+            }
         })();
     </script>
 
