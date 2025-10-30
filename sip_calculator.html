@@ -296,7 +296,7 @@
             <div class="goal-inputs">
                 <div class="goal-input-group">
                     <label for="goalAmount">Target Amount 🎯</label>
-                    <input id="goalAmount" type="number" value="10000000" min="0" step="100000" />
+                    <input id="goalAmount" type="text" inputmode="numeric" value="10000000" />
                 </div>
                 <div class="goal-input-group">
                     <label for="goalTimeframe">Time to Achieve (Years) ⏱️</label>
@@ -930,11 +930,20 @@ Be specific with actionable advice.`, false);
             function formatGoalAmount() {
                 const currencyEl = document.getElementById('currency');
                 const currency = currencyEl ? currencyEl.value : 'INR';
-                const rawValue = goalAmountEl.value.replace(/,/g, ''); // Remove existing commas
+                const rawValue = goalAmountEl.value.replace(/[,\.\s]/g, ''); // Remove commas, periods, spaces
                 
-                if (!rawValue || isNaN(rawValue)) return;
+                // If empty or invalid, keep the current value and don't format
+                if (!rawValue || rawValue.trim() === '' || isNaN(rawValue)) {
+                    return;
+                }
                 
                 const numValue = parseFloat(rawValue);
+                
+                // If it's 0 or invalid number, don't format
+                if (numValue === 0 || !isFinite(numValue)) {
+                    return;
+                }
+                
                 let locale = 'en-IN'; // Default to Indian format
                 
                 // Map currency to locale
@@ -964,8 +973,22 @@ Be specific with actionable advice.`, false);
             
             // Remove commas on focus (for editing)
             goalAmountEl.addEventListener('focus', () => {
-                const rawValue = goalAmountEl.dataset.rawValue || goalAmountEl.value.replace(/,/g, '');
-                goalAmountEl.value = rawValue;
+                const rawValue = goalAmountEl.dataset.rawValue || goalAmountEl.value.replace(/[,\.\s]/g, '');
+                if (rawValue && rawValue !== '') {
+                    goalAmountEl.value = rawValue;
+                }
+            });
+            
+            // Allow only numbers during input
+            goalAmountEl.addEventListener('input', (e) => {
+                const cursorPos = e.target.selectionStart;
+                const oldValue = e.target.value;
+                const newValue = oldValue.replace(/[^\d]/g, ''); // Keep only digits
+                
+                if (oldValue !== newValue) {
+                    e.target.value = newValue;
+                    e.target.setSelectionRange(cursorPos - 1, cursorPos - 1);
+                }
             });
             
             // Format on blur
