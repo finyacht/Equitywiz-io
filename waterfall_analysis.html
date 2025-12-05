@@ -529,7 +529,7 @@
             <h2>Waterfall Results</h2>
             <div>
                 <label for="exitAmount">Exit Amount ($)</label>
-                <input id="exitAmount" type="number" min="0" value="10000000">
+                <input id="exitAmount" class="numeric-input" type="text" inputmode="decimal" value="10000000">
             </div>
         </div>
         
@@ -615,6 +615,50 @@
         let summaryChart = null;
         let exitDistributionChart = null;
         
+        // Numeric formatting helpers
+        function parseNumber(value) {
+            const cleaned = String(value ?? '').replace(/,/g, '').trim();
+            const num = parseFloat(cleaned);
+            return isNaN(num) ? 0 : num;
+        }
+
+        function formatNumberInputElement(input) {
+            const cleaned = String(input.value ?? '').replace(/,/g, '').trim();
+            if (cleaned === '') {
+                input.value = '';
+                return;
+            }
+            const num = parseFloat(cleaned);
+            input.value = isNaN(num) ? '' : num.toLocaleString('en-US');
+        }
+
+        function attachNumericFormatting(root = document) {
+            const inputs = root.querySelectorAll('.numeric-input');
+            inputs.forEach(input => {
+                if (input.dataset.numericFormatterAttached) return;
+                input.dataset.numericFormatterAttached = 'true';
+
+                // Clean non-numeric characters except digits, dot, comma, minus
+                input.addEventListener('input', () => {
+                    const cleaned = input.value.replace(/[^\d.,-]/g, '');
+                    if (cleaned !== input.value) {
+                        input.value = cleaned;
+                    }
+                });
+
+                input.addEventListener('focus', () => {
+                    input.value = input.value.replace(/,/g, '');
+                    // Defer select to allow focus to settle
+                    setTimeout(() => input.select(), 0);
+                });
+
+                input.addEventListener('blur', () => formatNumberInputElement(input));
+
+                // Initial formatting pass
+                formatNumberInputElement(input);
+            });
+        }
+
         // DOM Elements
         const shareClassesTableBody = document.querySelector('#shareClassesTable tbody');
         const transactionsTableBody = document.querySelector('#transactionsTable tbody');
@@ -648,6 +692,8 @@
             
             renderShareClasses();
             renderTransactions();
+            attachNumericFormatting();
+            formatNumberInputElement(document.getElementById('exitAmount'));
             updateWaterfallAnalysis();
         }
 
@@ -687,7 +733,7 @@
         
         // Update exit amount
         function updateExitAmount() {
-            exitAmount = parseFloat(document.getElementById('exitAmount').value) || 0;
+            exitAmount = parseNumber(document.getElementById('exitAmount').value) || 0;
             updateWaterfallAnalysis();
         }
         
@@ -706,9 +752,9 @@
                             <option value="common" ${sc.type === 'common' ? 'selected' : ''}>Common</option>
                         </select>
                     </td>
-                    <td><input type="number" class="seniority" min="1" value="${sc.seniority}" onchange="updateShareClass(${sc.id}, this)"></td>
+                    <td><input type="text" inputmode="decimal" class="seniority numeric-input" min="1" value="${sc.seniority}" onchange="updateShareClass(${sc.id}, this)"></td>
                     <td>
-                        <input type="number" class="liquidationPref" min="1" step="0.1" value="${sc.liquidationPref}" 
+                        <input type="text" inputmode="decimal" class="liquidationPref numeric-input" min="1" step="0.1" value="${sc.liquidationPref}" 
                         onchange="updateShareClass(${sc.id}, this)" 
                         style="display: ${sc.type === 'preferred' ? 'block' : 'none'}">
                     </td>
@@ -720,7 +766,7 @@
                         </select>
                     </td>
                     <td>
-                        <input type="number" class="cap" min="0" step="0.1" 
+                        <input type="text" inputmode="decimal" class="cap numeric-input" min="0" step="0.1" 
                         value="${sc.cap || ''}" placeholder="No cap"
                         onchange="updateShareClass(${sc.id}, this)"
                         style="display: ${sc.type === 'preferred' && sc.prefType === 'participating' ? 'block' : 'none'}">
@@ -752,6 +798,8 @@
                 
                 shareClassesTableBody.appendChild(row);
             });
+
+            attachNumericFormatting(shareClassesTableBody);
         }
         
         // Render transactions to the table
@@ -780,11 +828,11 @@
                         </datalist>
                     </td>
                     <td>
-                        <input type="number" class="shares" min="0" value="${tx.shares}" 
+                        <input type="text" inputmode="decimal" class="shares numeric-input" min="0" value="${tx.shares}" 
                         onchange="updateTransaction(${tx.id}, this)">
                     </td>
                     <td>
-                        <input type="number" class="investment" min="0" value="${tx.investment}" 
+                        <input type="text" inputmode="decimal" class="investment numeric-input" min="0" value="${tx.investment}" 
                         onchange="updateTransaction(${tx.id}, this)">
                     </td>
                     <td><button class="delete" onclick="deleteTransaction(${tx.id})">Delete</button></td>
@@ -792,6 +840,8 @@
                 
                 transactionsTableBody.appendChild(row);
             });
+
+            attachNumericFormatting(transactionsTableBody);
         }
 
         // Update share class
@@ -804,13 +854,13 @@
             
             shareClass.name = row.querySelector('.name').value.trim();
             shareClass.type = type;
-            shareClass.seniority = parseInt(row.querySelector('.seniority').value) || 1;
+            shareClass.seniority = parseNumber(row.querySelector('.seniority').value) || 1;
             
             if (type === 'preferred') {
-                shareClass.liquidationPref = parseFloat(row.querySelector('.liquidationPref').value) || 1;
+                shareClass.liquidationPref = parseNumber(row.querySelector('.liquidationPref').value) || 1;
                 shareClass.prefType = row.querySelector('.prefType').value;
                 const capInput = row.querySelector('.cap').value;
-                shareClass.cap = capInput !== '' ? parseFloat(capInput) : null;
+                shareClass.cap = capInput !== '' ? parseNumber(capInput) : null;
             } else {
                 shareClass.liquidationPref = 1;
                 shareClass.prefType = 'non-participating';
@@ -839,8 +889,8 @@
             
             transaction.shareClass = row.querySelector('.shareClass').value;
             transaction.stakeholder = row.querySelector('.stakeholder').value.trim();
-            transaction.shares = parseFloat(row.querySelector('.shares').value) || 0;
-            transaction.investment = parseFloat(row.querySelector('.investment').value) || 0;
+            transaction.shares = parseNumber(row.querySelector('.shares').value) || 0;
+            transaction.investment = parseNumber(row.querySelector('.investment').value) || 0;
 
             // Only update charts if it's not just a typing event
             if (element.className !== 'stakeholder' || element.type !== 'text') {
@@ -1496,15 +1546,15 @@
                         <option value="common">Common</option>
                     </select>
                 </td>
-                <td><input type="number" class="seniority" min="1" value="1"></td>
-                <td><input type="number" class="liquidationPref" min="1" step="0.1" value="1"></td>
+                <td><input type="text" inputmode="decimal" class="seniority numeric-input" min="1" value="1"></td>
+                <td><input type="text" inputmode="decimal" class="liquidationPref numeric-input" min="1" step="0.1" value="1"></td>
                 <td>
                     <select class="prefType">
                         <option value="non-participating">Non-Participating</option>
                         <option value="participating">Participating</option>
                     </select>
                 </td>
-                <td><input type="number" class="cap" min="0" step="0.1" placeholder="No cap"></td>
+                <td><input type="text" inputmode="decimal" class="cap numeric-input" min="0" step="0.1" placeholder="No cap"></td>
                 <td class="action-buttons">
                     <button class="save" onclick="saveShareClass(this)">Save</button>
                     <button class="cancel" onclick="cancelShareClass(this)">Cancel</button>
@@ -1534,6 +1584,7 @@
             });
             
             shareClassesTableBody.appendChild(row);
+            attachNumericFormatting(row);
         }
 
         // Save share class
@@ -1543,11 +1594,11 @@
             if (name === '') return;
 
             const type = row.querySelector('.type').value;
-            const seniority = parseInt(row.querySelector('.seniority').value) || 1;
-            const liquidationPref = type === 'preferred' ? (parseFloat(row.querySelector('.liquidationPref').value) || 1) : 1;
+            const seniority = parseNumber(row.querySelector('.seniority').value) || 1;
+            const liquidationPref = type === 'preferred' ? (parseNumber(row.querySelector('.liquidationPref').value) || 1) : 1;
             const prefType = type === 'preferred' ? row.querySelector('.prefType').value : 'non-participating';
             const capInput = row.querySelector('.cap').value;
-            const cap = (type === 'preferred' && capInput !== '') ? parseFloat(capInput) : null;
+            const cap = (type === 'preferred' && capInput !== '') ? parseNumber(capInput) : null;
 
             const newShareClass = {
                 id: shareClasses.length > 0 ? Math.max(...shareClasses.map(sc => sc.id)) + 1 : 1,
@@ -1592,8 +1643,8 @@
                         ).join('')}
                     </datalist>
                 </td>
-                <td><input type="number" class="shares" min="0" value="0"></td>
-                <td><input type="number" class="investment" min="0" value="0"></td>
+                <td><input type="text" inputmode="decimal" class="shares numeric-input" min="0" value="0"></td>
+                <td><input type="text" inputmode="decimal" class="investment numeric-input" min="0" value="0"></td>
                 <td class="action-buttons">
                     <button class="save" onclick="saveTransaction(this)">Save</button>
                     <button class="cancel" onclick="cancelTransaction(this)">Cancel</button>
@@ -1601,6 +1652,7 @@
             `;
             
             transactionsTableBody.appendChild(row);
+            attachNumericFormatting(row);
         }
 
         // Save transaction
@@ -1610,8 +1662,8 @@
             if (shareClass === '') return;
 
             const stakeholder = row.querySelector('.stakeholder').value.trim();
-            const shares = parseFloat(row.querySelector('.shares').value) || 0;
-            const investment = parseFloat(row.querySelector('.investment').value) || 0;
+            const shares = parseNumber(row.querySelector('.shares').value) || 0;
+            const investment = parseNumber(row.querySelector('.investment').value) || 0;
 
             const newTransaction = {
                 id: transactions.length > 0 ? Math.max(...transactions.map(tx => tx.id)) + 1 : 1,
