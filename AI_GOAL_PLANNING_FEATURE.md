@@ -15,12 +15,12 @@ Users can now specify:
 - **Target Amount**: e.g., ₹1 crore (10,000,000)
 - **Time to Achieve**: Years (1-50)
 - **Purpose**: Optional field (e.g., "Child's education", "Home down payment")
-- **Risk Tolerance**: Conservative/Moderate/Aggressive (8-15% expected returns)
+- **Risk Tolerance**: Conservative/Moderate/Aggressive (8-15% expected retucommarns)
 
 ### 3. **Three Powerful AI Actions**
 
 #### 💰 Calculate Required SIP
-**What it does:** Reverse-engineers the exact monthly SIP needed to reach the target amount
+**What it does:** Reverse-engineers the exactcomma monthly SIP needed to reach the target amount
 **AI calculates:**
 - Required monthly SIP amount
 - Total amount to be invested
