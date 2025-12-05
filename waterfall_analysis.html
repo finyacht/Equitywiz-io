@@ -389,6 +389,30 @@
             background-color: #dc2626;
         }
 
+        /* Toggle buttons */
+        .toggle-group {
+            display: inline-flex;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .toggle-group button {
+            border: none;
+            background: #fff;
+            color: #374151;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border-right: 1px solid #d1d5db;
+        }
+        .toggle-group button:last-child {
+            border-right: none;
+        }
+        .toggle-group button.active {
+            background: #3b82f6;
+            color: #fff;
+        }
+
         /* Navigation Bar Styles */
         .nav-bar {
             background-color: #3b82f6;
@@ -535,7 +559,13 @@
         
         <!-- Summary Table -->
         <div>
-            <h3>Distribution Summary</h3>
+            <div class="space-between" style="align-items: flex-end;">
+                <h3>Distribution Summary</h3>
+                <div class="toggle-group">
+                    <button id="viewShareClass" class="active">By Share Class</button>
+                    <button id="viewTransactions">By Share Transaction</button>
+                </div>
+            </div>
             <div class="overflow-auto">
                 <table id="summaryTable">
                     <thead>
@@ -543,6 +573,8 @@
                             <th>Share Class</th>
                             <th>Amount ($)</th>
                             <th>Percentage</th>
+                            <th>ROI</th>
+                            <th>Price/Share</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -614,6 +646,7 @@
         // Charts
         let summaryChart = null;
         let exitDistributionChart = null;
+        let summaryView = 'shareClass'; // 'shareClass' | 'transaction'
         
         // Numeric formatting helpers
         function parseNumber(value) {
@@ -657,6 +690,20 @@
                 // Initial formatting pass
                 formatNumberInputElement(input);
             });
+        }
+
+        // Display helpers
+        function formatROI(payout, investment) {
+            if (!investment || investment <= 0) return 'N/A';
+            const multiple = payout / investment;
+            if (!isFinite(multiple)) return 'N/A';
+            return `${multiple.toFixed(2)}x`;
+        }
+
+        function formatPricePerShare(payout, shares) {
+            if (!shares || shares <= 0) return 'N/A';
+            const pps = payout / shares;
+            return `$${pps.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
         // DOM Elements
@@ -703,6 +750,18 @@
             document.getElementById('addShareClassBtn').addEventListener('click', addNewShareClassRow);
             document.getElementById('addTransactionBtn').addEventListener('click', addNewTransactionRow);
             document.getElementById('exitAmount').addEventListener('input', updateExitAmount);
+            document.getElementById('viewShareClass').addEventListener('click', () => {
+                summaryView = 'shareClass';
+                document.getElementById('viewShareClass').classList.add('active');
+                document.getElementById('viewTransactions').classList.remove('active');
+                renderSummaryTable(calculateSummaryWaterfall());
+            });
+            document.getElementById('viewTransactions').addEventListener('click', () => {
+                summaryView = 'transaction';
+                document.getElementById('viewTransactions').classList.add('active');
+                document.getElementById('viewShareClass').classList.remove('active');
+                renderSummaryTable(calculateSummaryWaterfall());
+            });
             
             // Add window resize listener for responsive Sankey diagram
             let resizeTimeout;
@@ -1163,6 +1222,48 @@
                 percentage: Math.round((summary.payout / exitAmount) * 10000) / 100
             }));
         }
+
+        // Calculate summary per transaction using share-class payouts as base
+        function calculateTransactionSummary(summaryData) {
+            const sharesByClass = {};
+            const investmentByClass = {};
+            transactions.forEach(tx => {
+                sharesByClass[tx.shareClass] = (sharesByClass[tx.shareClass] || 0) + (parseNumber(tx.shares) || 0);
+                investmentByClass[tx.shareClass] = (investmentByClass[tx.shareClass] || 0) + (parseNumber(tx.investment) || 0);
+            });
+
+            const transactionSummaries = [];
+            transactions.forEach(tx => {
+                const classSummary = summaryData.find(s => s.name === tx.shareClass);
+                if (!classSummary || classSummary.payout <= 0) return;
+                const totalClassShares = sharesByClass[tx.shareClass] || 0;
+                const txShares = parseNumber(tx.shares) || 0;
+                const txInvestment = parseNumber(tx.investment) || 0;
+
+                const payout = totalClassShares > 0 ? (txShares / totalClassShares) * classSummary.payout : 0;
+                const percentage = exitAmount > 0 ? Math.round((payout / exitAmount) * 10000) / 100 : 0;
+
+                // Distribute components proportionally for richer detail (not displayed but available)
+                const components = {};
+                Object.keys(classSummary.components || {}).forEach(key => {
+                    const classComponent = classSummary.components[key] || 0;
+                    components[key] = totalClassShares > 0 ? (txShares / totalClassShares) * classComponent : 0;
+                });
+
+                transactionSummaries.push({
+                    id: tx.id,
+                    name: tx.stakeholder ? `${tx.stakeholder}` : 'Unnamed Stakeholder',
+                    shareClass: tx.shareClass,
+                    shares: txShares,
+                    investment: txInvestment,
+                    payout,
+                    percentage,
+                    components
+                });
+            });
+
+            return transactionSummaries;
+        }
         
         // Update the waterfall analysis charts and tables
         function updateWaterfallAnalysis() {
@@ -1191,31 +1292,93 @@
         function renderSummaryTable(summaryData) {
             // Clear the table
             summaryTableBody.innerHTML = '';
-            
-            // Add each summary row
-            summaryData.forEach(result => {
-                const row = document.createElement('tr');
+
+            if (summaryView === 'shareClass') {
+                // Headers for share class view
+                summaryTableBody.parentElement.querySelector('thead').innerHTML = `
+                    <tr>
+                        <th>Share Class</th>
+                        <th>Amount ($)</th>
+                        <th>Percentage</th>
+                        <th>ROI</th>
+                        <th>Price/Share</th>
+                    </tr>
+                `;
+
+                // Add each summary row
+                summaryData.forEach(result => {
+                    // Compute totals for ROI and price/share
+                    const classTransactions = transactions.filter(tx => tx.shareClass === result.name);
+                    const totalInvestment = classTransactions.reduce((sum, tx) => sum + (parseNumber(tx.investment) || 0), 0);
+                    const totalShares = classTransactions.reduce((sum, tx) => sum + (parseNumber(tx.shares) || 0), 0);
+
+                    const row = document.createElement('tr');
+                    
+                    row.innerHTML = `
+                        <td>${result.name}</td>
+                        <td>$${result.payout.toLocaleString()}</td>
+                        <td>${result.percentage}%</td>
+                        <td>${formatROI(result.payout, totalInvestment)}</td>
+                        <td>${formatPricePerShare(result.payout, totalShares)}</td>
+                    `;
+                    
+                    summaryTableBody.appendChild(row);
+                });
                 
-                row.innerHTML = `
-                    <td>${result.name}</td>
-                    <td>$${result.payout.toLocaleString()}</td>
-                    <td>${result.percentage}%</td>
+                // Add total row
+                const totalRow = document.createElement('tr');
+                totalRow.className = 'font-bold';
+                
+                totalRow.innerHTML = `
+                    <td>Total</td>
+                    <td>$${exitAmount.toLocaleString()}</td>
+                    <td>100%</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
                 `;
                 
-                summaryTableBody.appendChild(row);
-            });
-            
-            // Add total row
-            const totalRow = document.createElement('tr');
-            totalRow.className = 'font-bold';
-            
-            totalRow.innerHTML = `
-                <td>Total</td>
-                <td>$${exitAmount.toLocaleString()}</td>
-                <td>100%</td>
-            `;
-            
-            summaryTableBody.appendChild(totalRow);
+                summaryTableBody.appendChild(totalRow);
+            } else {
+                // Transaction view
+                const txSummary = calculateTransactionSummary(summaryData);
+
+                summaryTableBody.parentElement.querySelector('thead').innerHTML = `
+                    <tr>
+                        <th>Stakeholder / Transaction</th>
+                        <th>Share Class</th>
+                        <th>Amount ($)</th>
+                        <th>Percentage</th>
+                        <th>ROI</th>
+                        <th>Price/Share</th>
+                    </tr>
+                `;
+
+                txSummary.forEach(result => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${result.name}</td>
+                        <td>${result.shareClass}</td>
+                        <td>$${result.payout.toLocaleString()}</td>
+                        <td>${result.percentage}%</td>
+                        <td>${formatROI(result.payout, result.investment)}</td>
+                        <td>${formatPricePerShare(result.payout, result.shares)}</td>
+                    `;
+                    summaryTableBody.appendChild(row);
+                });
+
+                // Totals row
+                const totalRow = document.createElement('tr');
+                totalRow.className = 'font-bold';
+                totalRow.innerHTML = `
+                    <td>Total</td>
+                    <td>-</td>
+                    <td>$${exitAmount.toLocaleString()}</td>
+                    <td>100%</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                `;
+                summaryTableBody.appendChild(totalRow);
+            }
         }
         
         // Render combined chart
