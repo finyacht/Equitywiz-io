@@ -14,6 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Waterfall Analysis Tool</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- D3.js with multiple CDN fallbacks -->
     <script>
         function loadD3Script() {
@@ -550,10 +551,13 @@
     <!-- Waterfall Analysis Results -->
     <div class="card section">
         <div class="space-between">
-            <h2>Waterfall Results</h2>
-            <div>
-                <label for="exitAmount">Exit Amount ($)</label>
-                <input id="exitAmount" class="numeric-input" type="text" inputmode="decimal" value="10000000">
+            <div class="space-between" style="gap: 10px; align-items: center;">
+                <h2>Waterfall Results</h2>
+                <button id="exportExcelBtn" class="primary">Export to Spreadsheet</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                <label for="exitAmount" style="margin:0;">Exit Amount ($)</label>
+                <input id="exitAmount" class="numeric-input" type="text" inputmode="decimal" value="10000000" style="width: 160px;">
             </div>
         </div>
         
@@ -706,6 +710,20 @@
             return `$${pps.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
+        // Aggregates for exports and ROI calculations
+        function getShareClassAggregates() {
+            const aggregates = {};
+            transactions.forEach(tx => {
+                const cls = tx.shareClass;
+                if (!aggregates[cls]) {
+                    aggregates[cls] = { investment: 0, shares: 0 };
+                }
+                aggregates[cls].investment += parseNumber(tx.investment) || 0;
+                aggregates[cls].shares += parseNumber(tx.shares) || 0;
+            });
+            return aggregates;
+        }
+
         // DOM Elements
         const shareClassesTableBody = document.querySelector('#shareClassesTable tbody');
         const transactionsTableBody = document.querySelector('#transactionsTable tbody');
@@ -762,6 +780,7 @@
                 document.getElementById('viewShareClass').classList.remove('active');
                 renderSummaryTable(calculateSummaryWaterfall());
             });
+            document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
             
             // Add window resize listener for responsive Sankey diagram
             let resizeTimeout;
@@ -848,12 +867,15 @@
                 });
 
                 // Add preference type change handler
-                row.querySelector('.prefType')?.addEventListener('change', function() {
-                    if (typeSelect.value === 'preferred') {
-                        capField.style.display = 
-                            this.value === 'participating' ? 'block' : 'none';
-                    }
-                });
+                const prefTypeEl = row.querySelector('.prefType');
+                if (prefTypeEl) {
+                    prefTypeEl.addEventListener('change', function() {
+                        if (typeSelect.value === 'preferred') {
+                            capField.style.display = 
+                                this.value === 'participating' ? 'block' : 'none';
+                        }
+                    });
+                }
                 
                 shareClassesTableBody.appendChild(row);
             });
@@ -1264,6 +1286,220 @@
 
             return transactionSummaries;
         }
+
+        // Export current view to XLSX
+        function exportToExcel() {
+            if (typeof XLSX === 'undefined') {
+                alert('Export library not loaded. Please try again.');
+                return;
+            }
+
+            const summaryData = calculateSummaryWaterfall();
+            const txSummary = calculateTransactionSummary(summaryData);
+            const aggregates = getShareClassAggregates();
+            const waterfallSteps = calculateDetailedWaterfall();
+            const totalSharesAll = Object.values(aggregates).reduce((sum, v) => sum + ((v && v.shares) || 0), 0);
+
+            const wb = XLSX.utils.book_new();
+
+            // Cap Table sheet (first sheet) with metadata columns
+            const capSheet = [];
+            const totalInvestmentAll = Object.values(aggregates).reduce((s, v) => s + ((v && v.investment) || 0), 0);
+
+            // Header for share classes with extra columns
+            capSheet.push(['Cap Table - Share Classes']);
+            capSheet.push(['Name', '% Ownership', 'Investment ($)', 'Type', 'Seniority', 'Liquidation Pref', 'Pref Type', 'Cap']);
+
+            const capClassStartRow = capSheet.length + 1; // header row number for formulas
+            const capClassRowMap = {};
+            summaryData.forEach((item, idx) => {
+                const excelRow = capClassStartRow + idx;
+                const agg = aggregates[item.name] || { investment: 0, shares: 0 };
+                const scMeta = shareClasses.find(sc => sc.name === item.name) || {};
+                capClassRowMap[item.name] = excelRow;
+                capSheet.push([
+                    item.name,
+                    { t: 'n', f: totalSharesAll > 0 ? `${agg.shares}/${totalSharesAll}` : '0' },
+                    { t: 'n', v: agg.investment },
+                    scMeta.type || '',
+                    scMeta.seniority || '',
+                    scMeta.liquidationPref || '',
+                    scMeta.prefType || '',
+                    scMeta.cap != null ? scMeta.cap : ''
+                ]);
+            });
+
+            // Totals row for classes
+            capSheet.push([
+                'Total',
+                { t: 'n', v: 1 },
+                { t: 'n', v: totalInvestmentAll },
+                '',
+                '',
+                '',
+                '',
+                ''
+            ]);
+
+            // Blank line
+            capSheet.push([]);
+
+            // Header for transactions
+            capSheet.push(['Cap Table - Share Transactions']);
+            capSheet.push(['Name', '% Ownership', 'Investment ($)']);
+            const capTxStartRow = capSheet.length + 1;
+
+            transactions.forEach((tx, idx) => {
+                const excelRow = capTxStartRow + idx;
+                const shares = parseNumber(tx.shares) || 0;
+                capSheet.push([
+                    tx.stakeholder || `Tx ${tx.id}`,
+                    { t: 'n', f: totalSharesAll > 0 ? `${shares}/${totalSharesAll}` : '0' },
+                    { t: 'n', v: parseNumber(tx.investment) || 0 }
+                ]);
+            });
+
+            // Totals row for transactions
+            const txInvestTotal = transactions.reduce((s, tx) => s + (parseNumber(tx.investment) || 0), 0);
+            capSheet.push([
+                'Total',
+                { t: 'n', v: 1 },
+                { t: 'n', v: txInvestTotal }
+            ]);
+
+            const capWS = XLSX.utils.aoa_to_sheet(capSheet);
+            XLSX.utils.book_append_sheet(wb, capWS, 'Cap Table');
+
+            // Share Class sheet (simplified)
+            const scSheet = [
+                ['Share Class', 'Amount ($)', 'Distribution % (LP adj.)', 'ROI', 'Price/Share', 'Investment ($)', 'Shares']
+            ];
+
+            summaryData.forEach((item, idx) => {
+                const rowIndex = idx + 2; // header is row 1
+                const agg = aggregates[item.name] || { investment: 0, shares: 0 };
+                scSheet.push([
+                    item.name,
+                    { t: 'n', v: item.payout },
+                    { t: 'n', v: item.percentage }, // distribution share already reflects prefs/caps from FE logic
+                    { t: 'n', f: `B${rowIndex}/F${rowIndex}` },
+                    { t: 'n', f: `B${rowIndex}/G${rowIndex}` },
+                    { t: 'n', v: agg.investment },
+                    { t: 'n', v: agg.shares }
+                ]);
+            });
+
+            const totalRowIndex = scSheet.length + 1;
+            const totalInvestment = Object.values(aggregates).reduce((s, v) => s + ((v && v.investment) || 0), 0);
+
+            // Totals row with share & investment sums
+            scSheet.push([
+                'Total',
+                { t: 'n', v: exitAmount },
+                { t: 'n', v: 100 },
+                '',
+                '',
+                { t: 'n', v: totalInvestment },
+                { t: 'n', v: totalSharesAll }
+            ]);
+
+            const scWS = XLSX.utils.aoa_to_sheet(scSheet);
+            XLSX.utils.book_append_sheet(wb, scWS, 'By Share Class');
+
+            // Transaction sheet (simplified)
+            const txSheet = [
+                ['Stakeholder / Transaction', 'Share Class', 'Amount ($)', 'Distribution % (LP adj.)', 'ROI', 'Price/Share', 'Investment ($)', 'Shares']
+            ];
+
+            txSummary.forEach((item, idx) => {
+                const rowIndex = idx + 2;
+                txSheet.push([
+                    item.name,
+                    item.shareClass,
+                    { t: 'n', v: item.payout },
+                    { t: 'n', v: item.percentage },
+                    { t: 'n', f: `C${rowIndex}/G${rowIndex}` },
+                    { t: 'n', f: `C${rowIndex}/H${rowIndex}` },
+                    { t: 'n', v: item.investment },
+                    { t: 'n', v: item.shares }
+                ]);
+            });
+
+            txSheet.push([
+                'Total',
+                '',
+                { t: 'n', v: exitAmount },
+                { t: 'n', v: 100 },
+                '',
+                '',
+                '',
+                '',
+                ''
+            ]);
+
+            const txWS = XLSX.utils.aoa_to_sheet(txSheet);
+            XLSX.utils.book_append_sheet(wb, txWS, 'By Transaction');
+
+            // Waterfall steps sheet (sequential; column D shows LP multiple or participation % from Cap Table)
+            const stepsSheet = [
+                ['Step', 'Share Class', 'Amount ($)', 'LP / Participation Factor', 'Remaining Proceeds ($)', 'Description']
+            ];
+
+            // Row 2: starting proceeds
+            stepsSheet.push([
+                'Total Exit Proceeds',
+                '',
+                { t: 'n', v: exitAmount },
+                '',
+                { t: 'n', v: exitAmount },
+                'Starting total proceeds'
+            ]);
+
+            let lastLpRemainingRow = null;
+
+            waterfallSteps.slice(1).forEach(step => {
+                const nextRowIndex = stepsSheet.length + 1; // +1 because header row counts
+                const prevRowIndex = nextRowIndex - 1;
+                const scName = step.shareClass || '';
+                const capRow = capClassRowMap[scName];
+
+                // Default to prior-remaining based factor if cap row missing
+                let factorFormula = `IF(E${prevRowIndex}=0,0,C${nextRowIndex}/E${prevRowIndex})`;
+                let amountFormula = `E${prevRowIndex}*D${nextRowIndex}`;
+
+                if (capRow) {
+                    const ownershipRef = `'Cap Table'!$B${capRow}`;
+                    const lpRef = `'Cap Table'!$F${capRow}`;
+                    const investmentRef = `'Cap Table'!$C${capRow}`;
+
+                    const isLiquidationPref = (step.name || '').indexOf('Liquidation Preference') !== -1;
+                    if (isLiquidationPref) {
+                        factorFormula = lpRef; // LP multiple
+                        amountFormula = `${investmentRef}*${lpRef}`;
+                        lastLpRemainingRow = nextRowIndex; // remaining after this row captured below
+                    } else {
+                        // participation/common distribution uses ownership %
+                        const baseRemainingRef = lastLpRemainingRow ? `E${lastLpRemainingRow}` : `E${prevRowIndex}`;
+                        factorFormula = ownershipRef;
+                        amountFormula = `${baseRemainingRef}*${ownershipRef}`;
+                    }
+                }
+
+                stepsSheet.push([
+                    step.name || '',
+                    scName,
+                    { t: 'n', f: amountFormula },
+                    { t: 'n', f: factorFormula },
+                    { t: 'n', f: `E${prevRowIndex}-C${nextRowIndex}` },
+                    step.description || ''
+                ]);
+            });
+
+            const stepsWS = XLSX.utils.aoa_to_sheet(stepsSheet);
+            XLSX.utils.book_append_sheet(wb, stepsWS, 'Waterfall Steps');
+
+            XLSX.writeFile(wb, 'waterfall_export.xlsx');
+        }
         
         // Update the waterfall analysis charts and tables
         function updateWaterfallAnalysis() {
@@ -1423,7 +1659,7 @@
             const datasets = distributionTypes.map(type => ({
                 label: type,
                 data: summaryData.map(summary => {
-                    return shareClassSteps[summary.name]?.[type] || 0;
+                    return (shareClassSteps[summary.name] && shareClassSteps[summary.name][type]) ? shareClassSteps[summary.name][type] : 0;
                 }),
                 backgroundColor: getDistributionTypeColor(type),
                 borderColor: getDistributionTypeColor(type, 0.8),
@@ -1975,7 +2211,14 @@
             transactions.forEach(tx => {
                 const txKey = `${tx.shareClass}_tx_${tx.id}`;
                 transactionNodes[txKey] = nodeIndex;
-                const stakeholderName = tx.stakeholder ? tx.stakeholder.split(' ')[0] + (tx.stakeholder.includes('(') ? ` ${tx.stakeholder.match(/\((.*?)\)/)?.[1] || ''}` : '') : 'Unknown';
+                let stakeholderName = 'Unknown';
+                if (tx.stakeholder) {
+                    const base = tx.stakeholder.split(' ')[0];
+                    let role = '';
+                    const match = tx.stakeholder.match(/\((.*?)\)/);
+                    if (match && match[1]) role = ` ${match[1]}`;
+                    stakeholderName = `${base}${role}`;
+                }
                 nodes.push({ 
                     name: `${stakeholderName}`, 
                     id: nodeIndex++, 
