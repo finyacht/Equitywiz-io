@@ -868,21 +868,29 @@
                 transactions.some(tx => tx.shareClass === sc.name)
             );
             
-            // Calculate total ownership percentages
-            const totalShares = transactions.reduce((sum, tx) => sum + (parseFloat(tx.shares) || 0), 0);
-            const ownershipByClass = {};
-            
+            // Calculate share counts per class (use counts instead of percentages to avoid rounding drift)
+            const sharesByClass = {};
             transactions.forEach(tx => {
-                if (!ownershipByClass[tx.shareClass]) {
-                    ownershipByClass[tx.shareClass] = 0;
+                const shares = parseFloat(tx.shares) || 0;
+                if (!sharesByClass[tx.shareClass]) {
+                    sharesByClass[tx.shareClass] = 0;
                 }
-                ownershipByClass[tx.shareClass] += (parseFloat(tx.shares) || 0) / totalShares;
+                sharesByClass[tx.shareClass] += shares;
             });
+
+            const totalShares = Object.values(sharesByClass).reduce((sum, val) => sum + val, 0);
+            if (totalShares <= 0) {
+                return results; // No shares to distribute against
+            }
 
             // First Round - Liquidation Preferences (only for preferred shares, in order of seniority)
             const preferredClasses = [...activeShareClasses]
                 .filter(sc => sc.type === 'preferred')
-                .sort((a, b) => b.seniority - a.seniority);
+                .sort((a, b) => {
+                    const aRank = Number(a.seniority) || Number.MAX_SAFE_INTEGER;
+                    const bRank = Number(b.seniority) || Number.MAX_SAFE_INTEGER;
+                    return aRank - bRank; // 1 = most senior, larger numbers = less senior
+                });
 
             // Handle preferred shares liquidation preferences first
             for (const sc of preferredClasses) {
@@ -918,13 +926,17 @@
 
                 // Calculate total participating shares
                 const participatingTotal = participatingClasses.reduce((sum, sc) => 
-                    sum + ownershipByClass[sc.name], 0
+                    sum + (sharesByClass[sc.name] || 0), 0
                 );
 
                 if (participatingTotal > 0) {
+                    const participationPool = remainingProceeds;
+                    let distributed = 0;
+                    const plannedDistributions = [];
+                    
                     for (const sc of participatingClasses) {
-                        const proRataShare = ownershipByClass[sc.name] / participatingTotal;
-                        let participationAmount = proRataShare * remainingProceeds;
+                        const proRataShare = (sharesByClass[sc.name] || 0) / participatingTotal;
+                        let participationAmount = proRataShare * participationPool;
 
                         // Apply caps for participating preferred if they exist
                         if (sc.type === 'preferred' && sc.cap) {
@@ -935,22 +947,32 @@
                                 .reduce((sum, r) => sum - r.value, 0);
                             
                             const capAmount = totalInvestment * sc.cap;
-                            participationAmount = Math.min(participationAmount, capAmount - currentPayout);
+                            participationAmount = Math.min(participationAmount, Math.max(0, capAmount - currentPayout));
                         }
 
-                        if (participationAmount > 0) {
+                        if (participationAmount > 0.01) {
                             const distributionType = sc.type === 'common' ? 'Common Distribution' : 'Participation';
-                            results.push({ 
-                                name: `${sc.name} (${distributionType})`, 
-                                value: -participationAmount,
+                            plannedDistributions.push({
+                                name: `${sc.name} (${distributionType})`,
+                                amount: participationAmount,
                                 description: `${sc.name} receives ${distributionType.toLowerCase()} of $${participationAmount.toLocaleString()}`,
-                                remainingProceeds,
                                 shareClass: sc.name
                             });
-                            
-                            remainingProceeds -= participationAmount;
+                            distributed += participationAmount;
                         }
                     }
+
+                    plannedDistributions.forEach(dist => {
+                        results.push({
+                            name: dist.name,
+                            value: -dist.amount,
+                            description: dist.description,
+                            remainingProceeds,
+                            shareClass: dist.shareClass
+                        });
+                    });
+
+                    remainingProceeds -= distributed;
                 }
             }
 
@@ -965,14 +987,18 @@
 
                 // Calculate total participating ownership
                 const totalParticipatingOwnership = allParticipatingClasses.reduce((sum, sc) => 
-                    sum + (ownershipByClass[sc.name] || 0), 0
+                    sum + (sharesByClass[sc.name] || 0), 0
                 );
 
                 if (totalParticipatingOwnership > 0) {
+                    const additionalPool = remainingProceeds;
+                    let additionalDistributed = 0;
+                    const plannedAdditional = [];
+
                     // Distribute remaining proceeds pro-rata
                     for (const sc of allParticipatingClasses) {
-                        const proRataShare = (ownershipByClass[sc.name] || 0) / totalParticipatingOwnership;
-                        let additionalAmount = proRataShare * remainingProceeds;
+                        const proRataShare = (sharesByClass[sc.name] || 0) / totalParticipatingOwnership;
+                        let additionalAmount = proRataShare * additionalPool;
 
                         // Check if this class has a cap and adjust if necessary
                         if (sc.type === 'preferred' && sc.cap) {
@@ -989,17 +1015,27 @@
 
                         if (additionalAmount > 0.01) { // Only add if meaningful amount
                             const distributionType = sc.type === 'common' ? 'Additional Common' : 'Additional Participation';
-                            results.push({ 
-                                name: `${sc.name} (${distributionType})`, 
-                                value: -additionalAmount,
+                            plannedAdditional.push({
+                                name: `${sc.name} (${distributionType})`,
+                                amount: additionalAmount,
                                 description: `${sc.name} receives additional distribution of $${additionalAmount.toLocaleString()}`,
-                                remainingProceeds,
                                 shareClass: sc.name
                             });
-                            
-                            remainingProceeds -= additionalAmount;
+                            additionalDistributed += additionalAmount;
                         }
                     }
+
+                    plannedAdditional.forEach(dist => {
+                        results.push({
+                            name: dist.name,
+                            value: -dist.amount,
+                            description: dist.description,
+                            remainingProceeds,
+                            shareClass: dist.shareClass
+                        });
+                    });
+
+                    remainingProceeds -= additionalDistributed;
                 }
             }
             
@@ -1007,13 +1043,16 @@
             if (remainingProceeds > 0.01) {
                 const commonClasses = activeShareClasses.filter(sc => sc.type === "common");
                 const totalCommonOwnership = commonClasses.reduce((sum, sc) => 
-                    sum + (ownershipByClass[sc.name] || 0), 0
+                    sum + (sharesByClass[sc.name] || 0), 0
                 );
 
                 if (totalCommonOwnership > 0) {
+                    const finalPool = remainingProceeds;
+                    let finalDistributed = 0;
+
                     for (const sc of commonClasses) {
-                        const proRataShare = (ownershipByClass[sc.name] || 0) / totalCommonOwnership;
-                        const finalAmount = proRataShare * remainingProceeds;
+                        const proRataShare = (sharesByClass[sc.name] || 0) / totalCommonOwnership;
+                        const finalAmount = proRataShare * finalPool;
 
                         if (finalAmount > 0.01) {
                             results.push({ 
@@ -1024,9 +1063,11 @@
                                 shareClass: sc.name
                             });
                             
-                            remainingProceeds -= finalAmount;
+                            finalDistributed += finalAmount;
                         }
                     }
+
+                    remainingProceeds -= finalDistributed;
                 }
             }
             
@@ -1797,7 +1838,7 @@
             const transactionDistributionData = {};
             
             waterfallSteps.forEach(step => {
-                if (step.shareClass && !step.isStarting && !step.isFinal && step.value > 0) {
+                if (step.shareClass && !step.isStarting && !step.isFinal && step.value < 0) {
                     const match = step.name.match(/\((.*?)\)/);
                     if (match) {
                         let type = match[1];
