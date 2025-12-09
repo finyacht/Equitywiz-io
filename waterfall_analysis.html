@@ -554,12 +554,33 @@
             <div class="space-between" style="gap: 10px; align-items: center;">
                 <h2>Waterfall Results</h2>
                 <button id="exportExcelBtn" class="primary">Export to Spreadsheet</button>
+                <button id="analyzeAIBtn" class="primary" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">🤖 Analyze with AI</button>
             </div>
             <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
                 <label for="exitAmount" style="margin:0;">Exit Amount ($)</label>
                 <input id="exitAmount" class="numeric-input" type="text" inputmode="decimal" value="10000000" style="width: 160px;">
             </div>
         </div>
+        
+        <!-- AI Analysis Modal -->
+        <div id="aiAnalysisModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; border-radius: 12px; max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 24px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <button id="closeAIModal" style="position: absolute; top: 12px; right: 12px; background: #f3f4f6; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 18px;">×</button>
+                <h2 style="margin-bottom: 16px; color: #1f2937;">🤖 AI Waterfall Analysis</h2>
+                <div id="aiAnalysisContent" style="line-height: 1.7; color: #374151;">
+                    <div id="aiLoadingSpinner" style="text-align: center; padding: 40px;">
+                        <div style="display: inline-block; width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                        <p style="margin-top: 12px; color: #6b7280;">Analyzing waterfall distribution...</p>
+                    </div>
+                    <div id="aiResponseText" style="display: none; white-space: pre-wrap;"></div>
+                </div>
+            </div>
+        </div>
+        <style>
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+        </style>
         
         <!-- Summary Table -->
         <div>
@@ -782,6 +803,18 @@
             });
             document.getElementById('exportExcelBtn').addEventListener('click', exportToExcel);
             
+            // AI Analysis button
+            document.getElementById('analyzeAIBtn').addEventListener('click', analyzeWithAI);
+            document.getElementById('closeAIModal').addEventListener('click', () => {
+                document.getElementById('aiAnalysisModal').style.display = 'none';
+            });
+            // Close modal when clicking outside
+            document.getElementById('aiAnalysisModal').addEventListener('click', (e) => {
+                if (e.target.id === 'aiAnalysisModal') {
+                    document.getElementById('aiAnalysisModal').style.display = 'none';
+                }
+            });
+            
             // Add window resize listener for responsive Sankey diagram
             let resizeTimeout;
             window.addEventListener('resize', () => {
@@ -980,6 +1013,11 @@
         };
         
         // Calculate the detailed waterfall analysis
+        // Implements the 4-step process:
+        // 1. Pay liquidation preferences
+        // 2. Calculate "phantom" participation (ignoring caps)
+        // 3. Apply caps, calculate overflow
+        // 4. Redistribute overflow: participating preferred gets share based on TOTAL ownership, common gets residual
         function calculateDetailedWaterfall() {
             let results = [];
             let remainingProceeds = exitAmount;
@@ -999,7 +1037,7 @@
                 transactions.some(tx => tx.shareClass === sc.name)
             );
             
-            // Calculate share counts per class (use counts instead of percentages to avoid rounding drift)
+            // Calculate share counts per class
             const sharesByClass = {};
             transactions.forEach(tx => {
                 const shares = parseFloat(tx.shares) || 0;
@@ -1011,26 +1049,37 @@
 
             const totalShares = Object.values(sharesByClass).reduce((sum, val) => sum + val, 0);
             if (totalShares <= 0) {
-                return results; // No shares to distribute against
+                return results;
             }
 
-            // First Round - Liquidation Preferences (only for preferred shares, in order of seniority)
+            // Calculate investment per class
+            const investmentByClass = {};
+            transactions.forEach(tx => {
+                if (!investmentByClass[tx.shareClass]) {
+                    investmentByClass[tx.shareClass] = 0;
+                }
+                investmentByClass[tx.shareClass] += parseFloat(tx.investment || 0);
+            });
+
+            // Separate classes by type
             const preferredClasses = [...activeShareClasses]
                 .filter(sc => sc.type === 'preferred')
                 .sort((a, b) => {
                     const aRank = Number(a.seniority) || Number.MAX_SAFE_INTEGER;
                     const bRank = Number(b.seniority) || Number.MAX_SAFE_INTEGER;
-                    return aRank - bRank; // 1 = most senior, larger numbers = less senior
+                    return aRank - bRank;
                 });
+            const commonClasses = activeShareClasses.filter(sc => sc.type === 'common');
 
-            // Handle preferred shares liquidation preferences first
+            // Track payouts per class
+            const payoutsByClass = {};
+            activeShareClasses.forEach(sc => { payoutsByClass[sc.name] = 0; });
+
+            // ========== STEP 1: LIQUIDATION PREFERENCES ==========
             for (const sc of preferredClasses) {
                 if (remainingProceeds <= 0) break;
                 
-                const transactionsForClass = transactions.filter(tx => tx.shareClass === sc.name);
-                let totalInvestment = transactionsForClass.reduce((sum, tx) => sum + parseFloat(tx.investment || 0), 0);
-                
-                // Calculate liquidation preference
+                const totalInvestment = investmentByClass[sc.name] || 0;
                 let liquidationPrefAmount = totalInvestment * parseFloat(sc.liquidationPref || 1);
                 let prefPayout = Math.min(liquidationPrefAmount, remainingProceeds);
                 
@@ -1038,22 +1087,22 @@
                     results.push({ 
                         name: `${sc.name} (Liquidation Preference)`, 
                         value: -prefPayout,
+                        lpMultiple: parseFloat(sc.liquidationPref || 1),
                         description: `${sc.name} receives liquidation preference of $${prefPayout.toLocaleString()}`,
                         remainingProceeds,
                         shareClass: sc.name
                     });
                     
+                    payoutsByClass[sc.name] += prefPayout;
                     remainingProceeds -= prefPayout;
                 }
             }
 
-            // Second Round - Pro-rata distribution among participating preferred and common
+            // ========== STEP 2: PARTICIPATION (with cap overflow redistribution) ==========
             if (remainingProceeds > 0) {
-                // Get participating preferred and common classes
-                const participatingClasses = [
-                    ...preferredClasses.filter(sc => sc.prefType === "participating"),
-                    ...activeShareClasses.filter(sc => sc.type === "common")
-                ];
+                // Get participating classes (participating preferred + common)
+                const participatingPreferred = preferredClasses.filter(sc => sc.prefType === "participating");
+                const participatingClasses = [...participatingPreferred, ...commonClasses];
 
                 // Calculate total participating shares
                 const participatingTotal = participatingClasses.reduce((sum, sc) => 
@@ -1062,143 +1111,117 @@
 
                 if (participatingTotal > 0) {
                     const participationPool = remainingProceeds;
-                    let distributed = 0;
-                    const plannedDistributions = [];
                     
-                    for (const sc of participatingClasses) {
+                    // Calculate phantom distributions (what each class WOULD get ignoring caps)
+                    const phantomDistributions = {};
+                    participatingClasses.forEach(sc => {
                         const proRataShare = (sharesByClass[sc.name] || 0) / participatingTotal;
-                        let participationAmount = proRataShare * participationPool;
+                        phantomDistributions[sc.name] = {
+                            amount: proRataShare * participationPool,
+                            proRataShare: proRataShare
+                        };
+                    });
 
-                        // Apply caps for participating preferred if they exist
-                        if (sc.type === 'preferred' && sc.cap) {
-                            const transactionsForClass = transactions.filter(tx => tx.shareClass === sc.name);
-                            const totalInvestment = transactionsForClass.reduce((sum, tx) => sum + parseFloat(tx.investment || 0), 0);
-                            const currentPayout = results
-                                .filter(r => r.shareClass === sc.name)
-                                .reduce((sum, r) => sum - r.value, 0);
-                            
+                    // Calculate actual distributions with caps, track overflow
+                    let totalOverflow = 0;
+                    const cappedClasses = [];
+                    const uncappedParticipatingPreferred = [];
+                    
+                    participatingPreferred.forEach(sc => {
+                        if (sc.cap) {
+                            const totalInvestment = investmentByClass[sc.name] || 0;
                             const capAmount = totalInvestment * sc.cap;
-                            participationAmount = Math.min(participationAmount, Math.max(0, capAmount - currentPayout));
+                            const currentPayout = payoutsByClass[sc.name];
+                            const remainingCap = Math.max(0, capAmount - currentPayout);
+                            const phantomAmount = phantomDistributions[sc.name].amount;
+                            
+                            if (phantomAmount > remainingCap) {
+                                // This class is capped
+                                totalOverflow += (phantomAmount - remainingCap);
+                                cappedClasses.push(sc.name);
+                                phantomDistributions[sc.name].actualAmount = remainingCap;
+                                phantomDistributions[sc.name].isCapped = true;
+                            } else {
+                                phantomDistributions[sc.name].actualAmount = phantomAmount;
+                                uncappedParticipatingPreferred.push(sc);
+                            }
+                        } else {
+                            phantomDistributions[sc.name].actualAmount = phantomDistributions[sc.name].amount;
+                            uncappedParticipatingPreferred.push(sc);
                         }
+                    });
 
-                        if (participationAmount > 0.01) {
+                    // Common classes always get their phantom amount (no caps)
+                    commonClasses.forEach(sc => {
+                        phantomDistributions[sc.name].actualAmount = phantomDistributions[sc.name].amount;
+                    });
+
+                    // Record participation distributions for each class
+                    participatingClasses.forEach(sc => {
+                        const dist = phantomDistributions[sc.name];
+                        if (dist.actualAmount > 0.01) {
                             const distributionType = sc.type === 'common' ? 'Common Distribution' : 'Participation';
-                            plannedDistributions.push({
+                            results.push({
                                 name: `${sc.name} (${distributionType})`,
-                                amount: participationAmount,
-                                description: `${sc.name} receives ${distributionType.toLowerCase()} of $${participationAmount.toLocaleString()}`,
-                                shareClass: sc.name
-                            });
-                            distributed += participationAmount;
-                        }
-                    }
-
-                    plannedDistributions.forEach(dist => {
-                        results.push({
-                            name: dist.name,
-                            value: -dist.amount,
-                            description: dist.description,
-                            remainingProceeds,
-                            shareClass: dist.shareClass
-                        });
-                    });
-
-                    remainingProceeds -= distributed;
-                }
-            }
-
-            // If there are still remaining proceeds, distribute them pro-rata among all participating classes
-            // (including those that may have hit caps - distribute the remainder)
-            if (remainingProceeds > 0.01) { // Using small threshold to avoid floating point issues
-                // Get all participating classes (participating preferred + common)
-                const allParticipatingClasses = [
-                    ...preferredClasses.filter(sc => sc.prefType === "participating"),
-                    ...activeShareClasses.filter(sc => sc.type === "common")
-                ];
-
-                // Calculate total participating ownership
-                const totalParticipatingOwnership = allParticipatingClasses.reduce((sum, sc) => 
-                    sum + (sharesByClass[sc.name] || 0), 0
-                );
-
-                if (totalParticipatingOwnership > 0) {
-                    const additionalPool = remainingProceeds;
-                    let additionalDistributed = 0;
-                    const plannedAdditional = [];
-
-                    // Distribute remaining proceeds pro-rata
-                    for (const sc of allParticipatingClasses) {
-                        const proRataShare = (sharesByClass[sc.name] || 0) / totalParticipatingOwnership;
-                        let additionalAmount = proRataShare * additionalPool;
-
-                        // Check if this class has a cap and adjust if necessary
-                        if (sc.type === 'preferred' && sc.cap) {
-                            const transactionsForClass = transactions.filter(tx => tx.shareClass === sc.name);
-                            const totalInvestment = transactionsForClass.reduce((sum, tx) => sum + parseFloat(tx.investment || 0), 0);
-                            const currentPayout = results
-                                .filter(r => r.shareClass === sc.name)
-                                .reduce((sum, r) => sum - r.value, 0);
-                            
-                            const capAmount = totalInvestment * sc.cap;
-                            const availableCapSpace = capAmount - currentPayout;
-                            additionalAmount = Math.min(additionalAmount, Math.max(0, availableCapSpace));
-                        }
-
-                        if (additionalAmount > 0.01) { // Only add if meaningful amount
-                            const distributionType = sc.type === 'common' ? 'Additional Common' : 'Additional Participation';
-                            plannedAdditional.push({
-                                name: `${sc.name} (${distributionType})`,
-                                amount: additionalAmount,
-                                description: `${sc.name} receives additional distribution of $${additionalAmount.toLocaleString()}`,
-                                shareClass: sc.name
-                            });
-                            additionalDistributed += additionalAmount;
-                        }
-                    }
-
-                    plannedAdditional.forEach(dist => {
-                        results.push({
-                            name: dist.name,
-                            value: -dist.amount,
-                            description: dist.description,
-                            remainingProceeds,
-                            shareClass: dist.shareClass
-                        });
-                    });
-
-                    remainingProceeds -= additionalDistributed;
-                }
-            }
-            
-            // Final check: if there are still remaining proceeds due to caps, distribute to common shares only
-            if (remainingProceeds > 0.01) {
-                const commonClasses = activeShareClasses.filter(sc => sc.type === "common");
-                const totalCommonOwnership = commonClasses.reduce((sum, sc) => 
-                    sum + (sharesByClass[sc.name] || 0), 0
-                );
-
-                if (totalCommonOwnership > 0) {
-                    const finalPool = remainingProceeds;
-                    let finalDistributed = 0;
-
-                    for (const sc of commonClasses) {
-                        const proRataShare = (sharesByClass[sc.name] || 0) / totalCommonOwnership;
-                        const finalAmount = proRataShare * finalPool;
-
-                        if (finalAmount > 0.01) {
-                            results.push({ 
-                                name: `${sc.name} (Final Distribution)`, 
-                                value: -finalAmount,
-                                description: `${sc.name} receives final distribution of $${finalAmount.toLocaleString()}`,
+                                value: -dist.actualAmount,
+                                participationFactor: dist.proRataShare,
+                                description: `${sc.name} receives ${distributionType.toLowerCase()} of $${dist.actualAmount.toLocaleString()}`,
                                 remainingProceeds,
                                 shareClass: sc.name
                             });
+                            payoutsByClass[sc.name] += dist.actualAmount;
+                            remainingProceeds -= dist.actualAmount;
+                        }
+                    });
+
+                    // ========== STEP 3 & 4: REDISTRIBUTE OVERFLOW ==========
+                    if (totalOverflow > 0.01) {
+                        // Step 3: Uncapped participating preferred gets share based on TOTAL company ownership
+                        // (not just participating shares - this is the key difference)
+                        uncappedParticipatingPreferred.forEach(sc => {
+                            const totalOwnershipShare = (sharesByClass[sc.name] || 0) / totalShares;
+                            const additionalAmount = totalOwnershipShare * totalOverflow;
                             
-                            finalDistributed += finalAmount;
+                            if (additionalAmount > 0.01) {
+                                results.push({
+                                    name: `${sc.name} (Additional Participation)`,
+                                    value: -additionalAmount,
+                                    participationFactor: totalOwnershipShare,
+                                    description: `${sc.name} receives additional distribution of $${additionalAmount.toLocaleString()}`,
+                                    remainingProceeds,
+                                    shareClass: sc.name
+                                });
+                                payoutsByClass[sc.name] += additionalAmount;
+                                remainingProceeds -= additionalAmount;
+                            }
+                        });
+
+                        // Step 4: Common shareholders (residual owners) get everything else
+                        if (remainingProceeds > 0.01 && commonClasses.length > 0) {
+                            const totalCommonShares = commonClasses.reduce((sum, sc) => 
+                                sum + (sharesByClass[sc.name] || 0), 0
+                            );
+                            
+                            const finalPool = remainingProceeds;
+                            commonClasses.forEach(sc => {
+                                const commonShare = (sharesByClass[sc.name] || 0) / totalCommonShares;
+                                const finalAmount = commonShare * finalPool;
+                                
+                                if (finalAmount > 0.01) {
+                                    results.push({
+                                        name: `${sc.name} (Final Distribution)`,
+                                        value: -finalAmount,
+                                        participationFactor: commonShare,
+                                        description: `${sc.name} receives final distribution of $${finalAmount.toLocaleString()}`,
+                                        remainingProceeds,
+                                        shareClass: sc.name
+                                    });
+                                    payoutsByClass[sc.name] += finalAmount;
+                                    remainingProceeds -= finalAmount;
+                                }
+                            });
                         }
                     }
-
-                    remainingProceeds -= finalDistributed;
                 }
             }
             
@@ -1440,7 +1463,7 @@
             const txWS = XLSX.utils.aoa_to_sheet(txSheet);
             XLSX.utils.book_append_sheet(wb, txWS, 'By Transaction');
 
-            // Waterfall steps sheet (sequential; column D shows LP multiple or participation % from Cap Table)
+            // Waterfall steps sheet - uses actual calculated values for accuracy
             const stepsSheet = [
                 ['Step', 'Share Class', 'Amount ($)', 'LP / Participation Factor', 'Remaining Proceeds ($)', 'Description']
             ];
@@ -1455,42 +1478,32 @@
                 'Starting total proceeds'
             ]);
 
-            let lastLpRemainingRow = null;
+            // Track running remaining proceeds
+            let runningRemaining = exitAmount;
 
             waterfallSteps.slice(1).forEach(step => {
-                const nextRowIndex = stepsSheet.length + 1; // +1 because header row counts
-                const prevRowIndex = nextRowIndex - 1;
                 const scName = step.shareClass || '';
-                const capRow = capClassRowMap[scName];
-
-                // Default to prior-remaining based factor if cap row missing
-                let factorFormula = `IF(E${prevRowIndex}=0,0,C${nextRowIndex}/E${prevRowIndex})`;
-                let amountFormula = `E${prevRowIndex}*D${nextRowIndex}`;
-
-                if (capRow) {
-                    const ownershipRef = `'Cap Table'!$B${capRow}`;
-                    const lpRef = `'Cap Table'!$F${capRow}`;
-                    const investmentRef = `'Cap Table'!$C${capRow}`;
-
-                    const isLiquidationPref = (step.name || '').indexOf('Liquidation Preference') !== -1;
-                    if (isLiquidationPref) {
-                        factorFormula = lpRef; // LP multiple
-                        amountFormula = `${investmentRef}*${lpRef}`;
-                        lastLpRemainingRow = nextRowIndex; // remaining after this row captured below
-                    } else {
-                        // participation/common distribution uses ownership %
-                        const baseRemainingRef = lastLpRemainingRow ? `E${lastLpRemainingRow}` : `E${prevRowIndex}`;
-                        factorFormula = ownershipRef;
-                        amountFormula = `${baseRemainingRef}*${ownershipRef}`;
-                    }
+                const amount = Math.abs(step.value || 0);
+                
+                // Determine the factor to display
+                let factor = '';
+                if (step.lpMultiple !== undefined) {
+                    // Liquidation preference step - show LP multiple
+                    factor = step.lpMultiple;
+                } else if (step.participationFactor !== undefined) {
+                    // Participation step - show ownership percentage
+                    factor = step.participationFactor;
                 }
+
+                // Calculate remaining after this step
+                runningRemaining -= amount;
 
                 stepsSheet.push([
                     step.name || '',
                     scName,
-                    { t: 'n', f: amountFormula },
-                    { t: 'n', f: factorFormula },
-                    { t: 'n', f: `E${prevRowIndex}-C${nextRowIndex}` },
+                    { t: 'n', v: amount },
+                    { t: 'n', v: factor },
+                    { t: 'n', v: Math.max(0, runningRemaining) }, // Ensure non-negative
                     step.description || ''
                 ]);
             });
@@ -1499,6 +1512,126 @@
             XLSX.utils.book_append_sheet(wb, stepsWS, 'Waterfall Steps');
 
             XLSX.writeFile(wb, 'waterfall_export.xlsx');
+        }
+        
+        // AI Analysis function - calls Gemini API to explain the waterfall
+        async function analyzeWithAI() {
+            const modal = document.getElementById('aiAnalysisModal');
+            const loadingSpinner = document.getElementById('aiLoadingSpinner');
+            const responseText = document.getElementById('aiResponseText');
+            
+            // Show modal with loading state
+            modal.style.display = 'flex';
+            loadingSpinner.style.display = 'block';
+            responseText.style.display = 'none';
+            
+            try {
+                // Gather waterfall data for context
+                const summaryData = calculateSummaryWaterfall();
+                const waterfallSteps = calculateDetailedWaterfall();
+                const aggregates = getShareClassAggregates();
+                const totalShares = Object.values(aggregates).reduce((sum, v) => sum + ((v && v.shares) || 0), 0);
+                
+                // Build context for AI
+                let contextText = `Analyze this waterfall distribution for a $${exitAmount.toLocaleString()} exit:\n\n`;
+                
+                // Share classes info
+                contextText += "SHARE CLASSES:\n";
+                shareClasses.forEach(sc => {
+                    const agg = aggregates[sc.name] || { shares: 0, investment: 0 };
+                    const ownership = totalShares > 0 ? ((agg.shares / totalShares) * 100).toFixed(2) : 0;
+                    contextText += `- ${sc.name}: ${sc.type}, ${ownership}% ownership, $${(agg.investment || 0).toLocaleString()} investment`;
+                    if (sc.type === 'preferred') {
+                        contextText += `, ${sc.liquidationPref}x LP, ${sc.prefType}`;
+                        if (sc.cap) contextText += `, ${sc.cap}x cap`;
+                    }
+                    contextText += "\n";
+                });
+                
+                // Waterfall steps
+                contextText += "\nWATERFALL DISTRIBUTION STEPS:\n";
+                waterfallSteps.forEach((step, i) => {
+                    if (i === 0) {
+                        contextText += `- Total Exit Proceeds: $${step.value.toLocaleString()}\n`;
+                    } else {
+                        const amount = Math.abs(step.value);
+                        contextText += `- ${step.name}: $${amount.toLocaleString()}\n`;
+                    }
+                });
+                
+                // Final summary
+                contextText += "\nFINAL DISTRIBUTION SUMMARY:\n";
+                summaryData.forEach(entry => {
+                    const agg = aggregates[entry.name] || { investment: 0 };
+                    const roi = agg.investment > 0 ? ((entry.payout / agg.investment) * 100).toFixed(1) : 'N/A';
+                    contextText += `- ${entry.name}: $${entry.payout.toLocaleString()} (${entry.percentage}%), ROI: ${roi}%\n`;
+                });
+                
+                const prompt = `You are a financial expert specializing in venture capital and startup equity. Please analyze the following waterfall distribution and explain:
+
+1. **Step-by-step breakdown**: Walk through each step of the distribution process, explaining why each amount was calculated that way.
+
+2. **Key observations**: What are the important insights about this distribution? Who benefits most? Are there any caps that affected the outcome?
+
+3. **Investor returns**: Analyze the returns for each share class relative to their investment.
+
+4. **Simple explanation**: Provide a brief "plain English" summary that a non-expert could understand.
+
+Please be specific with the actual numbers from this scenario. Use clear formatting with bullet points and headers.
+
+${contextText}`;
+
+                // Call Gemini API
+                const response = await fetch('/.netlify/functions/gemini-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: prompt })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const aiResponse = data.response || data.candidates?.[0]?.content?.parts?.[0]?.text || 'Unable to generate analysis.';
+                
+                // Format and display response
+                loadingSpinner.style.display = 'none';
+                responseText.style.display = 'block';
+                responseText.innerHTML = formatAIResponse(aiResponse);
+                
+            } catch (error) {
+                console.error('AI Analysis error:', error);
+                loadingSpinner.style.display = 'none';
+                responseText.style.display = 'block';
+                responseText.innerHTML = `<div style="color: #ef4444; padding: 20px; text-align: center;">
+                    <p><strong>Error analyzing waterfall</strong></p>
+                    <p style="font-size: 14px; color: #6b7280;">${error.message}</p>
+                    <p style="font-size: 14px; color: #6b7280; margin-top: 12px;">Please try again or check your connection.</p>
+                </div>`;
+            }
+        }
+        
+        // Format AI response with proper HTML
+        function formatAIResponse(text) {
+            // Convert markdown-style formatting to HTML
+            let formatted = text
+                // Headers
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/^### (.+)$/gm, '<h4 style="color: #1f2937; margin: 16px 0 8px;">$1</h4>')
+                .replace(/^## (.+)$/gm, '<h3 style="color: #1f2937; margin: 20px 0 10px;">$1</h3>')
+                .replace(/^# (.+)$/gm, '<h2 style="color: #1f2937; margin: 24px 0 12px;">$1</h2>')
+                // Lists
+                .replace(/^- (.+)$/gm, '<li style="margin: 4px 0;">$1</li>')
+                .replace(/^• (.+)$/gm, '<li style="margin: 4px 0;">$1</li>')
+                .replace(/^\d+\. (.+)$/gm, '<li style="margin: 4px 0;">$1</li>')
+                // Wrap consecutive list items
+                .replace(/(<li[^>]*>.*<\/li>\n?)+/g, '<ul style="margin: 8px 0 8px 20px; padding: 0;">$&</ul>')
+                // Line breaks
+                .replace(/\n\n/g, '</p><p style="margin: 12px 0;">')
+                .replace(/\n/g, '<br>');
+            
+            return `<div style="font-size: 15px;"><p style="margin: 12px 0;">${formatted}</p></div>`;
         }
         
         // Update the waterfall analysis charts and tables

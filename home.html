@@ -399,6 +399,7 @@
         .vanilla .tool-name::before { background: var(--vanilla-color); }
         .netflix .tool-name::before { background: var(--netflix-color); }
         .interest .tool-name::before { background: var(--interest-color); }
+        .benchmark .tool-name::before { background: #4a6cf7; }
         .budget .tool-name::before { background: #8B5CF6; }
         .grant .tool-name::before { background: #0a5264; }
         .espp .tool-name::before { background: #0a5264; }
@@ -409,6 +410,7 @@
         .vanilla .tool-indicator { background: var(--vanilla-color); }
         .netflix .tool-indicator { background: var(--netflix-color); }
         .interest .tool-indicator { background: var(--interest-color); }
+        .benchmark .tool-indicator { background: #4a6cf7; }
         .budget .tool-indicator { background: #8B5CF6; }
         .grant .tool-indicator { background: #0a5264; }
         .espp .tool-indicator { background: #0a5264; }
@@ -944,6 +946,7 @@
             position: relative;
             box-shadow: 0 -4px 20px -10px rgba(0, 0, 0, 0.05);
         }
+
         
         .footer-content {
             max-width: 1600px;
@@ -1183,7 +1186,7 @@
                 </a>
             </div>
         </header>
-        
+
         <div class="tools-section">
             <div class="tools-container">
 
@@ -1210,6 +1213,21 @@
                             </td>
                             <td>
                                 <a href="sip_calculator.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row benchmark">
+                            <td>
+                                <div class="tool-indicator"></div>
+                            </td>
+                            <td>
+                                <h3 class="tool-name">Term Sheet Benchmarker</h3>
+                                <p class="tool-type">AI SAFE / Note / Equity review</p>
+                            </td>
+                            <td>
+                                <p class="tool-description">Upload or paste a term sheet and get a simple market-fit score, key risks, and stage-aware benchmarks. Uses Gemini with founder/investor persona toggles.</p>
+                            </td>
+                            <td>
+                                <a href="term-sheet-benchmark.html" class="tool-launch-btn">Launch</a>
                             </td>
                         </tr>
                         <tr class="tool-row waterfall">
@@ -1525,6 +1543,7 @@
                     position: 'bottom-left'
                 });
             }
+
         });
     </script>
 </body>
