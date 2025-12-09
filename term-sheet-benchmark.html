@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-RT0B6NXFG6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Term Sheet Benchmarker (Gemini)</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/mobile-responsive.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+    <style>
+        :root {
+            --primary: #4a6cf7;
+            --accent: #22c55e;
+            --muted: #64748b;
+            --surface: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+        }
+        body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #0f172a; background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%); }
+        /* Top bar aligned with other tools */
+        .nav-bar { background: linear-gradient(135deg, var(--primary), #2ecc71); color: white; padding: 14px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 20; box-shadow: var(--shadow); }
+        .nav-bar a { color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; }
+        .nav-title { font-weight: 800; letter-spacing: .4px; text-shadow: 0 2px 4px rgba(0,0,0,.16); }
+
+        .page { max-width: 1100px; margin: 0 auto; padding: 18px; }
+        .hero { background: rgba(255,255,255,0.9); border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; }
+        .mini-logo { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 8px 18px rgba(74,108,247,0.25); position: relative; overflow: hidden; }
+        .mini-logo::before { content: ""; position: absolute; width: 24px; height: 24px; top: 10px; left: 10px; background: #fff; opacity: .88; clip-path: polygon(0 0, 100% 0, 100% 20%, 20% 20%, 20% 100%, 0 100%); }
+        .mini-logo::after { content: ""; position: absolute; width: 12px; height: 12px; right: 8px; bottom: 8px; background: #fff; opacity: .7; clip-path: polygon(0 0, 100% 0, 100% 100%, 80% 100%, 80% 80%, 0 80%); }
+        .hero h1 { margin: 0 0 6px 0; font-size: 1.6rem; }
+        .hero p { margin: 0; color: var(--muted); }
+        .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+        .pill { padding: 6px 10px; border-radius: 999px; font-weight: 700; background: rgba(74,108,247,0.12); color: #1e293b; border: 1px solid rgba(74,108,247,0.22); }
+
+        .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+        .card { background: var(--surface); border: 1px solid var(--gray-200); border-radius: 14px; box-shadow: var(--shadow); padding: 16px; }
+        .card h3 { margin: 0 0 10px 0; font-size: 1.1rem; }
+
+        .step { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .step-num { width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem; }
+
+        .upload { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 12px; background: #f8fafc; }
+        .upload input[type="file"] { width: 100%; padding: 10px; border: 1px dashed #cbd5e1; border-radius: 10px; background: white; cursor: pointer; }
+        .textarea { width: 100%; min-height: 120px; border: 1px solid var(--gray-200); border-radius: 12px; padding: 12px; font-size: 0.95rem; box-sizing: border-box; margin-top: 10px; }
+
+        .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-top: 10px; }
+        select, input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #dfe4ea; box-sizing: border-box; }
+
+        .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+        button { cursor: pointer; border: none; border-radius: 10px; padding: 12px 16px; font-weight: 800; }
+        .primary { background: linear-gradient(135deg, #4a6cf7, #22c55e); color: white; box-shadow: 0 10px 22px rgba(74,108,247,0.25); }
+        .ghost { background: #f8fafc; color: #0f172a; border: 1px solid #e2e8f0; }
+
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .mini-card { background: #f8fafc; border: 1px solid var(--gray-200); border-radius: 12px; padding: 12px; }
+        .mini-label { color: var(--muted); font-weight: 700; font-size: 0.85rem; }
+        .mini-value { font-size: 1.3rem; font-weight: 800; margin-top: 6px; }
+
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .chip { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 10px; font-weight: 600; }
+        .list { margin: 10px 0 0 16px; color: #475569; }
+
+        .benchmarks { display: grid; gap: 8px; margin-top: 10px; }
+        .bench-item { display: grid; grid-template-columns: 0.9fr 0.6fr 0.6fr; gap: 8px; padding: 10px; border: 1px solid var(--gray-200); border-radius: 10px; background: #fff; }
+        .badge { padding: 6px 10px; border-radius: 999px; font-weight: 700; }
+        .badge.green { background: rgba(34,197,94,0.15); color: #166534; }
+        .badge.amber { background: rgba(234,179,8,0.18); color: #854d0e; }
+        .badge.red { background: rgba(239,68,68,0.15); color: #991b1b; }
+
+        .status { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
+        .hint { background: #fefce8; border: 1px solid #fcd34d; padding: 10px; border-radius: 10px; color: #854d0e; margin-top: 10px; }
+
+        @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } .bench-item { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="home.html" aria-label="Go back home">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline><line x1="19" y1="12" x2="9" y2="12"></line></svg>
+            Home
+        </a>
+        <span class="nav-title">Term Sheet Benchmarker</span>
+    </div>
+
+    <div class="page">
+        <div class="hero">
+            <div class="mini-logo"></div>
+            <div>
+                <h1>Founder-friendly term sheet read</h1>
+                <p>Upload or paste a SAFE/Note/Equity term sheet. Gemini gives one verdict, key risks, and clean benchmarks—kept simple for founders.</p>
+                <div class="pill-row">
+                    <span class="pill">Gemini-powered</span>
+                    <span class="pill">PDF / DOCX / TXT</span>
+                    <span class="pill">Stage-aware ranges</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="layout">
+            <div class="card">
+                <div class="step"><span class="step-num">1</span><strong>Upload or paste key terms</strong></div>
+                <div class="upload">
+                    <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt,.md">
+                    <div class="status" id="uploadStatus">PDF stays in-browser. Paste if DOCX formatting is messy.</div>
+                </div>
+                <textarea id="termText" class="textarea" placeholder="Paste valuation cap, discount %, MFN, pro-rata/participation rights, liquidation prefs, board/info rights..."></textarea>
+
+                <div class="step" style="margin-top:10px;"><span class="step-num">2</span><strong>Pick viewpoint (kept simple)</strong></div>
+                <div class="row">
+                    <select id="personaSelect">
+                        <option value="founder" selected>Founder-friendly</option>
+                        <option value="investor">Investor protection</option>
+                        <option value="neutral">Neutral</option>
+                    </select>
+                    <select id="stageSelect">
+                        <option value="pre-seed">Pre-seed</option>
+                        <option value="seed" selected>Seed</option>
+                        <option value="series-a">Series A</option>
+                        <option value="series-b">Series B+</option>
+                    </select>
+                </div>
+
+                <div class="actions">
+                    <button class="primary" id="benchmarkBtn">Benchmark with Gemini</button>
+                    <button class="ghost" id="sampleBtn">Use sample SAFE</button>
+                </div>
+                <div class="hint">Tip: Start with the sample, then swap in your terms.</div>
+                <div class="status" id="statusText">Ready. Typical response ~3s.</div>
+            </div>
+
+            <div class="card">
+                <div class="step"><span class="step-num">3</span><strong>Results</strong></div>
+                <div class="result-grid">
+                    <div class="mini-card">
+                        <div class="mini-label">Market Fit</div>
+                        <div class="mini-value" id="scoreValue">--</div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="mini-label">Verdict</div>
+                        <div class="mini-value" id="verdictValue">Waiting</div>
+                    </div>
+                    <div class="mini-card">
+                        <div class="mini-label">Angle</div>
+                        <div class="mini-value" id="angleValue">-</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <strong>Summary</strong>
+                    <div class="hint" id="summaryBox">Upload or use sample to see a concise readout.</div>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <strong>Top Risks</strong>
+                    <div class="chips" id="risksBox">
+                        <span class="chip">Waiting for analysis</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px;">
+                    <strong>Benchmarks (stage-aware)</strong>
+                    <div class="benchmarks" id="benchBox">
+                        <div class="bench-item">
+                            <div><strong>Discount</strong><br><span class="status">Pending</span></div>
+                            <div>–</div>
+                            <div><span class="badge amber">Pending</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status" id="spinner" style="display:none;">Analyzing with Gemini…</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PDF worker setup
+        if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+        }
+
+        const fileInput = document.getElementById('fileInput');
+        const termText = document.getElementById('termText');
+        const benchmarkBtn = document.getElementById('benchmarkBtn');
+        const sampleBtn = document.getElementById('sampleBtn');
+        const personaSelect = document.getElementById('personaSelect');
+        const stageSelect = document.getElementById('stageSelect');
+        const statusText = document.getElementById('statusText');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const scoreValue = document.getElementById('scoreValue');
+        const verdictValue = document.getElementById('verdictValue');
+        const angleValue = document.getElementById('angleValue');
+        const summaryBox = document.getElementById('summaryBox');
+        const risksBox = document.getElementById('risksBox');
+        const benchBox = document.getElementById('benchBox');
+        const spinner = document.getElementById('spinner');
+
+        const sample = `Company: Acme AI, Inc. (Delaware C-Corp)
+Round: Seed SAFE (post-money)
+Valuation Cap: $12,000,000
+Discount: 15%
+MFN: Yes
+Pro Rata: Investor pro-rata through Series B; non-participating
+Participation: None (standard SAFE)
+Liquidation Preference: 1x non-participating
+Board: No seat; observer until Series A
+Information Rights: Quarterly financials + annual budget
+Closing: Rolling close, $250k min ticket`;
+
+        const fallbackBench = [
+            { name: 'Discount', provided: '—', market_range: 'Seed SAFE: 10-20%', assessment: 'Pending', risk_level: 'amber' },
+            { name: 'Valuation Cap', provided: '—', market_range: 'Seed SaaS: $8M-$15M', assessment: 'Pending', risk_level: 'amber' },
+            { name: 'Pro Rata', provided: '—', market_range: 'Standard to Series A/B', assessment: 'Pending', risk_level: 'amber' },
+            { name: 'Participation', provided: '—', market_range: 'Seed: non-participating standard', assessment: 'Pending', risk_level: 'amber' }
+        ];
+
+        const setStatus = (msg) => { if (statusText) statusText.textContent = msg; };
+        const toggleLoading = (isLoading) => {
+            if (spinner) spinner.style.display = isLoading ? 'block' : 'none';
+            [benchmarkBtn, sampleBtn].forEach(btn => btn && (btn.disabled = isLoading));
+        };
+
+        const sanitize = (str) => {
+            if (str === null || str === undefined) return '—';
+            return String(str).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        };
+
+        const renderRisks = (risks = []) => {
+            if (!risksBox) return;
+            risksBox.innerHTML = '';
+            const list = risks.length ? risks.slice(0, 4) : ['No major risks flagged yet'];
+            list.forEach(r => {
+                const span = document.createElement('span');
+                span.className = 'chip';
+                span.textContent = r;
+                risksBox.appendChild(span);
+            });
+        };
+
+        const renderBenchmarks = (bench = []) => {
+            if (!benchBox) return;
+            const items = bench.length ? bench : fallbackBench;
+            benchBox.innerHTML = items.map(item => {
+                const cls = item.risk_level === 'green' ? 'green' : item.risk_level === 'red' ? 'red' : 'amber';
+                return `<div class="bench-item">
+                    <div><strong>${sanitize(item.name)}</strong><br><span class="status">${sanitize(item.market_range || '')}</span></div>
+                    <div>${sanitize(item.provided || item.value || '—')}</div>
+                    <div><span class="badge ${cls}">${sanitize(item.assessment || 'Pending')}</span></div>
+                </div>`;
+            }).join('');
+        };
+
+        const applyResults = (data = {}, raw = '') => {
+            if (scoreValue) scoreValue.textContent = data.score ? `${data.score}/100` : '--';
+            if (verdictValue) verdictValue.textContent = data.verdict || 'See summary';
+            if (angleValue) angleValue.textContent = data.negotiation_angle || data.negotiation || '-';
+            if (summaryBox) summaryBox.textContent = data.summary || raw || 'No summary returned.';
+            renderRisks(data.risks || data.risk_flags || []);
+            renderBenchmarks(data.benchmarks || []);
+        };
+
+        const safeParse = (raw) => {
+            if (!raw) return {};
+            try { return JSON.parse(raw); } catch (e) {
+                const match = raw.match(/\{[\s\S]*\}/);
+                if (match) { try { return JSON.parse(match[0]); } catch (err) { return { summary: raw }; } }
+                return { summary: raw };
+            }
+        };
+
+        const buildPrompt = (text) => {
+            return `You are a venture financing counsel benchmarking term sheet economics for founders.
+Persona: ${personaSelect.value}
+Stage: ${stageSelect.value}
+
+Return ONLY valid JSON with:
+{
+  "score": number 0-100,
+  "verdict": "Near market / Aggressive / Founder-friendly / Risky",
+  "negotiation_angle": "short sentence",
+  "summary": "3-5 lines",
+  "risks": ["bullets"],
+  "benchmarks": [
+    {"name":"Discount","provided":"15%","market_range":"Seed SAFE 10-20%","assessment":"Market standard","risk_level":"amber"},
+    {"name":"Valuation Cap","provided":"$12M","market_range":"Seed SaaS $8M-$15M","assessment":"Slightly high","risk_level":"red"},
+    {"name":"Pro Rata","provided":"Yes to Series B","market_range":"Standard until Series A/B","assessment":"Reasonable","risk_level":"green"},
+    {"name":"Participation","provided":"None","market_range":"Non-participating standard","assessment":"Clean","risk_level":"green"}
+  ]
+}
+
+Term sheet text:
+${text}`;
+        };
+
+        const callGemini = async (prompt) => {
+            const body = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.3, maxOutputTokens: 800 }
+            };
+            const res = await fetch('/api/gemini-chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) throw new Error(`Gemini error: ${res.status}`);
+            const data = await res.json();
+            return data?.candidates?.[0]?.content?.parts?.[0]?.text || data.response || '';
+        };
+
+        const extractPdfText = async (file) => {
+            if (!window.pdfjsLib) return '';
+            const buffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+            let text = '';
+            const pages = Math.min(pdf.numPages, 6);
+            for (let i = 1; i <= pages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                text += content.items.map(it => it.str).join(' ') + '\n';
+            }
+            return text;
+        };
+
+        const readFile = async (file) => {
+            const name = file.name.toLowerCase();
+            if (name.endsWith('.pdf')) {
+                setStatus('Reading PDF securely…');
+                return extractPdfText(file);
+            }
+            setStatus('Reading file…');
+            return file.text();
+        };
+
+        const handleBenchmark = async () => {
+            const terms = termText?.value?.trim();
+            if (!terms) { setStatus('Add terms via upload or paste.'); termText?.focus(); return; }
+            toggleLoading(true);
+            try {
+                const prompt = buildPrompt(terms);
+                const raw = await callGemini(prompt);
+                const parsed = safeParse(raw);
+                applyResults(parsed, raw);
+                setStatus('Benchmark complete.');
+            } catch (err) {
+                console.error(err);
+                setStatus('Gemini request failed. Please retry.');
+            } finally {
+                toggleLoading(false);
+            }
+        };
+
+        // Event wiring
+        if (fileInput) {
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    const text = await readFile(file);
+                    termText.value = text || '';
+                    setStatus(`Loaded ${file.name}. Click Benchmark.`);
+                } catch (err) {
+                    console.error(err);
+                    setStatus('Could not read file. Please paste instead.');
+                }
+            });
+        }
+
+        if (sampleBtn) {
+            sampleBtn.addEventListener('click', () => {
+                termText.value = sample;
+                setStatus('Sample SAFE loaded. Click Benchmark.');
+            });
+        }
+
+        if (benchmarkBtn) {
+            benchmarkBtn.addEventListener('click', () => handleBenchmark());
+        }
+
+        // Default sample for quick try
+        termText.value = sample;
+    </script>
+</body>
+</html>
