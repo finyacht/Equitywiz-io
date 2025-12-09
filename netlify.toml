@@ -101,9 +101,11 @@
 [context.branch-deploy]
   environment = { NODE_ENV = "development" }
 
-# Functions configuration
+# Functions configuration - use root level functions folder
 [functions]
   directory = "netlify/functions"
+  node_bundler = "esbuild"
+  included_files = ["netlify/functions/**"]
 
 # Custom headers for security
 [[headers]]
