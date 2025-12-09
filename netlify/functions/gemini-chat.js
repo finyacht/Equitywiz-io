@@ -137,7 +137,7 @@ Use bullet points and be comprehensive. End with a practical tip.
   }
 
   try {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
     
     const result = await callGeminiWithRetry(apiUrl, {
       method: 'POST',
