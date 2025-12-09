@@ -101,11 +101,14 @@
 [context.branch-deploy]
   environment = { NODE_ENV = "development" }
 
-# Functions configuration - use root level functions folder
+# Functions configuration
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
-  included_files = ["netlify/functions/**"]
+
+# Force Node 18 for native fetch support
+[build.environment]
+  NODE_VERSION = "18"
 
 # Custom headers for security
 [[headers]]
