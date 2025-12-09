@@ -1,5 +1,60 @@
 const https = require('https');
 
+// Retry configuration
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 1000; // 1 second
+
+// Helper function to delay execution
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Helper function to make API call with retry logic
+async function callGeminiWithRetry(fetch, url, options, retries = MAX_RETRIES) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(url, options);
+      
+      // If rate limited (429), wait and retry
+      if (response.status === 429) {
+        if (attempt < retries) {
+          const retryDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1); // Exponential backoff
+          console.log(`⏳ Rate limited (429). Retrying in ${retryDelay}ms... (attempt ${attempt}/${retries})`);
+          await delay(retryDelay);
+          continue;
+        }
+        // Last attempt failed with 429
+        return {
+          ok: false,
+          status: 429,
+          errorMessage: 'Rate limit exceeded. Please wait a moment and try again. (Free tier: 60 requests/minute)'
+        };
+      }
+      
+      // If other error, return immediately
+      if (!response.ok) {
+        const errorText = await response.text();
+        return {
+          ok: false,
+          status: response.status,
+          errorMessage: errorText
+        };
+      }
+      
+      // Success
+      const data = await response.json();
+      return { ok: true, data };
+      
+    } catch (error) {
+      if (attempt < retries) {
+        const retryDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
+        console.log(`⚠️ Request failed. Retrying in ${retryDelay}ms... (attempt ${attempt}/${retries})`);
+        await delay(retryDelay);
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+
 exports.handler = async function(event, context) {
   // Handle CORS
   const headers = {
@@ -128,29 +183,41 @@ IMPORTANT: Always provide comprehensive workflows with 6-12+ action points. Neve
     // Use dynamic import for fetch
     const { default: fetch } = await import('node-fetch');
     
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(geminiRequestBody)
+    // Use gemini-1.5-flash for better rate limits and stability
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    
+    const result = await callGeminiWithRetry(fetch, apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(geminiRequestBody)
+    });
+
+    if (!result.ok) {
+      console.error('❌ Gemini API Error:', result.errorMessage);
+      
+      // Provide user-friendly error messages
+      let userMessage = result.errorMessage;
+      if (result.status === 429) {
+        userMessage = 'AI is temporarily busy. Please wait 10-15 seconds and try again.';
+      } else if (result.status === 403) {
+        userMessage = 'API key issue. Please check your Gemini API key configuration.';
+      } else if (result.status === 400) {
+        userMessage = 'Invalid request. Please try a shorter or simpler query.';
       }
-    );
-
-    console.log('📥 Gemini API response status:', response.status);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Gemini API Error:', errorText);
+      
       return { 
-        statusCode: response.status, 
+        statusCode: result.status, 
         headers,
-        body: JSON.stringify({ error: `Gemini API error: ${errorText}` })
+        body: JSON.stringify({ 
+          error: userMessage,
+          status: result.status,
+          retryable: result.status === 429
+        })
       };
     }
 
-    const data = await response.json();
     console.log('✅ Gemini API Success');
+    const data = result.data;
 
     // Check if this is a chatbot request (expects specific format)
     if (requestBody.message && !requestBody.contents) {
@@ -183,9 +250,10 @@ IMPORTANT: Always provide comprehensive workflows with 6-12+ action points. Neve
       statusCode: 500, 
       headers,
       body: JSON.stringify({ 
-        error: 'Internal server error', 
-        details: error.message 
+        error: 'AI service temporarily unavailable. Please try again in a moment.',
+        details: error.message,
+        retryable: true
       })
     };
   }
-}; 
+};
