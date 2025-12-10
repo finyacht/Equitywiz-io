@@ -1,59 +1,4 @@
-// Retry configuration - more aggressive for rate limits
-const MAX_RETRIES = 5;
-const INITIAL_RETRY_DELAY = 3000; // 3 seconds
-const MAX_RETRY_DELAY = 15000; // 15 seconds max
-
-// Helper function to delay execution
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Helper function to make API call with retry logic
-async function callGeminiWithRetry(url, options, retries = MAX_RETRIES) {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const response = await fetch(url, options);
-      
-      // If rate limited (429), wait and retry with longer delays
-      if (response.status === 429) {
-        if (attempt < retries) {
-          // Exponential backoff with jitter, capped at MAX_RETRY_DELAY
-          const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
-          const jitter = Math.random() * 1000;
-          const retryDelay = Math.min(baseDelay + jitter, MAX_RETRY_DELAY);
-          console.log(`Rate limited (429). Waiting ${Math.round(retryDelay/1000)}s before retry ${attempt}/${retries}...`);
-          await delay(retryDelay);
-          continue;
-        }
-        return {
-          ok: false,
-          status: 429,
-          errorMessage: 'API rate limit reached. Please wait 30 seconds and try again.'
-        };
-      }
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        return {
-          ok: false,
-          status: response.status,
-          errorMessage: errorText
-        };
-      }
-      
-      const data = await response.json();
-      return { ok: true, data };
-      
-    } catch (error) {
-      if (attempt < retries) {
-        const retryDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
-        console.log(`Request failed. Retrying in ${retryDelay}ms... (attempt ${attempt}/${retries})`);
-        await delay(Math.min(retryDelay, MAX_RETRY_DELAY));
-        continue;
-      }
-      throw error;
-    }
-  }
-}
-
+// Simplified - no retries to avoid Netlify timeout (10s limit)
 exports.handler = async function(event, context) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -114,7 +59,7 @@ Use bullet points and be comprehensive. End with a practical tip.
 
 `;
     
-    const recentHistory = history.slice(-6);
+    const recentHistory = history.slice(-4);
     recentHistory.forEach(msg => {
       if (msg.role === 'user') {
         conversationText += `User: ${msg.content}\n`;
@@ -133,7 +78,7 @@ Use bullet points and be comprehensive. End with a practical tip.
         temperature: 0.7,
         topK: 40,
         topP: 0.95,
-        maxOutputTokens: 1024
+        maxOutputTokens: 800
       }
     };
   } else {
@@ -143,35 +88,36 @@ Use bullet points and be comprehensive. End with a practical tip.
   try {
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
     
-    const result = await callGeminiWithRetry(apiUrl, {
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(geminiRequestBody)
     });
 
-    if (!result.ok) {
-      let userMessage = result.errorMessage;
-      if (result.status === 429) {
-        userMessage = '⏳ AI is busy due to high usage. Please wait 30 seconds and try again.';
-      } else if (result.status === 403) {
-        userMessage = 'API key issue. Please check your Gemini API key configuration.';
-      } else if (result.status === 400) {
-        userMessage = 'Invalid request. Please try a shorter or simpler query.';
+    if (!response.ok) {
+      const errorText = await response.text();
+      let userMessage = errorText;
+      
+      if (response.status === 429) {
+        userMessage = '⏳ AI is busy. Please wait 30 seconds and try again.';
+      } else if (response.status === 403) {
+        userMessage = 'API key issue. Please check configuration.';
+      } else if (response.status === 400) {
+        userMessage = 'Invalid request. Try a simpler query.';
       }
       
       return { 
-        statusCode: result.status, 
+        statusCode: response.status, 
         headers,
         body: JSON.stringify({ 
           error: userMessage,
-          status: result.status,
-          retryable: result.status === 429,
-          retryAfter: result.status === 429 ? 30 : null
+          status: response.status,
+          retryable: response.status === 429
         })
       };
     }
 
-    const data = result.data;
+    const data = await response.json();
 
     if (requestBody.message && !requestBody.contents) {
       if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
@@ -185,7 +131,7 @@ Use bullet points and be comprehensive. End with a practical tip.
           })
         };
       } else {
-        throw new Error('Invalid response format from Gemini API');
+        throw new Error('Invalid response from Gemini');
       }
     } else {
       return {
@@ -196,13 +142,12 @@ Use bullet points and be comprehensive. End with a practical tip.
     }
 
   } catch (error) {
-    console.error('Function Error:', error);
+    console.error('Error:', error);
     return { 
       statusCode: 500, 
       headers,
       body: JSON.stringify({ 
-        error: 'AI service temporarily unavailable. Please try again in a moment.',
-        details: error.message,
+        error: 'AI service error. Please try again.',
         retryable: true
       })
     };
