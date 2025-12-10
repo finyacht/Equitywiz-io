@@ -1,6 +1,7 @@
-// Retry configuration
-const MAX_RETRIES = 3;
-const INITIAL_RETRY_DELAY = 1000; // 1 second
+// Retry configuration - more aggressive for rate limits
+const MAX_RETRIES = 5;
+const INITIAL_RETRY_DELAY = 3000; // 3 seconds
+const MAX_RETRY_DELAY = 15000; // 15 seconds max
 
 // Helper function to delay execution
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -11,18 +12,21 @@ async function callGeminiWithRetry(url, options, retries = MAX_RETRIES) {
     try {
       const response = await fetch(url, options);
       
-      // If rate limited (429), wait and retry
+      // If rate limited (429), wait and retry with longer delays
       if (response.status === 429) {
         if (attempt < retries) {
-          const retryDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
-          console.log(`Rate limited (429). Retrying in ${retryDelay}ms... (attempt ${attempt}/${retries})`);
+          // Exponential backoff with jitter, capped at MAX_RETRY_DELAY
+          const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
+          const jitter = Math.random() * 1000;
+          const retryDelay = Math.min(baseDelay + jitter, MAX_RETRY_DELAY);
+          console.log(`Rate limited (429). Waiting ${Math.round(retryDelay/1000)}s before retry ${attempt}/${retries}...`);
           await delay(retryDelay);
           continue;
         }
         return {
           ok: false,
           status: 429,
-          errorMessage: 'Rate limit exceeded. Please wait a moment and try again.'
+          errorMessage: 'API rate limit reached. Please wait 30 seconds and try again.'
         };
       }
       
@@ -42,7 +46,7 @@ async function callGeminiWithRetry(url, options, retries = MAX_RETRIES) {
       if (attempt < retries) {
         const retryDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
         console.log(`Request failed. Retrying in ${retryDelay}ms... (attempt ${attempt}/${retries})`);
-        await delay(retryDelay);
+        await delay(Math.min(retryDelay, MAX_RETRY_DELAY));
         continue;
       }
       throw error;
@@ -148,7 +152,7 @@ Use bullet points and be comprehensive. End with a practical tip.
     if (!result.ok) {
       let userMessage = result.errorMessage;
       if (result.status === 429) {
-        userMessage = 'AI is temporarily busy. Please wait 10-15 seconds and try again.';
+        userMessage = '⏳ AI is busy due to high usage. Please wait 30 seconds and try again.';
       } else if (result.status === 403) {
         userMessage = 'API key issue. Please check your Gemini API key configuration.';
       } else if (result.status === 400) {
@@ -161,7 +165,8 @@ Use bullet points and be comprehensive. End with a practical tip.
         body: JSON.stringify({ 
           error: userMessage,
           status: result.status,
-          retryable: result.status === 429
+          retryable: result.status === 429,
+          retryAfter: result.status === 429 ? 30 : null
         })
       };
     }
@@ -196,7 +201,7 @@ Use bullet points and be comprehensive. End with a practical tip.
       statusCode: 500, 
       headers,
       body: JSON.stringify({ 
-        error: 'AI service temporarily unavailable. Please try again.',
+        error: 'AI service temporarily unavailable. Please try again in a moment.',
         details: error.message,
         retryable: true
       })
