@@ -1,5 +1,5 @@
-// Gemini function specialized for News Sentiment page
-// Separate from cap-table assistant to keep prompts independent
+// AI function for News Sentiment page - Now using Groq API
+// Supports both GROQ_API_KEY and GEMINI_API_KEY for backward compatibility
 
 exports.handler = async function(event) {
   const headers = {
@@ -17,9 +17,12 @@ exports.handler = async function(event) {
     return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method Not Allowed' }) };
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'GEMINI_API_KEY not configured' }) };
+  // Try Groq first, fall back to Gemini
+  const groqKey = process.env.GROQ_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+  
+  if (!groqKey && !geminiKey) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'No API key configured' }) };
   }
 
   let body;
@@ -30,21 +33,67 @@ exports.handler = async function(event) {
   }
 
   const userMessage = body.message || '';
-  const systemPreamble = body.systemPrompt || `
-You are a financial news sentiment assistant.
-You receive a short user request and a compact JSON context containing: the search query, time window, overall sentiment counts, and a short list of top articles (title, source, sentiment, combinedScore).
+  const systemPrompt = body.systemPrompt || `You are a financial news sentiment assistant.
+Provide clear, neutral, concise insights. Use bullet points (4-8 bullets).
+Do not give investment advice.`;
 
-Objectives:
-- Provide clear, neutral, concise insights for non-experts.
-- Use bullet points by default; 4-8 bullets is ideal.
-- Reference themes and sources at a high level; do not fabricate details.
-- Do not give investment advice; avoid directives like “buy/sell/hold”.
-- If context is missing, state assumptions briefly.
-`;
+  // Use Groq if available (preferred)
+  if (groqKey) {
+    return await callGroq(groqKey, systemPrompt, userMessage, headers);
+  } else {
+    return await callGemini(geminiKey, systemPrompt, userMessage, headers);
+  }
+};
 
-  const { default: fetch } = await import('node-fetch');
+// Groq API call
+async function callGroq(apiKey, systemPrompt, userMessage, headers) {
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMessage }
+        ],
+        temperature: 0.6,
+        max_tokens: 700
+      })
+    });
 
-  const prompt = `${systemPreamble}\n\nUser request:\n${userMessage}`;
+    if (!response.ok) {
+      const errText = await response.text();
+      
+      if (response.status === 429) {
+        return { 
+          statusCode: 429, 
+          headers, 
+          body: JSON.stringify({ 
+            error: '⏳ AI is busy. Please wait a moment and try again.',
+            retryable: true 
+          }) 
+        };
+      }
+      
+      return { statusCode: response.status, headers, body: JSON.stringify({ error: 'AI error', details: errText }) };
+    }
+
+    const data = await response.json();
+    const responseText = data.choices?.[0]?.message?.content || '';
+    return { statusCode: 200, headers, body: JSON.stringify({ response: responseText }) };
+    
+  } catch (e) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Service error', details: e.message }) };
+  }
+}
+
+// Fallback to Gemini API
+async function callGemini(apiKey, systemPrompt, userMessage, headers) {
+  const prompt = `${systemPrompt}\n\nUser request:\n${userMessage}`;
 
   try {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
@@ -52,20 +101,32 @@ Objectives:
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.6, topK: 40, topP: 0.9, maxOutputTokens: 700 }
+        generationConfig: { temperature: 0.6, topK: 40, topP: 0.9, maxOutputTokens: 500 }
       })
     });
 
     if (!res.ok) {
       const errText = await res.text();
-      return { statusCode: res.status, headers, body: JSON.stringify({ error: 'Gemini API error', details: errText }) };
+      
+      if (res.status === 429) {
+        return { 
+          statusCode: 429, 
+          headers, 
+          body: JSON.stringify({ 
+            error: '⏳ AI is busy. Please wait 30 seconds and try again.',
+            retryable: true 
+          }) 
+        };
+      }
+      
+      return { statusCode: res.status, headers, body: JSON.stringify({ error: 'Gemini error', details: errText }) };
     }
 
     const data = await res.json();
     const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
     return { statusCode: 200, headers, body: JSON.stringify({ response: responseText }) };
+    
   } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal server error', details: e.message }) };
+    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Service error', details: e.message }) };
   }
-};
-
+}
