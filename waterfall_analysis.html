@@ -556,9 +556,21 @@
                 <button id="exportExcelBtn" class="primary">Export to Spreadsheet</button>
                 <button id="analyzeAIBtn" class="primary" style="background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);">🤖 Analyze with AI</button>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
-                <label for="exitAmount" style="margin:0;">Exit Amount ($)</label>
-                <input id="exitAmount" class="numeric-input" type="text" inputmode="decimal" value="10000000" style="width: 160px;">
+            <div style="display: flex; gap: 20px; align-items: flex-end;">
+                <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                    <label for="distributionMethod" style="margin:0; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                        Distribution Method
+                        <span title="Standard: When a class hits its cap, it's removed from calculations. Remaining classes split proportionally.&#10;&#10;Residual Common: Participation percentages stay fixed. Overflow goes primarily to Common stock as residual owner." style="cursor: help; color: #6b7280; font-size: 14px;">ⓘ</span>
+                    </label>
+                    <select id="distributionMethod" style="width: 160px; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;" title="Standard: Capped classes removed, others split proportionally. Residual Common: Fixed percentages, common gets overflow.">
+                        <option value="standard" selected>Standard</option>
+                        <option value="residual">Residual Common</option>
+                    </select>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                    <label for="exitAmount" style="margin:0;">Exit Amount ($)</label>
+                    <input id="exitAmount" class="numeric-input" type="text" inputmode="decimal" value="10000000" style="width: 160px;">
+                </div>
             </div>
         </div>
         
@@ -651,6 +663,7 @@
         let shareClasses = [...DEFAULT_SHARE_CLASSES];
         let transactions = [...DEFAULT_TRANSACTIONS];
         let exitAmount = 10000000;
+        let distributionMethod = 'standard'; // 'standard' or 'residual'
         
         // Default stakeholder options for dropdown
         const DEFAULT_STAKEHOLDERS = [
@@ -774,7 +787,9 @@
             shareClasses = [...DEFAULT_SHARE_CLASSES];
             transactions = [...DEFAULT_TRANSACTIONS];
             exitAmount = 10000000;
+            distributionMethod = 'standard';
             document.getElementById('exitAmount').value = exitAmount;
+            document.getElementById('distributionMethod').value = distributionMethod;
             
             renderShareClasses();
             renderTransactions();
@@ -789,6 +804,7 @@
             document.getElementById('addShareClassBtn').addEventListener('click', addNewShareClassRow);
             document.getElementById('addTransactionBtn').addEventListener('click', addNewTransactionRow);
             document.getElementById('exitAmount').addEventListener('input', updateExitAmount);
+            document.getElementById('distributionMethod').addEventListener('change', updateDistributionMethod);
             document.getElementById('viewShareClass').addEventListener('click', () => {
                 summaryView = 'shareClass';
                 document.getElementById('viewShareClass').classList.add('active');
@@ -845,6 +861,12 @@
         // Update exit amount
         function updateExitAmount() {
             exitAmount = parseNumber(document.getElementById('exitAmount').value) || 0;
+            updateWaterfallAnalysis();
+        }
+        
+        // Update distribution method
+        function updateDistributionMethod() {
+            distributionMethod = document.getElementById('distributionMethod').value;
             updateWaterfallAnalysis();
         }
         
@@ -1176,50 +1198,80 @@
 
                     // ========== STEP 3 & 4: REDISTRIBUTE OVERFLOW ==========
                     if (totalOverflow > 0.01) {
-                        // Step 3: Uncapped participating preferred gets share based on TOTAL company ownership
-                        // (not just participating shares - this is the key difference)
-                        uncappedParticipatingPreferred.forEach(sc => {
-                            const totalOwnershipShare = (sharesByClass[sc.name] || 0) / totalShares;
-                            const additionalAmount = totalOwnershipShare * totalOverflow;
-                            
-                            if (additionalAmount > 0.01) {
-                                results.push({
-                                    name: `${sc.name} (Additional Participation)`,
-                                    value: -additionalAmount,
-                                    participationFactor: totalOwnershipShare,
-                                    description: `${sc.name} receives additional distribution of $${additionalAmount.toLocaleString()}`,
-                                    remainingProceeds,
-                                    shareClass: sc.name
-                                });
-                                payoutsByClass[sc.name] += additionalAmount;
-                                remainingProceeds -= additionalAmount;
-                            }
-                        });
-
-                        // Step 4: Common shareholders (residual owners) get everything else
-                        if (remainingProceeds > 0.01 && commonClasses.length > 0) {
-                            const totalCommonShares = commonClasses.reduce((sum, sc) => 
+                        if (distributionMethod === 'standard') {
+                            // STANDARD METHOD: Capped classes are removed from denominator
+                            // Remaining classes (uncapped preferred + common) split proportionally
+                            const remainingClasses = [...uncappedParticipatingPreferred, ...commonClasses];
+                            const remainingShares = remainingClasses.reduce((sum, sc) => 
                                 sum + (sharesByClass[sc.name] || 0), 0
                             );
                             
-                            const finalPool = remainingProceeds;
-                            commonClasses.forEach(sc => {
-                                const commonShare = (sharesByClass[sc.name] || 0) / totalCommonShares;
-                                const finalAmount = commonShare * finalPool;
+                            if (remainingShares > 0) {
+                                remainingClasses.forEach(sc => {
+                                    const proportionalShare = (sharesByClass[sc.name] || 0) / remainingShares;
+                                    const additionalAmount = proportionalShare * totalOverflow;
+                                    
+                                    if (additionalAmount > 0.01) {
+                                        const label = sc.type === 'common' ? 'Overflow Distribution' : 'Additional Participation';
+                                        results.push({
+                                            name: `${sc.name} (${label})`,
+                                            value: -additionalAmount,
+                                            participationFactor: proportionalShare,
+                                            description: `${sc.name} receives ${label.toLowerCase()} of $${additionalAmount.toLocaleString()} (Standard method: ${(proportionalShare * 100).toFixed(1)}% of overflow)`,
+                                            remainingProceeds,
+                                            shareClass: sc.name
+                                        });
+                                        payoutsByClass[sc.name] += additionalAmount;
+                                        remainingProceeds -= additionalAmount;
+                                    }
+                                });
+                            }
+                        } else {
+                            // RESIDUAL COMMON METHOD: Percentages stay fixed, common gets residual
+                            // Uncapped participating preferred gets share based on TOTAL company ownership
+                            uncappedParticipatingPreferred.forEach(sc => {
+                                const totalOwnershipShare = (sharesByClass[sc.name] || 0) / totalShares;
+                                const additionalAmount = totalOwnershipShare * totalOverflow;
                                 
-                                if (finalAmount > 0.01) {
+                                if (additionalAmount > 0.01) {
                                     results.push({
-                                        name: `${sc.name} (Final Distribution)`,
-                                        value: -finalAmount,
-                                        participationFactor: commonShare,
-                                        description: `${sc.name} receives final distribution of $${finalAmount.toLocaleString()}`,
+                                        name: `${sc.name} (Additional Participation)`,
+                                        value: -additionalAmount,
+                                        participationFactor: totalOwnershipShare,
+                                        description: `${sc.name} receives additional distribution of $${additionalAmount.toLocaleString()} (Residual method: ${(totalOwnershipShare * 100).toFixed(1)}% of total)`,
                                         remainingProceeds,
                                         shareClass: sc.name
                                     });
-                                    payoutsByClass[sc.name] += finalAmount;
-                                    remainingProceeds -= finalAmount;
+                                    payoutsByClass[sc.name] += additionalAmount;
+                                    remainingProceeds -= additionalAmount;
                                 }
                             });
+
+                            // Common shareholders (residual owners) get everything else
+                            if (remainingProceeds > 0.01 && commonClasses.length > 0) {
+                                const totalCommonShares = commonClasses.reduce((sum, sc) => 
+                                    sum + (sharesByClass[sc.name] || 0), 0
+                                );
+                                
+                                const finalPool = remainingProceeds;
+                                commonClasses.forEach(sc => {
+                                    const commonShare = (sharesByClass[sc.name] || 0) / totalCommonShares;
+                                    const finalAmount = commonShare * finalPool;
+                                    
+                                    if (finalAmount > 0.01) {
+                                        results.push({
+                                            name: `${sc.name} (Residual Distribution)`,
+                                            value: -finalAmount,
+                                            participationFactor: commonShare,
+                                            description: `${sc.name} receives residual distribution of $${finalAmount.toLocaleString()}`,
+                                            remainingProceeds,
+                                            shareClass: sc.name
+                                        });
+                                        payoutsByClass[sc.name] += finalAmount;
+                                        remainingProceeds -= finalAmount;
+                                    }
+                                });
+                            }
                         }
                     }
                 }
