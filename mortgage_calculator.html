@@ -422,6 +422,65 @@
         .send-btn:hover {
             transform: translateY(-50%) scale(1.1);
         }
+
+        /* Tooltip Styles */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            color: #fff;
+            font-size: 10px;
+            margin-left: 6px;
+            cursor: help;
+            position: relative;
+        }
+
+        .info-icon:hover {
+            background: var(--brand-primary);
+        }
+
+        .info-icon::before {
+            content: "i";
+            font-weight: bold;
+            font-family: serif;
+        }
+
+        .info-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            width: max-content;
+            max-width: 250px;
+            text-align: left;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            font-weight: normal;
+            line-height: 1.4;
+        }
+
+        .info-icon:hover::before {
+            /* Triangle arrow */
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
     </style>
 </head>
 
@@ -482,7 +541,8 @@
                     <h3 style="margin:0 0 12px 0; color:var(--text-main); font-size:1.1rem;">Inputs</h3>
                     <div style="display: grid; grid-template-columns: 1fr; gap: 14px;">
                         <div class="form-group">
-                            <label>Home Price ($)</label>
+                            <label>Home Price ($) <span class="info-icon"
+                                    data-tooltip="Total purchase price of the property.&#10;Base value for calculating the loan amount."></span></label>
                             <div class="inline">
                                 <input type="range" id="homePriceRange" min="1000000" max="50000000" step="100000"
                                     value="16400000">
@@ -491,7 +551,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>Down Payment ($)</label>
+                            <label>Down Payment ($) <span class="info-icon"
+                                    data-tooltip="Upfront cash paid towards the property.&#10;Reduces the loan principal and monthly interest."></span></label>
                             <div class="inline">
                                 <input type="range" id="downPaymentRange" min="0" max="20000000" step="100000"
                                     value="11400000">
@@ -502,7 +563,8 @@
 
                         <div class="form-group">
                             <label style="display: flex; justify-content: space-between; align-items: center;">
-                                <span>Interest Rate (% per annum)</span>
+                                <span>Interest Rate (% per annum) <span class="info-icon"
+                                        data-tooltip="Annual cost of borrowing money.&#10;Higher rates significantly increase total repayment amount."></span></span>
                                 <button id="manageRateChanges" type="button"
                                     style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 600;">
                                     📊 Rate Changes
@@ -517,7 +579,8 @@
 
                         <div class="form-group">
                             <label style="display: flex; align-items: center; justify-content: space-between;">
-                                <span>Monthly Payment ($)</span>
+                                <span>Monthly Payment ($) <span class="info-icon"
+                                        data-tooltip="Your recurring monthly expense.&#10;Increasing this reduces loan term and total interest."></span></span>
                                 <label
                                     style="display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; font-size: 0.85rem; color: #64748b;">
                                     <input type="checkbox" id="reverseCalc" checked style="cursor: pointer;">
@@ -679,7 +742,7 @@
                             style="padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #334155;">
                             Date</th>
                         <th
-                            style="padding: 12px; text-align: right; font-weight: 600; border-bottom: 2px solid #334155;">
+                            style="padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #334155;">
                             Description</th>
                         <th
                             style="padding: 12px; text-align: right; font-weight: 600; border-bottom: 2px solid #334155;">
@@ -715,11 +778,12 @@
                     style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3 id="settingsTitle" style="margin:0; font-size:1.2rem; color:var(--text-main);">Settings</h3>
                     <button id="closeSettings" class="close-btn" aria-label="Close settings"
-                        style="background: #f3f4f6; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-weight: 600; transition: all 0.2s;">Close</button>
+                        style="background: #e2e8f0; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-weight: 600; transition: all 0.2s;">Close</button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group" style="margin:0;">
-                        <label for="currency">Currency</label>
+                        <label for="currency">Currency <span class="info-icon"
+                                data-tooltip="The monetary unit for your loan (e.g., USD, INR).&#10;Changes the currency symbol displayed across all results."></span></label>
                         <div class="inline">
                             <select id="currency" aria-label="Currency"
                                 style="width:100%; max-width:100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
@@ -739,7 +803,8 @@
                     <h4 style="margin: 0 0 16px 0; color: var(--text-main); font-size: 1rem;">Loan Details</h4>
 
                     <div class="form-group">
-                        <label>Loan Term (Years)</label>
+                        <label>Loan Term (Years) <span class="info-icon"
+                                data-tooltip="The total duration to repay the loan.&#10;Longer terms lower monthly payments but increase total interest."></span></label>
                         <div class="inline">
                             <input type="number" id="loanTerm" value="30"
                                 style="flex: 0 1 180px; min-width: 140px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
@@ -750,29 +815,34 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Loan Start Date</label>
+                        <label>Loan Start Date <span class="info-icon"
+                                data-tooltip="The date your loan money was disbursed.&#10;Determines when interest starts accruing."></span></label>
                         <input type="date" id="loanStartDate"
-                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box;">
                     </div>
                     <div class="form-group">
-                        <label>First EMI Date</label>
+                        <label>First EMI Date <span class="info-icon"
+                                data-tooltip="The date your first monthly payment is due.&#10;Affects the first partial-month interest calculation."></span></label>
                         <input type="date" id="firstEmiDate"
-                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box;">
                         <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b;">Overrides calculated date if
                             set.</p>
                     </div>
                     <div class="form-group">
-                        <label>EMI Payment Date (Day of Month)</label>
+                        <label>EMI Payment Date (Day of Month) <span class="info-icon"
+                                data-tooltip="The specific day of the month you make payments.&#10;Aligns calculations with your actual bank schedule."></span></label>
                         <input type="number" id="emiPaymentDay" value="20" min="1" max="31"
-                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box;">
                         <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b;">e.g., 1 for 1st of month, 5
                             for 5th, etc.</p>
                     </div>
                     <div class="form-group">
-                        <label>Processing Fee ($) <span
+                        <label>Processing Fee ($) <span class="info-icon"
+                                data-tooltip="One-time charge by the bank for handling the loan.&#10;Added to your initial loan balance, increasing total debt."></span>
+                            <span
                                 style="color: #64748b; font-size: 0.85rem; font-weight: normal;">Optional</span></label>
                         <input type="number" id="processingFee" min="0" step="100"
-                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box;">
                     </div>
                 </div>
             </div>
@@ -908,12 +978,12 @@
                     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
                         <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                             <div>
-                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">Effective Date</label>
-                                <input type="date" value="${change.date}" onchange="updateRateChange(${change.id}, 'date', this.value)" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">Effective Date <span class="info-icon" data-tooltip="Date when the new interest rate takes effect.&#10;Calculations use the old rate before this date and new rate after."></span></label>
+                                <input type="date" value="${change.date}" onchange="updateRateChange(${change.id}, 'date', this.value)" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box;">
                             </div>
                             <div>
-                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">New Rate (%)</label>
-                                <input type="number" value="${change.rate}" onchange="updateRateChange(${change.id}, 'rate', parseFloat(this.value))" min="0.1" max="30" step="0.1" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">New Rate (%) <span class="info-icon" data-tooltip="The updated annual interest rate.&#10;Affects interest accrual from the effective date onwards."></span></label>
+                                <input type="number" value="${change.rate}" onchange="updateRateChange(${change.id}, 'rate', parseFloat(this.value))" min="0.1" max="30" step="0.1" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box;">
                             </div>
                         </div>
                         <button onclick="removeRateChange(${change.id})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin-left: 12px; font-size: 0.85rem; font-weight: 600; transition: all 0.2s;">Remove</button>
@@ -1060,11 +1130,11 @@
                         <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                             <div>
                                 <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">Payment Date</label>
-                                <input type="date" value="${payment.date}" onchange="updateExtraPayment(${payment.id}, 'date', this.value)" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                                <input type="date" value="${payment.date}" onchange="updateExtraPayment(${payment.id}, 'date', this.value)" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box;">
                             </div>
                             <div>
                                 <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">Amount ($)</label>
-                                <input type="number" value="${payment.amount}" onchange="updateExtraPayment(${payment.id}, 'amount', parseFloat(this.value))" min="0" step="100" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                                <input type="number" value="${payment.amount}" onchange="updateExtraPayment(${payment.id}, 'amount', parseFloat(this.value))" min="0" step="100" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; box-sizing: border-box;">
                             </div>
                         </div>
                         <button onclick="removeExtraPayment(${payment.id})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin-left: 12px; font-size: 0.85rem; font-weight: 600; transition: all 0.2s;">Remove</button>
@@ -1201,18 +1271,19 @@
                 piAmountEl.textContent = formatCurrency(monthlyPayment);
             }
 
+            // Summary updates (Total Interest, Cost, Payoff) are handled by updateAmortizationTable() for strict accuracy.
             document.getElementById('totalPrincipal').textContent = formatCurrency(P);
-            document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
-            document.getElementById('totalCost').textContent = formatCurrency(totalRepayment);
+            // document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+            // document.getElementById('totalCost').textContent = formatCurrency(totalRepayment);
 
             // Payoff Date: Calculated from Loan Start Date
-            const loanStart = loanStartDateInput && loanStartDateInput.value ? new Date(loanStartDateInput.value) : new Date();
-            const payoffDate = new Date(loanStart);
-            payoffDate.setMonth(payoffDate.getMonth() + actualMonths);
-            document.getElementById('payoffDate').textContent = payoffDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+            // const loanStart = loanStartDateInput && loanStartDateInput.value ? new Date(loanStartDateInput.value) : new Date();
+            // const payoffDate = new Date(loanStart);
+            // payoffDate.setMonth(payoffDate.getMonth() + actualMonths);
+            // document.getElementById('payoffDate').textContent = payoffDate.toLocaleString('default', { month: 'short', year: 'numeric' });
 
             // Update Chart
-            updateChart(P, totalInterest);
+            // updateChart(P, totalInterest); // Moved to updateAmortizationTable to use Ledger Data
             updateAmortizationTable(P, actualMonthlyPayment, r, extraPaymentMap, formatCurrency);
         }
 
@@ -1597,34 +1668,107 @@
                         <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0; color: ${payColor};">${displayPayment}</td>
                         <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0; color: ${prinColor};">${row.principalChange !== '-' ? formatCurrency(row.principalChange) : '-'}</td>
                         <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0; font-weight: 600;">${formatCurrency(row.balance)}</td>
-                    </tr>
                 `);
             });
+
+            // Update Chart with Annual Aggregates
+            updateChart(principal, totalInterestCalculated, processedRows);
         }
-        function updateChart(principal, interest) {
+        function updateChart(principal, interest, processedRows) {
             const ctx = document.getElementById('mortgageChart').getContext('2d');
 
             if (chartInstance) {
                 chartInstance.destroy();
             }
 
+            // Simple formatter for chart ticks
+            const currencyFormatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: typeof currentCurrency !== 'undefined' ? currentCurrency : 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+
+            // Aggregate Data by Year
+            const yearlyData = {};
+            if (processedRows) {
+                processedRows.forEach(row => {
+                    const year = row.date.getFullYear();
+                    if (!yearlyData[year]) yearlyData[year] = { principal: 0, interest: 0 };
+
+                    // Interest (Debit)
+                    if (row.interest > 0 && row.interest !== '-') {
+                        yearlyData[year].interest += row.interest;
+                    }
+
+                    // Principal Paid (Credit)
+                    if (row.principalChange > 0 && row.principalChange !== '-') {
+                        yearlyData[year].principal += row.principalChange;
+                    }
+                });
+            }
+
+            const labels = Object.keys(yearlyData).sort();
+            const principalData = labels.map(year => yearlyData[year].principal);
+            const interestData = labels.map(year => yearlyData[year].interest);
+
             chartInstance = new Chart(ctx, {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
-                    labels: ['Principal', 'Interest'],
-                    datasets: [{
-                        data: [principal, interest],
-                        backgroundColor: ['#6366f1', '#f472b6'],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Interest Paid',
+                            data: interestData,
+                            backgroundColor: '#ef4444', // Red
+                            borderRadius: 4,
+                            stack: 'Stack 0'
+                        },
+                        {
+                            label: 'Principal Paid',
+                            data: principalData,
+                            backgroundColor: '#3b82f6', // Blue
+                            borderRadius: 4,
+                            stack: 'Stack 0'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '70%',
                     plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + currencyFormatter.format(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            border: { display: false },
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                callback: function (value) { return currencyFormatter.format(value); },
+                                font: { size: 10 },
+                                color: '#64748b'
+                            }
+                        },
+                        x: {
+                            stacked: true,
+                            grid: { display: false },
+                            ticks: {
+                                font: { size: 10, weight: 500 },
+                                color: '#1e293b',
+                                maxRotation: 45,
+                                autoSkip: true,
+                                maxTicksLimit: 20
+                            }
+                        }
                     }
                 }
             });
