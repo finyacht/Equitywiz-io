@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-RT0B6NXFG6');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Mortgage AI Advisor | Smart Home Financing</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand-primary: #6366f1;
+            --brand-secondary: #8b5cf6;
+            --brand-dark: #4f46e5;
+            --brand-accent: #f472b6;
+            --surface-card: #ffffff;
+            --surface-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 75px 20px 20px;
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar-glass {
+            background-color: #3b82f6;
+            color: white;
+            padding: 15px 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 30px;
+            margin: 0;
+            border: none;
+        }
+
+        .navbar-glass a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            gap: 12px;
+            font-size: 16px;
+            transition: opacity 0.2s ease;
+        }
+
+        .navbar-glass a:hover {
+            opacity: 0.8;
+        }
+
+        .navbar-glass .nav-title {
+            margin-left: auto;
+            font-weight: 600;
+            color: white;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .icon-btn {
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 0;
+            justify-content: flex-start;
+            margin-top: 4px;
+        }
+
+        .author-info a {
+            color: var(--brand-primary);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .author-info a:hover {
+            opacity: 0.8;
+        }
+
+        .mini-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            box-shadow: 0 6px 14px rgba(99, 102, 241, 0.2);
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .mini-logo::before {
+            content: "";
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            top: 8px;
+            left: 8px;
+            background: #fff;
+            opacity: 0.85;
+            clip-path: polygon(0 0, 100% 0, 100% 20%, 20% 20%, 20% 100%, 0 100%);
+        }
+
+        .mini-logo::after {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            right: 8px;
+            bottom: 8px;
+            background: #fff;
+            opacity: 0.7;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 80% 100%, 80% 80%, 0 80%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(2, 6, 23, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 8px 24px rgba(2, 6, 23, 0.12);
+        }
+
+        /* Side-by-Side Layout */
+        .side-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 992px) {
+            .side-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form Styles */
+        .form-group {
+            position: relative;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-group:hover {
+            border-color: var(--brand-primary);
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.12);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .inline input[type="range"] {
+            flex: 1 1 260px;
+            accent-color: var(--brand-primary);
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* Result Cards - Compact */
+        .result-grid-compact {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .result-card-compact {
+            background: linear-gradient(135deg, #f8fafc, #fff);
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .result-card-compact:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .result-card-compact::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--brand-primary), var(--brand-accent));
+        }
+
+        .result-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            color: var(--brand-dark);
+            font-weight: 800;
+            font-size: 2rem;
+            margin-top: 4px;
+        }
+
+        .result-value-sm {
+            color: var(--brand-dark);
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-top: 4px;
+        }
+
+        /* AI Styles */
+        .ai-chat-interface {
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .ai-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding-right: 8px;
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            max-width: 90%;
+        }
+
+        .bot-bubble {
+            background: #f1f5f9;
+            color: var(--text-main);
+            border-bottom-left-radius: 4px;
+            margin-right: auto;
+        }
+
+        .user-bubble {
+            background: var(--brand-primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+            margin-left: auto;
+        }
+
+        .suggestion-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            scrollbar-width: none;
+        }
+
+        .chip {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--brand-dark);
+            font-weight: 500;
+        }
+
+        .chip:hover {
+            background: var(--brand-primary);
+            color: white;
+            border-color: var(--brand-primary);
+        }
+
+        .input-area {
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 16px 48px 16px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .chat-input:focus {
+            border-color: var(--brand-primary);
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--brand-primary);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar-glass">
+        <a href="home.html">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                    d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Home
+        </a>
+        <span class="nav-title">MORTGAGE CALCULATOR</span>
+    </nav>
+
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <!-- Header Card -->
+        <div class="glass-card" style="border-left: 5px solid var(--brand-primary); margin-bottom: 20px;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                <div class="mini-logo"></div>
+                <h1 style="margin:0; font-size:1.8rem; letter-spacing:-0.5px;">Mortgage Calculator</h1>
+            </div>
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                <p style="margin:0; color: var(--text-muted); line-height:1.6; flex:1; min-width:250px;">Calculate your
+                    monthly mortgage payments with precision. Input your home price, down payment, interest rate, and
+                    loan term to see detailed breakdowns including principal, interest, and total costs. Get AI-powered
+                    insights to optimize your home financing strategy.</p>
+                <button id="settingsBtn" class="icon-btn" title="Settings" style="flex-shrink:0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0A1.65 1.65 0 0 0 9 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 .33h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0c.2.44.59.78 1.05.9H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+                    </svg>
+                    Settings
+                </button>
+            </div>
+            <div class="author-info">
+                <span>By <strong>Amal Ganatra</strong></span>
+                <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer"
+                    aria-label="LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Inputs & Results Card -->
+        <div class="glass-card" style="margin-bottom: 20px;">
+            <h2 style="margin: 0 0 18px 0; color: var(--text-main); font-size: 1.4rem;">Inputs & Results</h2>
+            <div class="side-grid">
+                <!-- Inputs Column -->
+                <div>
+                    <h3 style="margin:0 0 12px 0; color:var(--text-main); font-size:1.1rem;">Inputs</h3>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 14px;">
+                        <div class="form-group">
+                            <label>Home Price ($)</label>
+                            <div class="inline">
+                                <input type="range" id="homePriceRange" min="1000000" max="50000000" step="100000"
+                                    value="16400000">
+                                <input type="number" id="homePrice" value="16400000"
+                                    style="flex: 0 1 180px; min-width: 140px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Down Payment ($)</label>
+                            <div class="inline">
+                                <input type="range" id="downPaymentRange" min="0" max="20000000" step="100000"
+                                    value="11400000">
+                                <input type="number" id="downPayment" value="11400000"
+                                    style="flex: 0 1 180px; min-width: 140px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Interest Rate (% per annum)</span>
+                                <button id="manageRateChanges" type="button"
+                                    style="padding: 6px 12px; background: #f59e0b; color: white; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-weight: 600;">
+                                    📊 Rate Changes
+                                </button>
+                            </label>
+                            <div class="inline">
+                                <input type="range" id="interestRateRange" min="0.1" max="15" step="0.1" value="7.75">
+                                <input type="number" id="interestRate" value="7.75" step="0.1"
+                                    style="flex: 0 1 180px; min-width: 140px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>Monthly Payment ($)</span>
+                                <label
+                                    style="display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; font-size: 0.85rem; color: #64748b;">
+                                    <input type="checkbox" id="reverseCalc" checked style="cursor: pointer;">
+                                    <span>Increase Payment to Pay Off Faster</span>
+                                </label>
+                            </label>
+                            <div class="inline">
+                                <input type="range" id="monthlyPaymentRange" min="10000" max="500000" step="1000"
+                                    value="36000">
+                                <input type="number" id="monthlyPaymentInput" value="36000"
+                                    style="flex: 0 1 180px; min-width: 140px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; background: white;">
+                            </div>
+                            <div id="reverseCalcHint"
+                                style="display: none; margin-top: 6px; font-size: 0.85rem; color: #0ea5e9; font-weight: 500;">
+                                💡 Pay more each month to reduce loan term and save on interest
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Column -->
+                <div>
+                    <h3 style="margin:0 0 12px 0; color:var(--text-main); font-size:1.1rem;">Results</h3>
+                    <div class="result-grid-compact">
+                        <div class="result-card-compact">
+                            <div class="result-label">Monthly Payment</div>
+                            <div class="result-value" id="monthlyPayment">$0</div>
+                        </div>
+                        <div class="result-card-compact">
+                            <div class="result-label">Total Principal</div>
+                            <div class="result-value-sm" id="totalPrincipal">$360,000</div>
+                        </div>
+                        <div class="result-card-compact">
+                            <div class="result-label">Total Interest</div>
+                            <div class="result-value-sm" id="totalInterest">$459,186</div>
+                        </div>
+                        <div class="result-card-compact">
+                            <div class="result-label">Total Cost</div>
+                            <div class="result-value-sm" id="totalCost">$819,186</div>
+                        </div>
+                        <div class="result-card-compact">
+                            <div class="result-label">Payoff Date</div>
+                            <div class="result-value-sm" id="payoffDate">Aug 2055</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Extra Payments Card -->
+        <div class="glass-card" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <h2 style="margin: 0; color: var(--text-main); font-size: 1.4rem;">Extra Payments</h2>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Add lump sum payments to
+                        pay off your mortgage faster</p>
+                </div>
+                <button id="addExtraPayment"
+                    style="background: var(--brand-primary); color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; transition: all 0.2s;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Payment
+                </button>
+            </div>
+            <div id="extraPaymentsList" style="display: grid; gap: 12px;">
+                <div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.95rem;">
+                    No extra payments added yet. Click "Add Payment" to get started.
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Card -->
+        <div class="glass-card" style="margin-bottom: 20px; border-top: 4px solid var(--success);">
+            <h2 style="margin: 0 0 10px 0; color: var(--text-main); font-size: 1.4rem;">Amortization Breakdown</h2>
+            <div style="position: relative; height: 380px; width: 100%;">
+                <canvas id="mortgageChart"></canvas>
+            </div>
+            <p style="color: var(--text-muted); margin-top: 12px; font-size: 0.9rem; line-height: 1.6;">Visual breakdown
+                of your mortgage showing the proportion of principal to interest over the life of the loan.</p>
+        </div>
+
+        <!-- AI Advisor Card -->
+        <div class="glass-card"
+            style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #fbbf24;">
+            <div
+                style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 2px solid #f59e0b;">
+                <div class="ai-avatar">🤖</div>
+                <div>
+                    <h2 style="margin: 0; color: var(--text-main); font-size: 1.4rem;">AI Mortgage Advisor</h2>
+                    <div style="font-size: 0.85rem; color: #92400e; font-weight: 500;">Powered by AI
+                    </div>
+                </div>
+            </div>
+            <p style="margin: 0 0 16px 0; color: #78350f; line-height: 1.6; font-size: 0.95rem; font-weight: 500;">
+                Get personalized mortgage advice based on your specific numbers. Ask questions about your payments,
+                interest rates, refinancing options, or any other mortgage-related concerns.
+            </p>
+
+            <div class="chat-history" id="chatHistory"
+                style="background: white; border-radius: 12px; padding: 16px; min-height: 200px; max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
+                <div class="chat-message">
+                    <div class="chat-bubble bot-bubble">
+                        Hi! I'm your AI housing market expert. I verify your calculated numbers and give advice. Ask me
+                        anything! 🏠
+                    </div>
+                </div>
+            </div>
+
+            <div class="suggestion-chips" style="margin-bottom: 12px;">
+                <div class="chip" onclick="askAI('Is this interest rate good right now?')">Is this rate good?</div>
+                <div class="chip" onclick="askAI('How can I lower my monthly payment?')">Lower payments</div>
+                <div class="chip" onclick="askAI('Should I do a 15-year or 30-year term?')">15yr vs 30yr</div>
+            </div>
+
+            <div class="input-area"
+                style="position: relative; display: flex; align-items: center; background: white; border-radius: 9999px; padding: 6px 6px 6px 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Ask about your mortgage..."
+                    onkeypress="handleKeyPress(event)"
+                    style="border: none; background: transparent; flex: 1; outline: none; font-size: 0.95rem; padding: 8px 0; min-width: 0;">
+                <button class="send-btn" onclick="sendMessage()"
+                    style="background: #3b82f6; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0; margin-left: 8px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Amortization Schedule Table -->
+        <div class="glass-card" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div>
+                    <h2 style="margin: 0; color: var(--text-main); font-size: 1.4rem;">Amortization Schedule</h2>
+                    <p style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.9rem;">Detailed month-by-month
+                        payment breakdown</p>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <label style="font-size: 0.9rem; color: var(--text-main); font-weight: 500;">Show first:</label>
+                    <select id="scheduleMonths"
+                        style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; cursor: pointer;">
+                        <option value="12">12 months</option>
+                        <option value="24">24 months</option>
+                        <option value="60">60 months</option>
+                        <option value="120">120 months</option>
+                        <option value="0" selected>All months</option>
+                    </select>
+                </div>
+            </div>
+            <div
+                style="overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <table id="amortizationTable" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead style="position: sticky; top: 0; background: #1e293b; color: white; z-index: 10;">
+                        <th
+                            style="padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #334155;">
+                            Date</th>
+                        <th
+                            style="padding: 12px; text-align: right; font-weight: 600; border-bottom: 2px solid #334155;">
+                            Description</th>
+                        <th
+                            style="padding: 12px; text-align: right; font-weight: 600; border-bottom: 2px solid #334155;">
+                            Interest</th>
+                        <th
+                            style="padding: 12px; text-align: right; font-weight: 600; border-bottom: 2px solid #334155;">
+                            Payment</th>
+                        <th
+                            style="padding: 12px; text-align: right; font-weight: 600; border-bottom: 2px solid #334155;">
+                            Principal Paid</th>
+                        <th
+                            style="padding: 12px; text-align: right; font-weight: 600; border-bottom: 2px solid #334155;">
+                            Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="amortizationTableBody">
+                        <tr>
+                            <td colspan="7" style="padding: 32px; text-align: center; color: var(--text-muted);">
+                                Calculating schedule...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="modal-backdrop" aria-hidden="true"
+            style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle"
+                style="background: white; border-radius: 12px; padding: 24px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <div class="modal-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 id="settingsTitle" style="margin:0; font-size:1.2rem; color:var(--text-main);">Settings</h3>
+                    <button id="closeSettings" class="close-btn" aria-label="Close settings"
+                        style="background: #f3f4f6; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; font-weight: 600; transition: all 0.2s;">Close</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" style="margin:0;">
+                        <label for="currency">Currency</label>
+                        <div class="inline">
+                            <select id="currency" aria-label="Currency"
+                                style="width:100%; max-width:100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                                <option value="USD" selected>USD - US Dollar ($)</option>
+                                <option value="INR">INR - Indian Rupee (₹)</option>
+                                <option value="EUR">EUR - Euro (€)</option>
+                                <option value="GBP">GBP - British Pound (£)</option>
+                                <option value="AUD">AUD - Australian Dollar (A$)</option>
+                                <option value="CAD">CAD - Canadian Dollar (C$)</option>
+                                <option value="SGD">SGD - Singapore Dollar (S$)</option>
+                                <option value="JPY">JPY - Japanese Yen (¥)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;">
+                    <h4 style="margin: 0 0 16px 0; color: var(--text-main); font-size: 1rem;">Loan Details</h4>
+
+                    <div class="form-group">
+                        <label>Loan Term (Years)</label>
+                        <div class="inline">
+                            <input type="number" id="loanTerm" value="30"
+                                style="flex: 0 1 180px; min-width: 140px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                            <button onclick="setTerm(15)" id="term15"
+                                style="padding: 10px 16px; border: 1px solid #cbd5e1; background: #fff; color: #1e293b; border-radius: 8px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; font-weight: 500;">15y</button>
+                            <button onclick="setTerm(30)" id="term30"
+                                style="padding: 10px 16px; border: 1px solid #cbd5e1; background: #3b82f6; color: white; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;">30y</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Start Date</label>
+                        <input type="date" id="loanStartDate"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                    </div>
+                    <div class="form-group">
+                        <label>First EMI Date</label>
+                        <input type="date" id="firstEmiDate"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b;">Overrides calculated date if
+                            set.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>EMI Payment Date (Day of Month)</label>
+                        <input type="number" id="emiPaymentDay" value="20" min="1" max="31"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #64748b;">e.g., 1 for 1st of month, 5
+                            for 5th, etc.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Processing Fee ($) <span
+                                style="color: #64748b; font-size: 0.85rem; font-weight: normal;">Optional</span></label>
+                        <input type="number" id="processingFee" min="0" step="100"
+                            style="width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rate Changes Modal -->
+    <div id="rateChangesModal" class="modal-backdrop" aria-hidden="true"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="rateChangesTitle"
+            style="background: white; border-radius: 12px; padding: 24px; max-width: 700px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 id="rateChangesTitle" style="margin: 0; color: var(--text-main); font-size: 1.4rem;">Interest Rate
+                    Changes</h2>
+                <button id="closeRateChanges" type="button" aria-label="Close"
+                    style="background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                    ×
+                </button>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <p style="margin: 0 0 16px 0; color: #64748b; line-height: 1.6;">
+                    Add rate changes that occurred during your loan term (e.g., when bank adjusted rates). The
+                    calculator will apply the new rate from the specified date onwards.
+                </p>
+                <button id="addRateChange" type="button"
+                    style="width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; font-size: 1rem; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+                    + Add Rate Change
+                </button>
+            </div>
+            <div id="rateChangesList" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.95rem;">
+                    No rate changes added yet
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Calculator Logic ---
+        const homePriceInput = document.getElementById('homePrice');
+        const downPaymentInput = document.getElementById('downPayment');
+        const interestRateInput = document.getElementById('interestRate');
+        const loanTermInput = document.getElementById('loanTerm');
+        const loanStartDateInput = document.getElementById('loanStartDate');
+        const firstEmiDateInput = document.getElementById('firstEmiDate');
+        const emiPaymentDayInput = document.getElementById('emiPaymentDay');
+        const processingFeeInput = document.getElementById('processingFee');
+
+        // Set default loan start date to 04-12-2025
+        if (loanStartDateInput) {
+            loanStartDateInput.value = '2025-12-04';
+        }
+        // Set default first EMI date to 20-12-2025
+        if (firstEmiDateInput) {
+            firstEmiDateInput.value = '2025-12-20';
+        }
+
+        // Ranges
+        const homePriceRange = document.getElementById('homePriceRange');
+        const downPaymentRange = document.getElementById('downPaymentRange');
+        const interestRateRange = document.getElementById('interestRateRange');
+
+        // Extra Payments
+        let extraPayments = [{ id: 1, date: '2025-12-04', amount: 118 }]; // Default: Processing Fee Payoff
+        let nextPaymentId = 2;
+
+        // Rate Changes - Initialize with default rate change
+        let rateChanges = [
+            { id: 1, date: '2025-12-15', rate: 7.50 }
+        ];
+        let nextRateChangeId = 2;
+        const rateChangesModal = document.getElementById('rateChangesModal');
+        const manageRateChangesBtn = document.getElementById('manageRateChanges');
+        const closeRateChangesBtn = document.getElementById('closeRateChanges');
+        const addRateChangeBtn = document.getElementById('addRateChange');
+
+        // Settings
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const currencySelect = document.getElementById('currency');
+        let currentCurrency = 'USD';
+
+        // Settings Modal
+        if (settingsBtn) settingsBtn.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+            settingsModal.setAttribute('aria-hidden', 'false');
+        });
+
+        if (closeSettings) closeSettings.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+            settingsModal.setAttribute('aria-hidden', 'true');
+        });
+
+        if (settingsModal) settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                settingsModal.style.display = 'none';
+                settingsModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        if (currencySelect) currencySelect.addEventListener('change', () => {
+            currentCurrency = currencySelect.value;
+            calculate();
+        });
+
+        // Rate Changes Modal
+        if (manageRateChangesBtn) manageRateChangesBtn.addEventListener('click', () => {
+            rateChangesModal.style.display = 'flex';
+            rateChangesModal.setAttribute('aria-hidden', 'false');
+            renderRateChanges();
+        });
+
+        if (closeRateChangesBtn) closeRateChangesBtn.addEventListener('click', () => {
+            rateChangesModal.style.display = 'none';
+            rateChangesModal.setAttribute('aria-hidden', 'true');
+        });
+
+        if (rateChangesModal) rateChangesModal.addEventListener('click', (e) => {
+            if (e.target === rateChangesModal) {
+                rateChangesModal.style.display = 'none';
+                rateChangesModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        function renderRateChanges() {
+            const list = document.getElementById('rateChangesList');
+            if (rateChanges.length === 0) {
+                list.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.95rem;">No rate changes added yet</div>';
+            } else {
+                list.innerHTML = rateChanges.map(change => `
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">Effective Date</label>
+                                <input type="date" value="${change.date}" onchange="updateRateChange(${change.id}, 'date', this.value)" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">New Rate (%)</label>
+                                <input type="number" value="${change.rate}" onchange="updateRateChange(${change.id}, 'rate', parseFloat(this.value))" min="0.1" max="30" step="0.1" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                            </div>
+                        </div>
+                        <button onclick="removeRateChange(${change.id})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin-left: 12px; font-size: 0.85rem; font-weight: 600; transition: all 0.2s;">Remove</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        if (addRateChangeBtn) addRateChangeBtn.addEventListener('click', () => {
+            const loanStart = loanStartDateInput ? loanStartDateInput.value : '2025-12-04';
+            const currentRate = parseFloat(interestRateInput.value);
+            rateChanges.push({ id: nextRateChangeId++, date: loanStart, rate: currentRate + 0.5 });
+            renderRateChanges();
+            calculate();
+        });
+
+        window.updateRateChange = function (id, field, value) {
+            const change = rateChanges.find(c => c.id === id);
+            if (change) {
+                change[field] = value;
+                calculate();
+            }
+        };
+
+        window.removeRateChange = function (id) {
+            rateChanges = rateChanges.filter(c => c.id !== id);
+            renderRateChanges();
+            calculate();
+        };
+
+        // Monthly Payment Reverse Calculation
+        const reverseCalcCheckbox = document.getElementById('reverseCalc');
+        const monthlyPaymentInput = document.getElementById('monthlyPaymentInput');
+        const monthlyPaymentRange = document.getElementById('monthlyPaymentRange');
+        const reverseCalcHint = document.getElementById('reverseCalcHint');
+        let isReverseMode = true; // Default to enabled
+
+        // Show hint by default since checkbox is checked
+        if (reverseCalcHint) {
+            reverseCalcHint.style.display = 'block';
+        }
+
+        if (reverseCalcCheckbox) {
+            reverseCalcCheckbox.addEventListener('change', () => {
+                isReverseMode = reverseCalcCheckbox.checked;
+                monthlyPaymentInput.disabled = !isReverseMode;
+                monthlyPaymentRange.disabled = !isReverseMode;
+                reverseCalcHint.style.display = isReverseMode ? 'block' : 'none';
+
+                if (isReverseMode) {
+                    monthlyPaymentInput.style.background = 'white';
+                } else {
+                    monthlyPaymentInput.style.background = '#f8fafc';
+                    calculate();
+                }
+            });
+        }
+
+        function syncMonthlyPayment(input, range) {
+            input.addEventListener('input', () => {
+                range.value = input.value;
+                if (isReverseMode) reverseCalculate();
+            });
+            range.addEventListener('input', () => {
+                input.value = range.value;
+                if (isReverseMode) reverseCalculate();
+            });
+        }
+        syncMonthlyPayment(monthlyPaymentInput, monthlyPaymentRange);
+
+        function reverseCalculate() {
+            // When user sets a higher monthly payment, calculate faster payoff
+            // Home price stays the same, we just pay it off faster
+            calculate();
+        }
+
+        // Sync inputs and ranges
+        function sync(input, range) {
+            input.addEventListener('input', () => { range.value = input.value; calculate(); });
+            range.addEventListener('input', () => { input.value = range.value; calculate(); });
+        }
+        sync(homePriceInput, homePriceRange);
+        sync(downPaymentInput, downPaymentRange);
+        sync(interestRateInput, interestRateRange);
+        loanTermInput.addEventListener('input', calculate);
+
+        // Add listeners for new fields
+        if (loanStartDateInput) loanStartDateInput.addEventListener('input', calculate);
+        if (firstEmiDateInput) firstEmiDateInput.addEventListener('input', calculate);
+        if (emiPaymentDayInput) emiPaymentDayInput.addEventListener('input', calculate);
+        if (emiPaymentDayInput) emiPaymentDayInput.addEventListener('input', calculate);
+        if (processingFeeInput) processingFeeInput.addEventListener('input', calculate);
+
+        function setTerm(years) {
+            loanTermInput.value = years;
+            // Update button styles
+            const term15Btn = document.getElementById('term15');
+            const term30Btn = document.getElementById('term30');
+            if (years === 15) {
+                term15Btn.style.background = '#3b82f6';
+                term15Btn.style.color = 'white';
+                term15Btn.style.fontWeight = '600';
+                term30Btn.style.background = '#fff';
+                term30Btn.style.color = '#1e293b';
+                term30Btn.style.fontWeight = '500';
+            } else {
+                term15Btn.style.background = '#fff';
+                term15Btn.style.color = '#1e293b';
+                term15Btn.style.fontWeight = '500';
+                term30Btn.style.background = '#3b82f6';
+                term30Btn.style.color = 'white';
+                term30Btn.style.fontWeight = '600';
+            }
+            // Recalculate standard monthly payment for this new term
+            const P = parseFloat(homePriceInput.value) - parseFloat(downPaymentInput.value);
+            const r = (parseFloat(interestRateInput.value) / 100) / 12;
+            const n = years * 12;
+
+            if (r > 0 && n > 0 && P > 0) {
+                const newPayment = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+                monthlyPaymentInput.value = Math.round(newPayment);
+                monthlyPaymentRange.value = Math.round(newPayment);
+            }
+
+            calculate();
+        }
+
+        // When manually changing loan term, also recalculate payment
+        loanTermInput.addEventListener('change', () => {
+            setTerm(parseFloat(loanTermInput.value));
+        });
+
+
+        let chartInstance = null;
+
+        // Extra Payment Management
+        function renderExtraPayments() {
+            const list = document.getElementById('extraPaymentsList');
+            if (extraPayments.length === 0) {
+                list.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 0.95rem;">No extra payments added yet. Click "Add Payment" to get started.</div>';
+            } else {
+                list.innerHTML = extraPayments.map(payment => `
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">Payment Date</label>
+                                <input type="date" value="${payment.date}" onchange="updateExtraPayment(${payment.id}, 'date', this.value)" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 6px; font-weight: 500;">Amount ($)</label>
+                                <input type="number" value="${payment.amount}" onchange="updateExtraPayment(${payment.id}, 'amount', parseFloat(this.value))" min="0" step="100" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem;">
+                            </div>
+                        </div>
+                        <button onclick="removeExtraPayment(${payment.id})" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; margin-left: 12px; font-size: 0.85rem; font-weight: 600; transition: all 0.2s;">Remove</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function addExtraPayment() {
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            extraPayments.push({ id: nextPaymentId++, date: dateStr, amount: 1000 });
+            renderExtraPayments();
+            calculate();
+        }
+
+        window.updateExtraPayment = function (id, field, value) {
+            const payment = extraPayments.find(p => p.id === id);
+            if (payment) {
+                payment[field] = value;
+                calculate();
+            }
+        };
+
+        window.removeExtraPayment = function (id) {
+            extraPayments = extraPayments.filter(p => p.id !== id);
+            renderExtraPayments();
+            calculate();
+        };
+
+        // Add event listener for add payment button
+        document.getElementById('addExtraPayment').addEventListener('click', addExtraPayment);
+
+        function calculate() {
+            const P = parseFloat(homePriceInput.value) - parseFloat(downPaymentInput.value); // Principal
+            const annualRate = parseFloat(interestRateInput.value) / 100;
+            const r = annualRate / 12; // Monthly rate
+            const initialMonths = parseFloat(loanTermInput.value) * 12; // Total months
+
+            let monthlyPayment = 0;
+            if (r === 0) {
+                monthlyPayment = P / initialMonths;
+            } else {
+                monthlyPayment = P * (r * Math.pow(1 + r, initialMonths)) / (Math.pow(1 + r, initialMonths) - 1);
+            }
+
+            // If in reverse mode, use the custom monthly payment
+            let actualMonthlyPayment = monthlyPayment;
+            if (isReverseMode) {
+                actualMonthlyPayment = parseFloat(monthlyPaymentInput.value);
+            }
+
+            // Calculate actual payoff with lump sum extra payments
+            const startDate = new Date();
+            let remainingBalance = P;
+            let totalInterest = 0;
+            let monthsPaid = 0;
+            const maxMonths = initialMonths * 2; // Safety limit
+
+            // Create a map of extra payments by month number
+            const extraPaymentMap = {};
+            extraPayments.forEach(payment => {
+                const paymentDate = new Date(payment.date + '-01');
+                if (paymentDate >= startDate) {
+                    const monthsDiff = (paymentDate.getFullYear() - startDate.getFullYear()) * 12 +
+                        (paymentDate.getMonth() - startDate.getMonth());
+                    if (monthsDiff >= 0) {
+                        extraPaymentMap[monthsDiff] = (extraPaymentMap[monthsDiff] || 0) + payment.amount;
+                    }
+                }
+            });
+
+            while (remainingBalance > 0 && monthsPaid < maxMonths) {
+                const interestPayment = remainingBalance * r;
+                let principalPayment = actualMonthlyPayment - interestPayment;
+
+                // Add any extra payment for this month
+                if (extraPaymentMap[monthsPaid]) {
+                    principalPayment += extraPaymentMap[monthsPaid];
+                }
+
+                if (principalPayment <= 0) break;
+
+                remainingBalance -= principalPayment;
+                totalInterest += interestPayment;
+                monthsPaid++;
+
+                if (remainingBalance < 0) remainingBalance = 0;
+            }
+
+            const actualMonths = monthsPaid;
+            const totalExtraPayments = Object.values(extraPaymentMap).length > 0
+                ? Object.values(extraPaymentMap).reduce((a, b) => a + b, 0)
+                : 0;
+            const totalRepayment = (actualMonthlyPayment * actualMonths) + totalExtraPayments;
+
+
+            // Format currency based on selected currency
+            const currencyLocales = {
+                'USD': 'en-US',
+                'INR': 'en-IN',  // Indian numbering system (lakhs/crores)
+                'EUR': 'de-DE',
+                'GBP': 'en-GB',
+                'AUD': 'en-AU',
+                'CAD': 'en-CA',
+                'SGD': 'en-SG',
+                'JPY': 'ja-JP'
+            };
+            const locale = currencyLocales[currentCurrency] || 'en-US';
+
+            function formatCurrency(amount) {
+                return new Intl.NumberFormat(locale, {
+                    style: 'currency',
+                    currency: currentCurrency,
+                    minimumFractionDigits: currentCurrency === 'JPY' ? 0 : 2,
+                    maximumFractionDigits: currentCurrency === 'JPY' ? 0 : 2
+                }).format(amount);
+            }
+
+            // Update UI
+            // Show the actual payment amount being made (user-set in reverse mode, or calculated in normal mode)
+            const displayPayment = isReverseMode ? actualMonthlyPayment : monthlyPayment;
+            document.getElementById('monthlyPayment').textContent = formatCurrency(displayPayment);
+
+            // Update monthly payment input if not in reverse mode
+            if (!isReverseMode) {
+                monthlyPaymentInput.value = Math.round(monthlyPayment);
+                monthlyPaymentRange.value = Math.round(monthlyPayment);
+            }
+
+            // Update piAmount if it exists (for backward compatibility)
+            const piAmountEl = document.getElementById('piAmount');
+            if (piAmountEl) {
+                piAmountEl.textContent = formatCurrency(monthlyPayment);
+            }
+
+            document.getElementById('totalPrincipal').textContent = formatCurrency(P);
+            document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+            document.getElementById('totalCost').textContent = formatCurrency(totalRepayment);
+
+            // Payoff Date: Calculated from Loan Start Date
+            const loanStart = loanStartDateInput && loanStartDateInput.value ? new Date(loanStartDateInput.value) : new Date();
+            const payoffDate = new Date(loanStart);
+            payoffDate.setMonth(payoffDate.getMonth() + actualMonths);
+            document.getElementById('payoffDate').textContent = payoffDate.toLocaleString('default', { month: 'short', year: 'numeric' });
+
+            // Update Chart
+            updateChart(P, totalInterest);
+            updateAmortizationTable(P, actualMonthlyPayment, r, extraPaymentMap, formatCurrency);
+        }
+
+        // Amortization Table
+        let currentScheduleMonths = 0;
+        const scheduleMonthsSelect = document.getElementById('scheduleMonths');
+
+        if (scheduleMonthsSelect) {
+            scheduleMonthsSelect.addEventListener('change', () => {
+                currentScheduleMonths = parseInt(scheduleMonthsSelect.value);
+                calculate();
+            });
+        }
+
+        function updateAmortizationTable(principal, monthlyPayment, monthlyRate, extraPaymentMap, formatCurrency) {
+            const tableBody = document.getElementById('amortizationTableBody');
+            if (!tableBody) return;
+
+            // Clear existing rows
+            tableBody.innerHTML = '';
+
+            let loanStartDate = new Date();
+            if (loanStartDateInput && loanStartDateInput.value) {
+                const parts = loanStartDateInput.value.split('-');
+                loanStartDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            }
+            const processingFee = processingFeeInput ? parseFloat(processingFeeInput.value) || 0 : 0;
+            const emiDay = emiPaymentDayInput ? parseInt(emiPaymentDayInput.value) || 1 : 1;
+
+            // --- 1. Determine First EMI Date ---
+            const firstEmiDateInput = document.getElementById('firstEmiDate');
+            let firstEmiDate;
+            if (firstEmiDateInput && firstEmiDateInput.value) {
+                const parts = firstEmiDateInput.value.split('-');
+                firstEmiDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            } else {
+                firstEmiDate = new Date(loanStartDate);
+                firstEmiDate.setMonth(firstEmiDate.getMonth() + 1);
+                // Adjust to EMI Day
+                const daysInTargetMonth = new Date(firstEmiDate.getFullYear(), firstEmiDate.getMonth() + 1, 0).getDate();
+                firstEmiDate.setDate(Math.min(emiDay, daysInTargetMonth));
+            }
+
+            // --- 2. Build Event Queue ---
+            let events = [];
+            let balance = principal;
+
+            // A. Rate Changes
+            // Filter changes that are after start date
+            rateChanges.forEach(rc => {
+                if (new Date(rc.date) >= loanStartDate) {
+                    events.push({
+                        date: new Date(rc.date),
+                        type: 'RATE_CHANGE',
+                        rate: rc.rate
+                    });
+                }
+            });
+
+            // B. EMI Events
+            let simDate = new Date(firstEmiDate);
+            const loanTermMonths = parseInt(loanTermInput.value) * 12; // Safety Cap
+
+            for (let i = 0; i < loanTermMonths + 120; i++) {
+                events.push({
+                    date: new Date(simDate),
+                    type: 'EMI',
+                    amount: isReverseMode ? parseFloat(document.getElementById('monthlyPaymentInput').value) : monthlyPayment
+                });
+
+                let nextMonth = new Date(simDate);
+                nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+                const maxDay = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0).getDate();
+                if (emiDay <= maxDay) {
+                    nextMonth.setDate(emiDay);
+                } else {
+                    nextMonth.setDate(maxDay);
+                }
+                simDate = nextMonth;
+            }
+
+            // C. Extra Payment Events
+            extraPayments.forEach(p => {
+                const parts = p.date.split('-');
+                const pDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                events.push({
+                    date: pDate,
+                    type: 'LUMP_SUM',
+                    amount: p.amount
+                });
+            });
+
+            // D. Sort Events Chronologically
+            events.sort((a, b) => a.date - b.date);
+
+            // --- 3. Process Ledger ---
+            let processedRows = [];
+
+            // Add Initial Disbursal Event
+            processedRows.push({
+                date: new Date(loanStartDate),
+                desc: 'Loan Disbursal',
+                interest: '-',
+                payment: '-',
+                principalChange: '-',
+                balance: balance,
+                isDisbursal: true
+            });
+
+            if (processingFee > 0) {
+                // Ledger: Fee is Added to Balance (Debit)
+                balance += processingFee;
+                processedRows.push({
+                    date: new Date(loanStartDate),
+                    desc: 'Processing Fee',
+                    interest: '-', // or show fee here? distinct line is better
+                    payment: '-',
+                    principalChange: processingFee * -1, // Debt increased
+                    balance: balance,
+                    isFee: true
+                });
+            }
+
+            let lastDate = new Date(loanStartDate);
+            // lastDate.setDate(lastDate.getDate() - 1); // Removed: Start from Loan Date itself (Day 0). Interest accrues overnight.
+
+            let accruedInterest = 0;
+            const displayLimit = currentScheduleMonths === 0 ? 10000 : currentScheduleMonths;
+            let displayedCount = 0;
+
+            // Summary Accumulators
+            let totalInterestCalculated = 0;
+            let totalRepaymentCalculated = 0; // Principal + Interest + Fees
+            // Add Processing Fee to total repayment? Usually yes.
+            // But usually "Total Repayment" = Monthly * Term.
+            // Let's stick to P + I for standard view, or P+I+Fee?
+            // "Summary Cards" usually P + I.
+            // totalRepaymentCalculated += processingFee; // Removed as it is included in balance and paid via payments
+
+            // Helper: Get days in year
+            function getDaysInYear(year) {
+                return ((year % 4 === 0 && year % 100 > 0) || year % 400 === 0) ? 366 : 365;
+            }
+
+            // Helper: Find rate active at a specific date
+            // Optimization: Maintain `currentAnnualRate` state, update on RATE_CHANGE event?
+            // Yes, strict simulation is easier.
+            // Determine initial rate at start date.
+            let currentAnnualRate = parseFloat(interestRateInput.value);
+            // If there's a rate change exactly ON start date or before, apply it.
+            // We sorted `rateChanges` before? No, we just pushed them.
+            // Let's find latest before start.
+            const sortedRC = [...rateChanges].sort((a, b) => new Date(a.date) - new Date(b.date));
+            for (const rc of sortedRC) {
+                if (new Date(rc.date) <= loanStartDate) {
+                    currentAnnualRate = rc.rate;
+                } else {
+                    break;
+                }
+            }
+
+            for (let i = 0; i < events.length; i++) {
+                // if (balance <= 0.5 && events[i].type === 'EMI') break; 
+                // Don't break early in Ledger view, balance might fluctuate? 
+                if (balance <= 0.5) break;
+                if (displayedCount >= displayLimit) break;
+
+                const event = events[i];
+                const eventDate = event.date;
+
+                if (eventDate < loanStartDate && event.type !== 'RATE_CHANGE') continue;
+
+                // --- 1. Month End Checkpoints (Interest Postings) ---
+                let tempDate = new Date(lastDate);
+                tempDate.setDate(tempDate.getDate() + 1);
+
+                while (true) {
+                    // Logic Update: Calculate interest up to strict End of Month (which effectively means 1st of Next Month midnight)
+                    // Current Month End is derived from tempDate's month.
+                    // We target the 1st of the NEXT month to ensure full month coverage.
+                    const nextMonthFirst = new Date(tempDate.getFullYear(), tempDate.getMonth() + 1, 1);
+
+                    // If the event date is BEFORE the end of this month, we stop.
+                    // But wait, if event is ON 1st of next month, we might need to post prev month interest first?
+                    // Actually comparing `nextMonthFirst` vs `eventDate`.
+                    // If `eventDate` is Jan 20, and `nextMonthFirst` is Jan 1 -> We process Jan 1 (Dec month end) first.
+                    // If `eventDate` is Dec 15, and `nextMonthFirst` is Dec 1 (No, tempDate is Dec). `nextMonthFirst` is Jan 1. 
+                    // Jan 1 > Dec 15 -> Break. Correct.
+                    if (nextMonthFirst > eventDate) break;
+
+                    // Calculate Interest to Month End (Jan 1)
+                    // Range: [lastDate, nextMonthFirst)
+                    const days = Math.floor((nextMonthFirst - lastDate) / (1000 * 60 * 60 * 24));
+                    let interestDebit = 0;
+                    if (days > 0) {
+                        const yearDays = getDaysInYear(lastDate.getFullYear());
+                        const dailyRate = (currentAnnualRate / 100) / yearDays;
+                        interestDebit = balance * dailyRate * days;
+                    }
+
+                    // Ledger: ADD Interest to Balance (Debit)
+                    // Include any accrued interest (from previous partial periods/payments)
+                    const totalDebit = interestDebit + accruedInterest;
+                    balance += totalDebit;
+                    totalInterestCalculated += totalDebit;
+                    accruedInterest = 0; // Reset after posting
+
+                    // Display Date should be the End of Month (Dec 31), not Jan 1
+                    const displayDate = new Date(nextMonthFirst);
+                    displayDate.setDate(displayDate.getDate() - 1);
+
+                    processedRows.push({
+                        date: displayDate,
+                        desc: 'End of Month Balance (Interest Capitalized)',
+                        interest: totalDebit,
+                        payment: '-',
+                        principalChange: totalDebit * -1, // Negative principal change (debt grew)
+                        balance: balance,
+                        isMonthEnd: true
+                    });
+                    displayedCount++;
+
+                    lastDate = new Date(nextMonthFirst);
+                    // Update tempDate to start of next check (Jan 1 + 1 day? No, just Jan 1 is fine as base)
+                    tempDate = new Date(nextMonthFirst);
+                    // tempDate.setDate(tempDate.getDate() + 1); // Not needed? standard loop logic
+                    // Actually loop relies on tempDate being inside the month we want to check end for.
+                    // If tempDate is Jan 1, `getMonth()+1` gives Feb 1. Correct.
+                }
+
+                // --- 2. Calculate Interest to Event Date ---
+                const daysDiff = Math.floor((eventDate - lastDate) / (1000 * 60 * 60 * 24));
+                let eventInterest = 0;
+
+                if (daysDiff > 0) {
+                    const yearDays = getDaysInYear(lastDate.getFullYear());
+                    const dailyRate = (currentAnnualRate / 100) / yearDays;
+                    eventInterest = balance * dailyRate * daysDiff;
+                }
+
+                // --- 3. Handle Event ---
+                if (event.type === 'RATE_CHANGE') {
+                    // Rate Change Event
+                    // Does interest capitalize on Rate Change? 
+                    // User only said "EMI payment date and end of month".
+                    // So we just carry this `eventInterest` in an accumulator?
+                    // OR do we debit it now? 
+                    // If we don't debit, the rate applies to the old balance. 
+                    // If we do debit, rate applies to (Bal+Int).
+                    // Strict interpretation: Accrue separate, don't capitalize.
+                    accruedInterest += eventInterest;
+
+                    currentAnnualRate = event.rate;
+                    processedRows.push({
+                        date: eventDate,
+                        desc: `Rate Changed to ${event.rate.toFixed(2)}%`,
+                        interest: '-',
+                        payment: '-',
+                        principalChange: '-',
+                        balance: balance, // Balance hasn't changed yet
+                        isRateChange: true
+                    });
+                    // lastDate updates below, so we start counting from here for next period
+                } else {
+                    // Payment Event (EMI or Lump Sum)
+                    // "Interest will be added to the outstanding balance on EMI payment date"
+
+                    // 1. Defer Interest (Don't debit yet, just accrue)
+                    accruedInterest += eventInterest;
+                    // Note: We do NOT debit balance here. Interest is posted at Month End.
+
+                    // 2. Credit Payment
+                    let paymentAmount = event.amount;
+                    balance -= paymentAmount;
+                    totalRepaymentCalculated += paymentAmount;
+
+                    if (balance < 0) {
+                        paymentAmount += balance;
+                        balance = 0;
+                    }
+
+                    processedRows.push({
+                        date: eventDate,
+                        desc: event.type === 'EMI' ? 'EMI Payment' : 'Part Prepayment',
+                        interest: '-', // Interest not posted on payment date
+                        payment: paymentAmount, // Credited Amount
+                        principalChange: paymentAmount, // Full payment reduces principal (interest handled separately)
+                        balance: balance,
+                        isMonthEnd: false
+                    });
+                }
+
+                lastDate = new Date(eventDate);
+                if (event.type !== 'RATE_CHANGE') displayedCount++;
+            }
+
+            // Sync Summary Cards with Accurate Calculation
+            if (document.getElementById('totalInterest')) document.getElementById('totalInterest').innerText = formatCurrency(totalInterestCalculated);
+            if (document.getElementById('totalCost')) document.getElementById('totalCost').innerText = formatCurrency(totalRepaymentCalculated); // totalCost is the correct ID
+
+            // Payoff Date
+            if (processedRows.length > 0) {
+                // Find last payment date
+                const payoff = lastDate.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+                // We have a payoff date card?
+                const payoffEl = document.getElementById('payoffDate');
+                if (payoffEl) {
+                    payoffEl.innerText = payoff;
+                }
+            }
+
+
+            // Render
+            if (processedRows.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="padding: 32px; text-align: center; color: var(--text-muted);">No data generated</td></tr>`;
+                return;
+            }
+
+            processedRows.forEach((row, index) => {
+                const dateStr = row.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                let rowStyle = index % 2 === 0 ? 'background: #f8fafc;' : 'background: white;';
+
+                if (row.isMonthEnd) rowStyle = 'background: #f1f5f9; font-weight: 500; color: #475569;';
+                if (row.isDisbursal) rowStyle = 'background: #eff6ff; font-weight: 600; color: #1e3a8a;';
+                if (row.isFee) rowStyle = 'background: #fee2e2; color: #991b1b;';
+                if (row.isRateChange) rowStyle = 'background: #fff7ed; color: #9a3412; font-weight: 500; border-left: 4px solid #f97316;';
+
+
+                // Color Logic
+                // Interest is always a Debit (Red)
+                const interestColor = '#dc2626'; // Red
+
+                // Payment Column Logic:
+                // If Fee -> Red (Debit)
+                // If Payment -> Green (Credit)
+                let payColor = 'var(--text-muted)';
+                if (row.isFee) {
+                    payColor = '#dc2626'; // Red
+                } else if (row.payment > 0 && row.payment !== '-') {
+                    payColor = '#10b981'; // Green
+                }
+
+                const prinColor = row.principalChange > 0 && row.principalChange !== '-' ? '#3b82f6' : 'var(--text-muted)';
+
+                // Content Formatting with Signs
+                // Interest: Add '+' if positive
+                let displayInterest = '-';
+                if (row.interest > 0 && row.interest !== '-') {
+                    displayInterest = `+ ${formatCurrency(row.interest)}`;
+                }
+
+                // Payment: Add '+' if Fee, '-' if Payment
+                let displayPayment = '-';
+                if (row.isFee) {
+                    // Fee is currently stored in 'payment' field as raw number?
+                    // Wait, in previous step I didn't push it to payment field. I pushed it to payment field in the chunk I *tried* to edit?
+                    // Actually I changed it to `payment: '-'` in my previous thought process but realized user wanted it in Payment Col.
+                    // The executed code (chunk 1318+) shows: `payment: '-'`. 
+                    // Wait, I need to FIX the data generation for Fee first!
+                    // Actually let me do that fix HERE by checking `isFee`.
+                    // If `isFee` is true, the `balance` change is already correct.
+                    // But the `row.payment` field might be `-`. 
+                    // I can just pull the fee amount from `principalChange` (which is negative fee) or use global Input?
+                    // Better: Fix the data generation block above?
+                    // No, let's fix the DISPLAY here.
+                    // If isFee, show `+ {FeeAmount}`. Where to get Fee Amount?
+                    // `row.principalChange` is `-Fee`. So `Math.abs(principalChange)` is Fee.
+                    displayPayment = `+ ${formatCurrency(Math.abs(row.principalChange))}`;
+                } else if (row.payment > 0 && row.payment !== '-') {
+                    displayPayment = `- ${formatCurrency(row.payment)}`;
+                } else if (row.desc === 'Processing Fee') {
+                    // Fallback if isFee not strictly set? we set it.
+                    // But wait, the DATA is key.
+                }
+
+                tableBody.insertAdjacentHTML('beforeend', `
+                    <tr style="${rowStyle}">
+                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${dateStr}</td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${row.desc}</td>
+                        <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0; color: ${interestColor};">${displayInterest}</td>
+                        <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0; color: ${payColor};">${displayPayment}</td>
+                        <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0; color: ${prinColor};">${row.principalChange !== '-' ? formatCurrency(row.principalChange) : '-'}</td>
+                        <td style="padding: 12px; text-align: right; border-bottom: 1px solid #e2e8f0; font-weight: 600;">${formatCurrency(row.balance)}</td>
+                    </tr>
+                `);
+            });
+        }
+        function updateChart(principal, interest) {
+            const ctx = document.getElementById('mortgageChart').getContext('2d');
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        data: [principal, interest],
+                        backgroundColor: ['#6366f1', '#f472b6'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                    }
+                }
+            });
+        }
+
+        // Initialize
+        renderExtraPayments();
+        calculate();
+
+        // --- AI Logic ---
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function askAI(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Loading state
+            const loadingId = addMessage('Thinking...', 'bot', true);
+
+            // Context construction
+            const context = {
+                homePrice: homePriceInput.value,
+                downPayment: downPaymentInput.value,
+                rate: interestRateInput.value,
+                term: loanTermInput.value,
+                monthly: document.getElementById('monthlyPayment').textContent
+            };
+
+            const systemPrompt = `You are an expert AI Mortgage Advisor. 
+            User Context:
+                    - Home Price: $${context.homePrice}
+                - Down Payment: $${context.downPayment}
+                - Interest Rate: ${context.rate} %
+                - Term: ${context.term} years
+                - Estimated Monthly Payment: ${context.monthly}
+            
+            Answer the user's question specifically based on these numbers. Be concise, friendly, and financially sound. Use bullet points for clarity.`;
+
+            try {
+                const response = await fetch('/.netlify/functions/gemini-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `${systemPrompt}\n\nUser Question: ${message}`
+                    })
+                });
+
+                const data = await response.json();
+
+                // Remove loading message
+                document.getElementById(loadingId).remove();
+
+                if (data.response || (data.candidates && data.candidates[0].content)) {
+                    const reply = data.response || data.candidates[0].content.parts[0].text;
+                    addMessage(reply, 'bot');
+                } else {
+                    addMessage("I'm having trouble connecting right now. Please try again.", 'bot');
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById(loadingId).remove();
+                addMessage("Sorry, something went wrong with the AI service.", 'bot');
+            }
+        }
+
+        function addMessage(text, sender, isLoading = false) {
+            const history = document.getElementById('chatHistory');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message';
+            msgDiv.id = isLoading ? 'loading-msg' : 'msg-' + Date.now();
+
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${sender}-bubble`;
+            bubble.innerHTML = isLoading ? '<span style="animation:pulse 1s infinite">...</span>' : text.replace(/\n/g, '<br>');
+
+            msgDiv.appendChild(bubble);
+            history.appendChild(msgDiv);
+            history.scrollTop = history.scrollHeight;
+            return msgDiv.id;
+        }
+    </script>
+</body>
+
+</html>
