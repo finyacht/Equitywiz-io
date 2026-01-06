@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RT0B6NXFG6"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-      gtag('config', 'G-RT0B6NXFG6');
+        gtag('config', 'G-RT0B6NXFG6');
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
     <!-- CSP handled by netlify.toml for better control -->
     <title>Financial Modeling Tools</title>
     <link rel="stylesheet" href="/css/styles.css">
@@ -26,7 +28,7 @@
             --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
             --hover-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        
+
         body {
             min-height: 100vh;
             margin: 0;
@@ -39,7 +41,7 @@
             position: relative;
             overflow-x: hidden;
         }
-        
+
         body::before {
             content: '';
             position: absolute;
@@ -47,13 +49,13 @@
             right: 0;
             bottom: 0;
             left: 0;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 20% 30%, rgba(74, 108, 247, 0.05) 0%, transparent 400px),
                 radial-gradient(circle at 80% 70%, rgba(46, 204, 113, 0.05) 0%, transparent 400px),
                 radial-gradient(circle at 50% 50%, rgba(229, 9, 20, 0.025) 0%, transparent 600px);
             z-index: -1;
         }
-        
+
         .container {
             width: 100%;
             max-width: 100%;
@@ -62,7 +64,7 @@
             position: relative;
             overflow-x: hidden;
         }
-        
+
         .header {
             text-align: left;
             margin-bottom: 40px;
@@ -78,7 +80,7 @@
             border-bottom: 1px solid rgba(226, 232, 240, 0.6);
             box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.03);
         }
-        
+
         .header::before {
             content: '';
             position: absolute;
@@ -89,7 +91,7 @@
             background: linear-gradient(90deg, var(--waterfall-color), var(--vanilla-color), var(--netflix-color));
             z-index: 1;
         }
-        
+
         .header-top {
             display: flex;
             align-items: center;
@@ -97,7 +99,7 @@
             padding: 0 40px;
             width: 100%;
         }
-        
+
         .header-logo {
             display: flex;
             align-items: center;
@@ -112,7 +114,7 @@
             overflow: hidden;
             transform: translateY(-2px);
         }
-        
+
         .header-logo::before {
             content: "";
             position: absolute;
@@ -124,7 +126,7 @@
             top: 10px;
             left: 10px;
         }
-        
+
         .header-logo::after {
             content: "";
             position: absolute;
@@ -136,7 +138,7 @@
             bottom: 10px;
             right: 10px;
         }
-        
+
         .title {
             font-size: 2.5rem;
             font-weight: 700;
@@ -148,7 +150,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .subtitle {
             font-size: 1.1rem;
             color: #64748b;
@@ -157,7 +159,7 @@
             margin: 0 0 8px 0;
             padding: 0 40px;
         }
-        
+
         .author-info {
             display: flex;
             align-items: center;
@@ -166,13 +168,13 @@
             margin-bottom: 20px;
             padding: 0 40px;
         }
-        
+
         .author-info a {
             display: inline-flex;
             margin-left: 6px;
             color: #64748b;
         }
-        
+
         .tools-section {
             padding: 0 20px 40px;
             max-width: 100%;
@@ -371,7 +373,7 @@
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: linear-gradient(45deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
             border-radius: 6px;
             z-index: -1;
         }
@@ -395,27 +397,85 @@
             display: inline-block;
         }
 
-        .waterfall .tool-name::before { background: var(--waterfall-color); }
-        .vanilla .tool-name::before { background: var(--vanilla-color); }
-        .netflix .tool-name::before { background: var(--netflix-color); }
-        .interest .tool-name::before { background: var(--interest-color); }
-        .benchmark .tool-name::before { background: #4a6cf7; }
-        .budget .tool-name::before { background: #8B5CF6; }
-        .grant .tool-name::before { background: #0a5264; }
-        .espp .tool-name::before { background: #0a5264; }
-        .stock .tool-name::before { background: #4a6cf7; }
-        .converter .tool-name::before { background: #059669; }
+        .waterfall .tool-name::before {
+            background: var(--waterfall-color);
+        }
 
-        .waterfall .tool-indicator { background: var(--waterfall-color); }
-        .vanilla .tool-indicator { background: var(--vanilla-color); }
-        .netflix .tool-indicator { background: var(--netflix-color); }
-        .interest .tool-indicator { background: var(--interest-color); }
-        .benchmark .tool-indicator { background: #4a6cf7; }
-        .budget .tool-indicator { background: #8B5CF6; }
-        .grant .tool-indicator { background: #0a5264; }
-        .espp .tool-indicator { background: #0a5264; }
-        .stock .tool-indicator { background: #4a6cf7; }
-        .converter .tool-indicator { background: #059669; }
+        .vanilla .tool-name::before {
+            background: var(--vanilla-color);
+        }
+
+        .netflix .tool-name::before {
+            background: var(--netflix-color);
+        }
+
+        .interest .tool-name::before {
+            background: var(--interest-color);
+        }
+
+        .benchmark .tool-name::before {
+            background: #4a6cf7;
+        }
+
+        .budget .tool-name::before {
+            background: #8B5CF6;
+        }
+
+        .grant .tool-name::before {
+            background: #0a5264;
+        }
+
+        .espp .tool-name::before {
+            background: #0a5264;
+        }
+
+        .stock .tool-name::before {
+            background: #4a6cf7;
+        }
+
+        .converter .tool-name::before {
+            background: #059669;
+        }
+
+        .waterfall .tool-indicator {
+            background: var(--waterfall-color);
+        }
+
+        .vanilla .tool-indicator {
+            background: var(--vanilla-color);
+        }
+
+        .netflix .tool-indicator {
+            background: var(--netflix-color);
+        }
+
+        .interest .tool-indicator {
+            background: var(--interest-color);
+        }
+
+        .benchmark .tool-indicator {
+            background: #4a6cf7;
+        }
+
+        .budget .tool-indicator {
+            background: #8B5CF6;
+        }
+
+        .grant .tool-indicator {
+            background: #0a5264;
+        }
+
+        .espp .tool-indicator {
+            background: #0a5264;
+        }
+
+        .stock .tool-indicator {
+            background: #4a6cf7;
+        }
+
+        .converter .tool-indicator {
+            background: #059669;
+        }
 
         .tool-type {
             font-size: 0.8rem;
@@ -460,34 +520,62 @@
             opacity: 0.9;
         }
 
-        .waterfall .tool-launch-btn { background: #4a6cf7; }
-        .vanilla .tool-launch-btn { background: #2ecc71; }
-        .netflix .tool-launch-btn { background: #e50914; }
-        .interest .tool-launch-btn { background: #0ea5e9; }
-        .budget .tool-launch-btn { background: #8B5CF6; }
-        .grant .tool-launch-btn { background: #0a5264; }
-        .espp .tool-launch-btn { background: #0a5264; }
-        .waterfall .tool-launch-btn { 
-            background: var(--waterfall-color) !important; 
+        .waterfall .tool-launch-btn {
+            background: #4a6cf7;
         }
-        .vanilla .tool-launch-btn { 
-            background: var(--vanilla-color) !important; 
+
+        .vanilla .tool-launch-btn {
+            background: #2ecc71;
         }
-        .netflix .tool-launch-btn { 
-            background: var(--netflix-color) !important; 
+
+        .netflix .tool-launch-btn {
+            background: #e50914;
         }
-        .interest .tool-launch-btn { 
-            background: var(--interest-color) !important; 
+
+        .interest .tool-launch-btn {
+            background: #0ea5e9;
         }
-        .budget .tool-launch-btn { 
-            background: #8B5CF6 !important; 
+
+        .budget .tool-launch-btn {
+            background: #8B5CF6;
         }
-        .grant .tool-launch-btn { 
-            background: #0a5264 !important; 
+
+        .grant .tool-launch-btn {
+            background: #0a5264;
         }
-        .converter .tool-launch-btn { 
-            background: #059669 !important; 
+
+        .espp .tool-launch-btn {
+            background: #0a5264;
         }
+
+        .waterfall .tool-launch-btn {
+            background: var(--waterfall-color) !important;
+        }
+
+        .vanilla .tool-launch-btn {
+            background: var(--vanilla-color) !important;
+        }
+
+        .netflix .tool-launch-btn {
+            background: var(--netflix-color) !important;
+        }
+
+        .interest .tool-launch-btn {
+            background: var(--interest-color) !important;
+        }
+
+        .budget .tool-launch-btn {
+            background: #8B5CF6 !important;
+        }
+
+        .grant .tool-launch-btn {
+            background: #0a5264 !important;
+        }
+
+        .converter .tool-launch-btn {
+            background: #059669 !important;
+        }
+
         .stock .tool-launch-btn {
             background: #4a6cf7 !important;
         }
@@ -496,7 +584,7 @@
             .tools-section {
                 padding: 0 20px 40px;
             }
-            
+
             .tools-container {
                 padding: 25px 20px;
             }
@@ -511,7 +599,8 @@
                 box-sizing: border-box !important;
             }
 
-            html, body {
+            html,
+            body {
                 overflow-x: hidden !important;
                 width: 100% !important;
                 max-width: 100% !important;
@@ -761,52 +850,52 @@
                 padding: 30px 10px !important;
                 margin-top: 20px !important;
             }
-            
+
             .game-break-container {
                 max-width: 100% !important;
                 padding: 0 !important;
             }
-            
+
             .game-break-header {
                 margin-bottom: 25px !important;
             }
-            
+
             .game-break-icon {
                 font-size: 2rem !important;
                 margin-bottom: 15px !important;
             }
-            
+
             .game-break-title {
                 font-size: 1.6rem !important;
                 margin-bottom: 8px !important;
             }
-            
+
             .game-break-subtitle {
                 font-size: 0.95rem !important;
                 padding: 0 10px !important;
             }
-            
+
             .game-card {
                 padding: 25px 15px !important;
                 margin: 0 5px !important;
             }
-            
+
             .game-title {
                 font-size: 1.5rem !important;
                 letter-spacing: 1px !important;
             }
-            
+
             .game-tagline {
                 font-size: 0.9rem !important;
                 margin-bottom: 20px !important;
             }
-            
+
             .game-description {
                 font-size: 0.9rem !important;
                 margin-bottom: 30px !important;
                 padding: 0 5px !important;
             }
-            
+
             .game-launch-btn {
                 padding: 12px 30px !important;
                 font-size: 0.95rem !important;
@@ -814,6 +903,7 @@
         }
 
         @media (max-width: 480px) {
+
             /* Smaller Mobile Header */
             .header {
                 padding: 16px 0 12px !important;
@@ -947,7 +1037,7 @@
             box-shadow: 0 -4px 20px -10px rgba(0, 0, 0, 0.05);
         }
 
-        
+
         .footer-content {
             max-width: 1600px;
             margin: 0 auto;
@@ -956,18 +1046,18 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .visit-counter {
             font-size: 0.875rem;
             color: #64748b;
             display: flex;
             align-items: center;
         }
-        
+
         .visit-counter svg {
             margin-right: 6px;
         }
-        
+
         .footer-copyright {
             color: #94a3b8;
             font-size: 0.875rem;
@@ -981,7 +1071,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .game-break-section::before {
             content: '';
             position: absolute;
@@ -989,30 +1079,30 @@
             right: 0;
             bottom: 0;
             left: 0;
-            background-image: 
+            background-image:
                 radial-gradient(circle at 20% 30%, rgba(0, 255, 255, 0.1) 0%, transparent 300px),
                 radial-gradient(circle at 80% 70%, rgba(255, 0, 255, 0.08) 0%, transparent 400px);
             z-index: 0;
         }
-        
+
         .game-break-container {
             max-width: 1200px;
             margin: 0 auto;
             position: relative;
             z-index: 1;
         }
-        
+
         .game-break-header {
             text-align: center;
             margin-bottom: 40px;
         }
-        
+
         .game-break-icon {
             font-size: 3rem;
             margin-bottom: 20px;
             filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.5));
         }
-        
+
         .game-break-title {
             font-size: 2.5rem;
             font-weight: 700;
@@ -1020,20 +1110,20 @@
             margin-bottom: 12px;
             text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
         }
-        
+
         .game-break-subtitle {
             font-size: 1.2rem;
             color: #94a3b8;
             margin: 0;
             font-weight: 400;
         }
-        
+
         .game-card {
             background: rgba(15, 23, 42, 0.8);
             border: 2px solid #0ff;
             border-radius: 16px;
             padding: 40px;
-            box-shadow: 
+            box-shadow:
                 0 0 40px rgba(0, 255, 255, 0.2),
                 inset 0 0 20px rgba(0, 255, 255, 0.05);
             backdrop-filter: blur(10px);
@@ -1041,14 +1131,14 @@
             overflow: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .game-card:hover {
-            box-shadow: 
+            box-shadow:
                 0 0 60px rgba(0, 255, 255, 0.3),
                 inset 0 0 30px rgba(0, 255, 255, 0.1);
             transform: translateY(-5px);
         }
-        
+
         .neon-border {
             position: absolute;
             top: 0;
@@ -1059,12 +1149,17 @@
             background-size: 200% 100%;
             animation: neon-flow 3s linear infinite;
         }
-        
+
         @keyframes neon-flow {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 200% 0%; }
+            0% {
+                background-position: 0% 0%;
+            }
+
+            100% {
+                background-position: 200% 0%;
+            }
         }
-        
+
         .game-title {
             font-size: 2.5rem;
             font-weight: 900;
@@ -1074,7 +1169,7 @@
             letter-spacing: 2px;
             text-align: center;
         }
-        
+
         .game-tagline {
             font-size: 1.1rem;
             color: #f0f;
@@ -1083,7 +1178,7 @@
             font-weight: 500;
             text-shadow: 0 0 10px #f0f;
         }
-        
+
         .game-description {
             font-size: 1.1rem;
             color: #e2e8f0;
@@ -1094,11 +1189,11 @@
             margin-left: auto;
             margin-right: auto;
         }
-        
+
         .game-launch {
             text-align: center;
         }
-        
+
         .game-launch-btn {
             display: inline-block;
             padding: 16px 48px;
@@ -1115,17 +1210,17 @@
             letter-spacing: 1px;
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
         }
-        
+
         .game-launch-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 0 50px rgba(0, 255, 255, 0.6);
         }
-        
+
         .btn-text {
             position: relative;
             z-index: 2;
         }
-        
+
         .btn-glow {
             position: absolute;
             top: 0;
@@ -1135,7 +1230,7 @@
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             transition: left 0.5s ease;
         }
-        
+
         .game-launch-btn:hover .btn-glow {
             left: 100%;
         }
@@ -1145,23 +1240,23 @@
             .game-break-section {
                 padding: 40px 15px;
             }
-            
+
             .game-break-title {
                 font-size: 1.8rem;
             }
-            
+
             .game-break-subtitle {
                 font-size: 1rem;
             }
-            
+
             .game-card {
                 padding: 30px 20px;
             }
-            
+
             .game-title {
                 font-size: 1.8rem;
             }
-            
+
             .game-launch-btn {
                 padding: 14px 36px;
                 font-size: 1rem;
@@ -1169,6 +1264,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header class="header">
@@ -1180,8 +1276,10 @@
             <div class="author-info">
                 by Amal Ganatra
                 <a href="https://www.linkedin.com/in/amalganatra/" target="_blank" rel="noopener noreferrer">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
                     </svg>
                 </a>
             </div>
@@ -1209,7 +1307,9 @@
                                 <p class="tool-type">Systematic Investment Plan with Inflation Analysis</p>
                             </td>
                             <td>
-                                <p class="tool-description">Plan recurring investments with flexible frequency & currency. Features powerful inflation comparison showing real value after inflation, with clear gain/loss indicators.</p>
+                                <p class="tool-description">Plan recurring investments with flexible frequency &
+                                    currency. Features powerful inflation comparison showing real value after inflation,
+                                    with clear gain/loss indicators.</p>
                             </td>
                             <td>
                                 <a href="sip_calculator.html" class="tool-launch-btn">Launch</a>
@@ -1224,7 +1324,9 @@
                                 <p class="tool-type">AI SAFE / Note / Equity review</p>
                             </td>
                             <td>
-                                <p class="tool-description">Upload or paste a term sheet and get a simple market-fit score, key risks, and stage-aware benchmarks. Uses Gemini with founder/investor persona toggles.</p>
+                                <p class="tool-description">Upload or paste a term sheet and get a simple market-fit
+                                    score, key risks, and stage-aware benchmarks. Uses Gemini with founder/investor
+                                    persona toggles.</p>
                             </td>
                             <td>
                                 <a href="term-sheet-benchmark.html" class="tool-launch-btn">Launch</a>
@@ -1239,7 +1341,9 @@
                                 <p class="tool-type">Investment Distribution Calculator</p>
                             </td>
                             <td>
-                                <p class="tool-description">Visualize how investment proceeds are distributed among different share classes during a company exit or liquidation event based on liquidation preferences and participation rights.</p>
+                                <p class="tool-description">Visualize how investment proceeds are distributed among
+                                    different share classes during a company exit or liquidation event based on
+                                    liquidation preferences and participation rights.</p>
                             </td>
                             <td>
                                 <a href="waterfall_analysis.html" class="tool-launch-btn">Launch</a>
@@ -1254,7 +1358,9 @@
                                 <p class="tool-type">Option Value Calculator</p>
                             </td>
                             <td>
-                                <p class="tool-description">Analyze vanilla options by calculating their value at different price points. Understand whether options are in-the-money or out-of-the-money, and visualize total value and net gain.</p>
+                                <p class="tool-description">Analyze vanilla options by calculating their value at
+                                    different price points. Understand whether options are in-the-money or
+                                    out-of-the-money, and visualize total value and net gain.</p>
                             </td>
                             <td>
                                 <a href="vanilla.html" class="tool-launch-btn">Launch</a>
@@ -1269,7 +1375,9 @@
                                 <p class="tool-type">Stock Option Value Calculator</p>
                             </td>
                             <td>
-                                <p class="tool-description">Model and compare Netflix's Supplemental Stock Option Plan to direct stock purchases. Analyze break-even points, potential returns, and visualize how options can outperform stock at different prices.</p>
+                                <p class="tool-description">Model and compare Netflix's Supplemental Stock Option Plan
+                                    to direct stock purchases. Analyze break-even points, potential returns, and
+                                    visualize how options can outperform stock at different prices.</p>
                             </td>
                             <td>
                                 <a href="netflix.html" class="tool-launch-btn">Launch</a>
@@ -1284,10 +1392,30 @@
                                 <p class="tool-type">Investment Growth Modeler</p>
                             </td>
                             <td>
-                                <p class="tool-description">Calculate how your investments grow over time with this interactive tool. Compare simple and compound interest with various compounding frequencies, and visualize the impact of regular deposits on your investment growth.</p>
+                                <p class="tool-description">Calculate how your investments grow over time with this
+                                    interactive tool. Compare simple and compound interest with various compounding
+                                    frequencies, and visualize the impact of regular deposits on your investment growth.
+                                </p>
                             </td>
                             <td>
                                 <a href="interest-calculator.html" class="tool-launch-btn">Launch</a>
+                            </td>
+                        </tr>
+                        <tr class="tool-row" onclick="window.location.href='mortgage-calculator'">
+                            <td>
+                                <div class="tool-indicator interest"></div>
+                            </td>
+                            <td>
+                                <div class="tool-name interest">Mortgage AI Advisor</div>
+                                <div class="tool-type">Real Estate</div>
+                            </td>
+                            <td>
+                                <p class="tool-description">Smart mortgage planning with AI-powered advice and dynamic
+                                    visualizations.</p>
+                            </td>
+                            <td>
+                                <button class="tool-launch-btn interest"
+                                    onclick="window.location.href='mortgage-calculator'; event.stopPropagation();">Launch</button>
                             </td>
                         </tr>
                         <tr class="tool-row budget">
@@ -1299,7 +1427,8 @@
                                 <p class="tool-type">Smart Budget Planning Tool</p>
                             </td>
                             <td>
-                                <p class="tool-description">Plan your budget with flexible allocation rules and see how your savings can grow over time.</p>
+                                <p class="tool-description">Plan your budget with flexible allocation rules and see how
+                                    your savings can grow over time.</p>
                             </td>
                             <td>
                                 <a href="budget-calculator.html" class="tool-launch-btn">Launch</a>
@@ -1314,7 +1443,8 @@
                                 <p class="tool-type">Equity Compensation Calculator</p>
                             </td>
                             <td>
-                                <p class="tool-description">Estimate the value of your equity compensation, including both stock options and RSUs, with modern, intuitive analysis.</p>
+                                <p class="tool-description">Estimate the value of your equity compensation, including
+                                    both stock options and RSUs, with modern, intuitive analysis.</p>
                             </td>
                             <td>
                                 <a href="grant-calculator.html" class="tool-launch-btn">Launch</a>
@@ -1329,7 +1459,9 @@
                                 <p class="tool-type">Basic Past / Present / Future View</p>
                             </td>
                             <td>
-                                <p class="tool-description">A clear helicopter view of your equity journey: Past (vested/exercised), Present (current holdings and value), and Future (remaining to vest and projected value), with a clean lifecycle chart.</p>
+                                <p class="tool-description">A clear helicopter view of your equity journey: Past
+                                    (vested/exercised), Present (current holdings and value), and Future (remaining to
+                                    vest and projected value), with a clean lifecycle chart.</p>
                             </td>
                             <td>
                                 <a href="grant_lifecycle_calculator_v3.html" class="tool-launch-btn">Launch</a>
@@ -1344,7 +1476,8 @@
                                 <p class="tool-type">Options/RSUs/Shares Lifecycle</p>
                             </td>
                             <td>
-                                <p class="tool-description">Model grants end-to-end: vesting schedules, exercises/sales, portfolio value over time with an interactive combined chart.</p>
+                                <p class="tool-description">Model grants end-to-end: vesting schedules, exercises/sales,
+                                    portfolio value over time with an interactive combined chart.</p>
                             </td>
                             <td>
                                 <a href="grant_lifecycle_calculator.html" class="tool-launch-btn">Launch</a>
@@ -1359,7 +1492,8 @@
                                 <p class="tool-type">Yearly Timeline & Tax Modes</p>
                             </td>
                             <td>
-                                <p class="tool-description">Explore a dashboard view with yearly timeline, WTC/STC tax modes, departure scenarios, and value vs shares charts.</p>
+                                <p class="tool-description">Explore a dashboard view with yearly timeline, WTC/STC tax
+                                    modes, departure scenarios, and value vs shares charts.</p>
                             </td>
                             <td>
                                 <a href="grant_lifecycle_calculator_v2.html" class="tool-launch-btn">Launch</a>
@@ -1374,7 +1508,8 @@
                                 <p class="tool-type">Employee Stock Purchase Plan Calculator</p>
                             </td>
                             <td>
-                                <p class="tool-description">Calculate potential returns from your Employee Stock Purchase Plan with detailed tax implications and scenarios.</p>
+                                <p class="tool-description">Calculate potential returns from your Employee Stock
+                                    Purchase Plan with detailed tax implications and scenarios.</p>
                             </td>
                             <td>
                                 <a href="espp-calculator.html" class="tool-launch-btn">Launch</a>
@@ -1389,7 +1524,9 @@
                                 <p class="tool-type">Real-time Market Data & Analysis</p>
                             </td>
                             <td>
-                                <p class="tool-description">Professional stock market dashboard with S&P 500 charts, real-time data, top gainers/losers, and advanced screening tools for informed investment decisions.</p>
+                                <p class="tool-description">Professional stock market dashboard with S&P 500 charts,
+                                    real-time data, top gainers/losers, and advanced screening tools for informed
+                                    investment decisions.</p>
                             </td>
                             <td>
                                 <a href="stock-screener.html" class="tool-launch-btn">Launch</a>
@@ -1404,7 +1541,8 @@
                                 <p class="tool-type">2-Day Social Sentiment on News</p>
                             </td>
                             <td>
-                                <p class="tool-description">Track positive, neutral, and negative sentiment for news from the last two days using Reddit and Twitter signals.</p>
+                                <p class="tool-description">Track positive, neutral, and negative sentiment for news
+                                    from the last two days using Reddit and Twitter signals.</p>
                             </td>
                             <td>
                                 <a href="news-sentiment.html" class="tool-launch-btn">Launch</a>
@@ -1419,7 +1557,9 @@
                                 <p class="tool-type">Cap Table Data Transformation Tool</p>
                             </td>
                             <td>
-                                <p class="tool-description">Convert cap table exports between different share registry platforms. Transform certificate ledger data into standardized import formats with automatic field mapping and validation.</p>
+                                <p class="tool-description">Convert cap table exports between different share registry
+                                    platforms. Transform certificate ledger data into standardized import formats with
+                                    automatic field mapping and validation.</p>
                             </td>
                             <td>
                                 <a href="share-registry-converter.html" class="tool-launch-btn">Launch</a>
@@ -1445,7 +1585,7 @@
                     <div class="game-title">NEON CYCLES</div>
                     <div class="game-tagline">Light Trail Battle Arena</div>
                     <div class="game-description">
-                        Test your reflexes in this retro-futuristic Tron-style game. Battle against AI opponents, 
+                        Test your reflexes in this retro-futuristic Tron-style game. Battle against AI opponents,
                         create light trails, and be the last one standing in the neon arena!
                     </div>
                 </div>
@@ -1458,12 +1598,13 @@
             </div>
         </div>
     </div>
-    
+
     <footer class="footer">
         <div class="footer-content">
             <p class="footer-copyright">© 2025 All Rights Reserved</p>
             <p class="visit-counter">
-                <a href="https://forms.gle/QzKyMR5wFdhb4Enu5" target="_blank" rel="noopener noreferrer">💡 Have an idea? Share feedback</a>
+                <a href="https://forms.gle/QzKyMR5wFdhb4Enu5" target="_blank" rel="noopener noreferrer">💡 Have an idea?
+                    Share feedback</a>
             </p>
         </div>
     </footer>
@@ -1472,40 +1613,40 @@
     <script src="js/chatbotWidget.js"></script>
     <script>
         // Table sorting functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const table = document.querySelector('.tools-table');
             const headers = table.querySelectorAll('th.sortable');
             const tbody = table.querySelector('tbody');
-            
+
             console.log('Sorting initialized:', headers.length, 'sortable headers found');
-            
+
             headers.forEach(header => {
-                header.addEventListener('click', function() {
+                header.addEventListener('click', function () {
                     console.log('Header clicked:', this.dataset.column);
-                    
+
                     const column = this.dataset.column;
                     const isAscending = !this.classList.contains('sort-asc');
-                    
+
                     // Remove sort classes from all headers
                     headers.forEach(h => {
                         h.classList.remove('sort-asc', 'sort-desc');
                     });
-                    
+
                     // Add appropriate sort class
                     if (isAscending) {
                         this.classList.add('sort-asc');
                     } else {
                         this.classList.add('sort-desc');
                     }
-                    
+
                     // Get all rows
                     const rows = Array.from(tbody.querySelectorAll('tr'));
                     console.log('Rows found:', rows.length);
-                    
+
                     // Sort the rows
                     rows.sort((rowA, rowB) => {
                         let textA, textB;
-                        
+
                         if (column === 'tool') {
                             textA = rowA.querySelector('.tool-name').textContent.trim().toLowerCase();
                             textB = rowB.querySelector('.tool-name').textContent.trim().toLowerCase();
@@ -1513,25 +1654,25 @@
                             textA = rowA.querySelector('.tool-description').textContent.trim().toLowerCase();
                             textB = rowB.querySelector('.tool-description').textContent.trim().toLowerCase();
                         }
-                        
+
                         console.log('Comparing:', textA, 'vs', textB);
-                        
+
                         if (isAscending) {
                             return textA.localeCompare(textB);
                         } else {
                             return textB.localeCompare(textA);
                         }
                     });
-                    
+
                     // Clear and re-append sorted rows
                     while (tbody.firstChild) {
                         tbody.removeChild(tbody.firstChild);
                     }
-                    
+
                     rows.forEach(row => {
                         tbody.appendChild(row);
                     });
-                    
+
                     console.log('Sorting complete');
                 });
             });
@@ -1547,4 +1688,5 @@
         });
     </script>
 </body>
-</html> 
+
+</html>

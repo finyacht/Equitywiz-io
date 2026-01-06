@@ -145,6 +145,15 @@ app.get('/stock-screener.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'stock-screener.html'));
 });
 
+// Route for the Mortgage Calculator
+app.get('/mortgage-calculator', (req, res) => {
+  res.sendFile(path.join(__dirname, 'mortgage_calculator.html'));
+});
+
+app.get('/mortgage_calculator.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'mortgage_calculator.html'));
+});
+
 // Polygon API Proxy Route for Local Development
 app.get('/.netlify/functions/polygon-api', async (req, res) => {
   try {
