@@ -224,360 +224,191 @@
             margin: 5px 0 0 0;
         }
 
-        .tools-table {
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 12px;
-            background: transparent;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: none;
-            table-layout: fixed;
         }
 
-        .table-header {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-bottom: 2px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .table-header th {
-            padding: 16px 20px;
-            text-align: left;
-            font-weight: 600;
-            color: #475569;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: none;
-            vertical-align: middle;
+        .tool-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05), 0 2px 6px -2px rgba(0, 0, 0, 0.025);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex;
+            flex-direction: column;
             cursor: pointer;
             position: relative;
-            user-select: none;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            backdrop-filter: blur(10px);
+            min-height: 250px;
         }
 
-        .table-header th:hover {
-            background: #e2e8f0;
-        }
-
-        .table-header th.sortable::after {
-            content: '↕';
-            position: absolute;
-            right: 8px;
-            opacity: 0.5;
-            font-size: 0.8rem;
-        }
-
-        .table-header th.sort-asc::after {
-            content: '↑';
-            opacity: 1;
-        }
-
-        .table-header th.sort-desc::after {
-            content: '↓';
-            opacity: 1;
-        }
-
-        .table-header th:first-child {
-            width: 8%;
-            border-radius: 12px 0 0 12px;
-            text-align: center;
-            padding: 16px 8px;
-        }
-
-        .table-header th:nth-child(2) {
-            width: 22%;
-            padding: 16px 20px;
-        }
-
-        .table-header th:nth-child(3) {
-            width: 50%;
-            padding: 16px 20px;
-        }
-
-        .table-header th:last-child {
-            width: 20%;
-            text-align: center;
-            border-radius: 0 12px 12px 0;
-            padding: 16px 20px;
-        }
-
-        .tool-row {
-            background: white;
-            border-radius: 12px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-            border: 1px solid #e2e8f0;
-            margin-bottom: 8px;
-        }
-
-        .tool-row:hover {
-            background: #f8fafc;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .tool-row td {
-            padding: 16px;
-            vertical-align: top;
-            border: none;
-        }
-
-        .tool-row td:first-child {
-            border-radius: 12px 0 0 12px;
-            width: 8%;
-            text-align: center;
-            vertical-align: middle;
-            padding: 16px 8px;
-        }
-
-        .tool-row td:nth-child(2) {
-            width: 22%;
-            padding: 16px 20px;
-            vertical-align: top;
-        }
-
-        .tool-row td:nth-child(3) {
-            width: 50%;
-            padding: 16px 20px;
-            vertical-align: top;
-        }
-
-        .tool-row td:last-child {
-            text-align: center;
-            border-radius: 0 12px 12px 0;
-            width: 20%;
-            vertical-align: middle;
-            padding: 16px 20px;
-        }
-
-        .tool-row td:last-child * {
-            visibility: visible !important;
-            display: inline-block !important;
-        }
-
-        .tool-indicator {
-            width: 6px;
-            height: 40px;
-            border-radius: 3px;
-            margin: 0 auto;
-            position: relative;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-        }
-
-        .tool-indicator::after {
+        .tool-card::before {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
-            border-radius: 6px;
-            z-index: -1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--card-color, #4a6cf7);
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
         }
 
-        .tool-name {
-            font-size: 1.05rem;
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(226, 232, 240, 1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .tool-card:hover::before {
+            opacity: 1;
+        }
+
+        .tool-card.waterfall {
+            --card-color: var(--waterfall-color);
+        }
+
+        .tool-card.vanilla {
+            --card-color: var(--vanilla-color);
+        }
+
+        .tool-card.netflix {
+            --card-color: var(--netflix-color);
+        }
+
+        .tool-card.interest {
+            --card-color: var(--interest-color);
+        }
+
+        .tool-card.benchmark {
+            --card-color: #4a6cf7;
+        }
+
+        .tool-card.budget {
+            --card-color: #8B5CF6;
+        }
+
+        .tool-card.grant {
+            --card-color: #0a5264;
+        }
+
+        .tool-card.espp {
+            --card-color: #0a5264;
+        }
+
+        .tool-card.stock {
+            --card-color: #4a6cf7;
+        }
+
+        .tool-card.converter {
+            --card-color: #059669;
+        }
+
+        .tool-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .tool-card.waterfall .tool-type-badge {
+            background: rgba(74, 108, 247, 0.1);
+        }
+
+        .tool-card.vanilla .tool-type-badge {
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .tool-card.netflix .tool-type-badge {
+            background: rgba(229, 9, 20, 0.1);
+        }
+
+        .tool-card.interest .tool-type-badge {
+            background: rgba(14, 165, 233, 0.1);
+        }
+
+        .tool-card.benchmark .tool-type-badge {
+            background: rgba(74, 108, 247, 0.1);
+        }
+
+        .tool-card.budget .tool-type-badge {
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .tool-card.grant .tool-type-badge {
+            background: rgba(10, 82, 100, 0.1);
+        }
+
+        .tool-card.espp .tool-type-badge {
+            background: rgba(10, 82, 100, 0.1);
+        }
+
+        .tool-card.stock .tool-type-badge {
+            background: rgba(74, 108, 247, 0.1);
+        }
+
+        .tool-card.converter .tool-type-badge {
+            background: rgba(5, 150, 105, 0.1);
+        }
+
+        .tool-card-title {
+            font-size: 1.35rem;
             font-weight: 700;
             color: #1e293b;
-            margin-bottom: 4px;
-            line-height: 1.2;
-            display: flex;
+            margin: 0 0 12px 0;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+
+        .tool-card-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.6;
+            flex-grow: 1;
+            margin: 0 0 20px 0;
+        }
+
+        .tool-card-footer {
+            display: inline-flex;
             align-items: center;
-            gap: 6px;
-        }
-
-        .tool-name::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .waterfall .tool-name::before {
-            background: var(--waterfall-color);
-        }
-
-        .vanilla .tool-name::before {
-            background: var(--vanilla-color);
-        }
-
-        .netflix .tool-name::before {
-            background: var(--netflix-color);
-        }
-
-        .interest .tool-name::before {
-            background: var(--interest-color);
-        }
-
-        .benchmark .tool-name::before {
-            background: #4a6cf7;
-        }
-
-        .budget .tool-name::before {
-            background: #8B5CF6;
-        }
-
-        .grant .tool-name::before {
-            background: #0a5264;
-        }
-
-        .espp .tool-name::before {
-            background: #0a5264;
-        }
-
-        .stock .tool-name::before {
-            background: #4a6cf7;
-        }
-
-        .converter .tool-name::before {
-            background: #059669;
-        }
-
-        .waterfall .tool-indicator {
-            background: var(--waterfall-color);
-        }
-
-        .vanilla .tool-indicator {
-            background: var(--vanilla-color);
-        }
-
-        .netflix .tool-indicator {
-            background: var(--netflix-color);
-        }
-
-        .interest .tool-indicator {
-            background: var(--interest-color);
-        }
-
-        .benchmark .tool-indicator {
-            background: #4a6cf7;
-        }
-
-        .budget .tool-indicator {
-            background: #8B5CF6;
-        }
-
-        .grant .tool-indicator {
-            background: #0a5264;
-        }
-
-        .espp .tool-indicator {
-            background: #0a5264;
-        }
-
-        .stock .tool-indicator {
-            background: #4a6cf7;
-        }
-
-        .converter .tool-indicator {
-            background: #059669;
-        }
-
-        .tool-type {
-            font-size: 0.8rem;
-            color: #64748b;
-            font-weight: 500;
-            background: #f1f5f9;
-            padding: 2px 6px;
-            border-radius: 10px;
-            display: inline-block;
-            margin-top: 0;
-            line-height: 1.1;
-        }
-
-        .tool-description {
-            font-size: 0.85rem;
-            color: #64748b;
-            line-height: 1.4;
-            margin: 0;
-            text-align: left;
-        }
-
-        .tool-launch-btn {
-            background: #4a6cf7;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 6px;
+            justify-content: center;
             font-weight: 600;
             font-size: 0.9rem;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            min-width: 90px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin: 0 auto;
+            color: var(--card-color, #4a6cf7);
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid var(--card-color, #4a6cf7);
+            margin-top: auto;
+            padding: 8px 18px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .tool-launch-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-            opacity: 0.9;
+        .tool-card:hover .tool-card-footer {
+            background: var(--card-color, #4a6cf7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
         }
 
-        .waterfall .tool-launch-btn {
-            background: #4a6cf7;
+        .tool-card:hover .tool-card-footer svg {
+            transform: translateX(4px);
+            fill: white;
         }
 
-        .vanilla .tool-launch-btn {
-            background: #2ecc71;
-        }
-
-        .netflix .tool-launch-btn {
-            background: #e50914;
-        }
-
-        .interest .tool-launch-btn {
-            background: #0ea5e9;
-        }
-
-        .budget .tool-launch-btn {
-            background: #8B5CF6;
-        }
-
-        .grant .tool-launch-btn {
-            background: #0a5264;
-        }
-
-        .espp .tool-launch-btn {
-            background: #0a5264;
-        }
-
-        .waterfall .tool-launch-btn {
-            background: var(--waterfall-color) !important;
-        }
-
-        .vanilla .tool-launch-btn {
-            background: var(--vanilla-color) !important;
-        }
-
-        .netflix .tool-launch-btn {
-            background: var(--netflix-color) !important;
-        }
-
-        .interest .tool-launch-btn {
-            background: var(--interest-color) !important;
-        }
-
-        .budget .tool-launch-btn {
-            background: #8B5CF6 !important;
-        }
-
-        .grant .tool-launch-btn {
-            background: #0a5264 !important;
-        }
-
-        .converter .tool-launch-btn {
-            background: #059669 !important;
-        }
-
-        .stock .tool-launch-btn {
-            background: #4a6cf7 !important;
+        .tool-card-footer svg {
+            margin-left: 8px;
+            transition: all 0.3s ease;
         }
 
         @media (max-width: 1200px) {
@@ -723,115 +554,6 @@
                 color: #64748b !important;
             }
 
-            /* Clean Card Layout */
-            .tools-table {
-                border-spacing: 0 12px !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            .table-header {
-                display: none !important;
-            }
-
-            .tool-row {
-                display: block !important;
-                background: white !important;
-                border-radius: 12px !important;
-                margin: 0 0 12px 0 !important;
-                padding: 0 !important;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
-                border: 1px solid #e2e8f0 !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                box-sizing: border-box;
-                overflow: hidden;
-                transition: all 0.2s ease !important;
-            }
-
-            .tool-row:hover {
-                transform: translateY(-2px) !important;
-                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-            }
-
-            .tool-row td {
-                display: block !important;
-                padding: 0 !important;
-                border: none !important;
-                text-align: left !important;
-                width: 100% !important;
-                box-sizing: border-box;
-            }
-
-            .tool-row td:first-child {
-                padding: 0 !important;
-            }
-
-            .tool-row td:nth-child(2) {
-                padding: 16px 14px 8px 14px !important;
-            }
-
-            .tool-row td:nth-child(3) {
-                padding: 0 14px 12px 14px !important;
-            }
-
-            .tool-row td:last-child {
-                padding: 0 14px 16px 14px !important;
-                text-align: left !important;
-            }
-
-            .tool-indicator {
-                width: 100% !important;
-                height: 4px !important;
-                border-radius: 0 !important;
-                margin: 0 !important;
-            }
-
-            .tool-name {
-                font-size: 1.1rem !important;
-                margin-bottom: 4px !important;
-                font-weight: 700 !important;
-                line-height: 1.3 !important;
-                color: #1e293b !important;
-            }
-
-            .tool-type {
-                font-size: 0.8rem !important;
-                margin-bottom: 0 !important;
-                margin-top: 0 !important;
-                color: #64748b !important;
-                font-weight: 500 !important;
-            }
-
-            .tool-description {
-                font-size: 0.9rem !important;
-                line-height: 1.5 !important;
-                margin-bottom: 0 !important;
-                word-wrap: break-word !important;
-                overflow-wrap: break-word !important;
-                color: #475569 !important;
-            }
-
-            .tool-launch-btn {
-                width: 100% !important;
-                max-width: 100% !important;
-                padding: 10px 12px !important;
-                font-size: 0.95rem !important;
-                font-weight: 600 !important;
-                display: block !important;
-                text-align: center !important;
-                box-sizing: border-box !important;
-                border-radius: 10px !important;
-                transition: all 0.2s ease !important;
-                margin: 0 !important;
-                border: none !important;
-            }
-
-            .tool-launch-btn:hover {
-                transform: none !important;
-            }
-
             /* Clean Footer */
             .footer {
                 background: white !important;
@@ -966,51 +688,6 @@
 
             .section-subtitle {
                 font-size: 0.8rem !important;
-            }
-
-            .tool-row {
-                margin-bottom: 14px !important;
-                border-radius: 12px !important;
-            }
-
-            .tool-row td:nth-child(2) {
-                padding: 14px 12px 8px 12px !important;
-            }
-
-            .tool-row td:nth-child(3) {
-                padding: 0 12px 10px 12px !important;
-            }
-
-            .tool-row td:last-child {
-                padding: 0 12px 14px 12px !important;
-            }
-
-            .tool-row {
-                margin: 0 0 10px 0 !important;
-            }
-
-            .tool-name {
-                font-size: 1rem !important;
-                margin-bottom: 3px !important;
-            }
-
-            .tool-type {
-                font-size: 0.75rem !important;
-            }
-
-            .tool-description {
-                font-size: 0.85rem !important;
-                line-height: 1.4 !important;
-            }
-
-            .tool-launch-btn {
-                padding: 10px 12px !important;
-                font-size: 0.9rem !important;
-                border-radius: 10px !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                box-sizing: border-box !important;
-                margin: 0 !important;
             }
 
             /* Smaller Mobile Footer */
@@ -1262,6 +939,145 @@
                 font-size: 1rem;
             }
         }
+
+        .view-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 24px;
+            gap: 8px;
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            backdrop-filter: blur(10px);
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: #334155;
+            transform: translateY(-1px);
+        }
+
+        .view-btn.active {
+            background: white;
+            color: #4a6cf7;
+            border-color: #4a6cf7;
+            box-shadow: 0 2px 8px rgba(74, 108, 247, 0.15);
+        }
+
+        .category-block {
+            margin-bottom: 48px;
+        }
+
+        .category-header {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 24px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(226, 232, 240, 0.6);
+            display: flex;
+            align-items: center;
+        }
+
+        .category-header::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 24px;
+            background: linear-gradient(135deg, #4a6cf7, #2ecc71);
+            border-radius: 4px;
+            margin-right: 12px;
+        }
+
+        /* List View Styles */
+        .tools-container.view-mode-list .tools-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tools-container.view-mode-list .tool-card {
+            flex-direction: row;
+            align-items: center;
+            min-height: auto;
+            padding: 16px 24px;
+            gap: 24px;
+        }
+
+        .tools-container.view-mode-list .tool-card::before {
+            width: 4px;
+            height: 100%;
+        }
+
+        .tools-container.view-mode-list .tool-card-header {
+            margin-bottom: 0;
+            flex-shrink: 0;
+            width: 180px;
+            /* Fixed width for badge area */
+            display: flex;
+            align-items: center;
+        }
+
+        .tools-container.view-mode-list .tool-type-badge {
+            font-size: 0.7rem;
+            text-align: center;
+        }
+
+        .tools-container.view-mode-list .tool-card-content-wrapper {
+            flex: 1;
+            min-width: 0;
+            /* Prevents flex flex-child from overflowing container */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tools-container.view-mode-list .tool-card-title {
+            font-size: 1.15rem;
+            margin: 0 0 4px 0;
+        }
+
+        .tools-container.view-mode-list .tool-card-desc {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            max-width: 800px;
+        }
+
+        .tools-container.view-mode-list .tool-card-footer {
+            margin-top: 0;
+            align-self: center;
+            flex-shrink: 0;
+            padding: 10px 24px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .tools-container.view-mode-list .tool-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .tools-container.view-mode-list .tool-card-header {
+                width: 100%;
+            }
+
+            .tools-container.view-mode-list .tool-card-footer {
+                margin-top: 8px;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
@@ -1288,300 +1104,375 @@
         <div class="tools-section">
             <div class="tools-container">
 
-                <table class="tools-table">
-                    <thead class="table-header">
-                        <tr>
-                            <th></th>
-                            <th class="sortable" data-column="tool">Tool</th>
-                            <th class="sortable" data-column="description">Description</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="tool-row interest">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">SIP Calculator</h3>
-                                <p class="tool-type">Systematic Investment Plan with Inflation Analysis</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Plan recurring investments with flexible frequency &
-                                    currency. Features powerful inflation comparison showing real value after inflation,
-                                    with clear gain/loss indicators.</p>
-                            </td>
-                            <td>
-                                <a href="sip_calculator.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row benchmark">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Term Sheet Benchmarker</h3>
-                                <p class="tool-type">AI SAFE / Note / Equity review</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Upload or paste a term sheet and get a simple market-fit
-                                    score, key risks, and stage-aware benchmarks. Uses Gemini with founder/investor
-                                    persona toggles.</p>
-                            </td>
-                            <td>
-                                <a href="term-sheet-benchmark.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row waterfall">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Waterfall Analysis Tool</h3>
-                                <p class="tool-type">Investment Distribution Calculator</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Visualize how investment proceeds are distributed among
-                                    different share classes during a company exit or liquidation event based on
-                                    liquidation preferences and participation rights.</p>
-                            </td>
-                            <td>
-                                <a href="waterfall_analysis.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row vanilla">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Vanilla Option Modeler</h3>
-                                <p class="tool-type">Option Value Calculator</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Analyze vanilla options by calculating their value at
-                                    different price points. Understand whether options are in-the-money or
-                                    out-of-the-money, and visualize total value and net gain.</p>
-                            </td>
-                            <td>
-                                <a href="vanilla.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row netflix">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Netflix Options</h3>
-                                <p class="tool-type">Stock Option Value Calculator</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Model and compare Netflix's Supplemental Stock Option Plan
-                                    to direct stock purchases. Analyze break-even points, potential returns, and
-                                    visualize how options can outperform stock at different prices.</p>
-                            </td>
-                            <td>
-                                <a href="netflix.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row interest">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Interest Rate Calculator</h3>
-                                <p class="tool-type">Investment Growth Modeler</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Calculate how your investments grow over time with this
+                <div class="view-controls">
+                    <button class="view-btn active" data-view="grid" title="Bento Grid View">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                            viewBox="0 0 16 16">
+                            <path
+                                d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zM2.5 2a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zM1 10.5A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3zm6.5.5A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-3z" />
+                        </svg>
+                    </button>
+                    <button class="view-btn" data-view="list" title="List View">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                            viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="category-block">
+                    <h2 class="category-header">Investment & Growth</h2>
+                    <div class="tools-grid">
+                        <a href="sip_calculator.html" class="tool-card interest">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Systematic Investment Plan with Inflation Analysis</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">SIP Calculator</h3>
+                                <p class="tool-card-desc">Plan recurring investments with flexible frequency & currency.
+                                    Features powerful inflation comparison showing real value after inflation, with
+                                    clear gain/loss indicators.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="interest-calculator.html" class="tool-card interest">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Investment Growth Modeler</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Interest Rate Calculator</h3>
+                                <p class="tool-card-desc">Calculate how your investments grow over time with this
                                     interactive tool. Compare simple and compound interest with various compounding
                                     frequencies, and visualize the impact of regular deposits on your investment growth.
                                 </p>
-                            </td>
-                            <td>
-                                <a href="interest-calculator.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row interest" id="mortgage-calc-row">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <div class="tool-name interest">Mortgage AI Advisor</div>
-                                <div class="tool-type">Real Estate</div>
-                            </td>
-                            <td>
-                                <p class="tool-description">Smart mortgage planning with AI-powered advice and dynamic
-                                    visualizations.</p>
-                            </td>
-                            <td>
-                                <a href="mortgage_calculator.html" class="tool-launch-btn interest">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row budget">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Budget & Finances Modeler</h3>
-                                <p class="tool-type">Smart Budget Planning Tool</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Plan your budget with flexible allocation rules and see how
-                                    your savings can grow over time.</p>
-                            </td>
-                            <td>
-                                <a href="budget-calculator.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row budget">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Debt Snowball Calculator</h3>
-                                <p class="tool-type">Debt Payoff Strategy</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Accelerate your journey to becoming debt-free by calculating
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="debt-snowball-calculator.html" class="tool-card budget">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Debt Payoff Strategy</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Debt Snowball Calculator</h3>
+                                <p class="tool-card-desc">Accelerate your journey to becoming debt-free by calculating
                                     how paying off your smallest debts first can save you time and money.</p>
-                            </td>
-                            <td>
-                                <a href="debt-snowball-calculator.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row grant">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Grant Calculator</h3>
-                                <p class="tool-type">Equity Compensation Calculator</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Estimate the value of your equity compensation, including
-                                    both stock options and RSUs, with modern, intuitive analysis.</p>
-                            </td>
-                            <td>
-                                <a href="grant-calculator.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row grant">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Portfolio Timeline</h3>
-                                <p class="tool-type">Basic Past / Present / Future View</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">A clear helicopter view of your equity journey: Past
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="budget-calculator.html" class="tool-card budget">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Smart Budget Planning Tool</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Budget & Finances Modeler</h3>
+                                <p class="tool-card-desc">Plan your budget with flexible allocation rules and see how
+                                    your savings can grow over time.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="category-block">
+                    <h2 class="category-header">Equity Compensation</h2>
+                    <div class="tools-grid">
+                        <a href="vanilla.html" class="tool-card vanilla">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Option Value Calculator</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Vanilla Option Modeler</h3>
+                                <p class="tool-card-desc">Analyze vanilla options by calculating their value at
+                                    different price points. Understand whether options are in-the-money or
+                                    out-of-the-money, and visualize total value and net gain.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="netflix.html" class="tool-card netflix">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Stock Option Value Calculator</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Netflix Options</h3>
+                                <p class="tool-card-desc">Model and compare Netflix's Supplemental Stock Option Plan to
+                                    direct stock purchases. Analyze break-even points, potential returns, and visualize
+                                    how options can outperform stock at different prices.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="grant-calculator.html" class="tool-card grant">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Equity Compensation Calculator</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Grant Calculator</h3>
+                                <p class="tool-card-desc">Estimate the value of your equity compensation, including both
+                                    stock options and RSUs, with modern, intuitive analysis.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="grant_lifecycle_calculator.html" class="tool-card grant">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Options/RSUs/Shares Lifecycle</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Grant Lifecycle Calculator</h3>
+                                <p class="tool-card-desc">Model grants end-to-end: vesting schedules, exercises/sales,
+                                    portfolio value over time with an interactive combined chart.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="grant_lifecycle_calculator_v2.html" class="tool-card grant">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Yearly Timeline & Tax Modes</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Grant Lifecycle Calculator V2</h3>
+                                <p class="tool-card-desc">Explore a dashboard view with yearly timeline, WTC/STC tax
+                                    modes, departure scenarios, and value vs shares charts.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="grant_lifecycle_calculator_v3.html" class="tool-card grant">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Basic Past / Present / Future View</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Portfolio Timeline</h3>
+                                <p class="tool-card-desc">A clear helicopter view of your equity journey: Past
                                     (vested/exercised), Present (current holdings and value), and Future (remaining to
                                     vest and projected value), with a clean lifecycle chart.</p>
-                            </td>
-                            <td>
-                                <a href="grant_lifecycle_calculator_v3.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row grant">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Grant Lifecycle Calculator</h3>
-                                <p class="tool-type">Options/RSUs/Shares Lifecycle</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Model grants end-to-end: vesting schedules, exercises/sales,
-                                    portfolio value over time with an interactive combined chart.</p>
-                            </td>
-                            <td>
-                                <a href="grant_lifecycle_calculator.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row grant">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Grant Lifecycle Calculator V2</h3>
-                                <p class="tool-type">Yearly Timeline & Tax Modes</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Explore a dashboard view with yearly timeline, WTC/STC tax
-                                    modes, departure scenarios, and value vs shares charts.</p>
-                            </td>
-                            <td>
-                                <a href="grant_lifecycle_calculator_v2.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row espp">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">ESPP Calculator</h3>
-                                <p class="tool-type">Employee Stock Purchase Plan Calculator</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Calculate potential returns from your Employee Stock
-                                    Purchase Plan with detailed tax implications and scenarios.</p>
-                            </td>
-                            <td>
-                                <a href="espp-calculator.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row stock">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Stock Market Screener</h3>
-                                <p class="tool-type">Real-time Market Data & Analysis</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Professional stock market dashboard with S&P 500 charts,
-                                    real-time data, top gainers/losers, and advanced screening tools for informed
-                                    investment decisions.</p>
-                            </td>
-                            <td>
-                                <a href="stock-screener.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row espp">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">News Sentiment Tracker</h3>
-                                <p class="tool-type">2-Day Social Sentiment on News</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Track positive, neutral, and negative sentiment for news
-                                    from the last two days using Reddit and Twitter signals.</p>
-                            </td>
-                            <td>
-                                <a href="news-sentiment.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                        <tr class="tool-row converter">
-                            <td>
-                                <div class="tool-indicator"></div>
-                            </td>
-                            <td>
-                                <h3 class="tool-name">Share Registry Converter</h3>
-                                <p class="tool-type">Cap Table Data Transformation Tool</p>
-                            </td>
-                            <td>
-                                <p class="tool-description">Convert cap table exports between different share registry
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="espp-calculator.html" class="tool-card espp">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Employee Stock Purchase Plan Calculator</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">ESPP Calculator</h3>
+                                <p class="tool-card-desc">Calculate potential returns from your Employee Stock Purchase
+                                    Plan with detailed tax implications and scenarios.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="category-block">
+                    <h2 class="category-header">Exits & Cap Tables</h2>
+                    <div class="tools-grid">
+                        <a href="term-sheet-benchmark.html" class="tool-card benchmark">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">AI SAFE / Note / Equity review</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Term Sheet Benchmarker</h3>
+                                <p class="tool-card-desc">Upload or paste a term sheet and get a simple market-fit
+                                    score, key risks, and stage-aware benchmarks. Uses Gemini with founder/investor
+                                    persona toggles.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="waterfall_analysis.html" class="tool-card waterfall">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Investment Distribution Calculator</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Waterfall Analysis Tool</h3>
+                                <p class="tool-card-desc">Visualize how investment proceeds are distributed among
+                                    different share classes during a company exit or liquidation event based on
+                                    liquidation preferences and participation rights.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="share-registry-converter.html" class="tool-card converter">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Cap Table Data Transformation Tool</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Share Registry Converter</h3>
+                                <p class="tool-card-desc">Convert cap table exports between different share registry
                                     platforms. Transform certificate ledger data into standardized import formats with
                                     automatic field mapping and validation.</p>
-                            </td>
-                            <td>
-                                <a href="share-registry-converter.html" class="tool-launch-btn">Launch</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="category-block">
+                    <h2 class="category-header">Real Estate & Markets</h2>
+                    <div class="tools-grid">
+                        <a href="mortgage_calculator.html" class="tool-card interest">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Real Estate</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Mortgage AI Advisor</h3>
+                                <p class="tool-card-desc">Smart mortgage planning with AI-powered advice and dynamic
+                                    visualizations.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="stock-screener.html" class="tool-card stock">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">Real-time Market Data & Analysis</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">Stock Market Screener</h3>
+                                <p class="tool-card-desc">Professional stock market dashboard with S&P 500 charts,
+                                    real-time data, top gainers/losers, and advanced screening tools for informed
+                                    investment decisions.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+
+                        <a href="news-sentiment.html" class="tool-card espp">
+                            <div class="tool-card-header">
+                                <span class="tool-type-badge">2-Day Social Sentiment on News</span>
+                            </div>
+                            <div class="tool-card-content-wrapper">
+                                <h3 class="tool-card-title">News Sentiment Tracker</h3>
+                                <p class="tool-card-desc">Track positive, neutral, and negative sentiment for news from
+                                    the last two days using Reddit and Twitter signals.</p>
+                            </div>
+                            <div class="tool-card-footer">
+                                Launch Calculator
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1627,71 +1518,44 @@
     <!-- Yikes AI Chatbot Widget -->
     <script src="js/chatbotWidget.js"></script>
     <script>
-        // Table sorting functionality
+
+        // View Toggle Logic
         document.addEventListener('DOMContentLoaded', function () {
-            const table = document.querySelector('.tools-table');
-            const headers = table.querySelectorAll('th.sortable');
-            const tbody = table.querySelector('tbody');
+            const viewBtns = document.querySelectorAll('.view-btn');
+            const toolsContainer = document.querySelector('.tools-container');
 
-            console.log('Sorting initialized:', headers.length, 'sortable headers found');
+            // Check local storage for preference
+            const savedView = localStorage.getItem('toolsViewMode') || 'grid';
 
-            headers.forEach(header => {
-                header.addEventListener('click', function () {
-                    console.log('Header clicked:', this.dataset.column);
+            function setViewMode(mode) {
+                if (mode === 'list') {
+                    toolsContainer.classList.add('view-mode-list');
+                } else {
+                    toolsContainer.classList.remove('view-mode-list');
+                }
 
-                    const column = this.dataset.column;
-                    const isAscending = !this.classList.contains('sort-asc');
-
-                    // Remove sort classes from all headers
-                    headers.forEach(h => {
-                        h.classList.remove('sort-asc', 'sort-desc');
-                    });
-
-                    // Add appropriate sort class
-                    if (isAscending) {
-                        this.classList.add('sort-asc');
+                viewBtns.forEach(btn => {
+                    if (btn.dataset.view === mode) {
+                        btn.classList.add('active');
                     } else {
-                        this.classList.add('sort-desc');
+                        btn.classList.remove('active');
                     }
+                });
 
-                    // Get all rows
-                    const rows = Array.from(tbody.querySelectorAll('tr'));
-                    console.log('Rows found:', rows.length);
+                localStorage.setItem('toolsViewMode', mode);
+            }
 
-                    // Sort the rows
-                    rows.sort((rowA, rowB) => {
-                        let textA, textB;
+            // Apply saved preference immediately
+            setViewMode(savedView);
 
-                        if (column === 'tool') {
-                            textA = rowA.querySelector('.tool-name').textContent.trim().toLowerCase();
-                            textB = rowB.querySelector('.tool-name').textContent.trim().toLowerCase();
-                        } else if (column === 'description') {
-                            textA = rowA.querySelector('.tool-description').textContent.trim().toLowerCase();
-                            textB = rowB.querySelector('.tool-description').textContent.trim().toLowerCase();
-                        }
-
-                        console.log('Comparing:', textA, 'vs', textB);
-
-                        if (isAscending) {
-                            return textA.localeCompare(textB);
-                        } else {
-                            return textB.localeCompare(textA);
-                        }
-                    });
-
-                    // Clear and re-append sorted rows
-                    while (tbody.firstChild) {
-                        tbody.removeChild(tbody.firstChild);
-                    }
-
-                    rows.forEach(row => {
-                        tbody.appendChild(row);
-                    });
-
-                    console.log('Sorting complete');
+            viewBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    setViewMode(this.dataset.view);
                 });
             });
+        });
 
+        document.addEventListener('DOMContentLoaded', function () {
             // Initialize chatbot with Groq API key
             if (window.YikesAIChatbot && !document.querySelector('.gs-chatbot-widget')) {
                 window.yikesAIChatbot = new YikesAIChatbot({
