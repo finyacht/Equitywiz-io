@@ -1,0 +1,26 @@
+src/app/term-sheet-benchmark/page.tsx(252,46): error TS2322: Type 'Dispatch<SetStateAction<string>>' is not assignable to type '(value: string | null, eventDetails: SelectRootChangeEventDetails) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string | null' is not assignable to type 'SetStateAction<string>'.
+      Type 'null' is not assignable to type 'SetStateAction<string>'.
+src/app/term-sheet-benchmark/page.tsx(264,44): error TS2322: Type 'Dispatch<SetStateAction<string>>' is not assignable to type '(value: string | null, eventDetails: SelectRootChangeEventDetails) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'string | null' is not assignable to type 'SetStateAction<string>'.
+      Type 'null' is not assignable to type 'SetStateAction<string>'.
+src/app/waterfall-analysis/page.tsx(124,27): error TS18046: 'totalShares' is of type 'unknown'.
+src/app/waterfall-analysis/page.tsx(124,60): error TS18046: 'totalShares' is of type 'unknown'.
+src/app/waterfall-analysis/page.tsx(254,43): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+src/app/waterfall-analysis/page.tsx(265,41): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+src/app/waterfall-analysis/page.tsx(325,50): error TS2322: Type '(v: "standard" | "residual") => void' is not assignable to type '(value: "standard" | "residual" | null, eventDetails: SelectRootChangeEventDetails) => void'.
+  Types of parameters 'v' and 'value' are incompatible.
+    Type '"standard" | "residual" | null' is not assignable to type '"standard" | "residual"'.
+      Type 'null' is not assignable to type '"standard" | "residual"'.
+src/app/waterfall-analysis/page.tsx(368,51): error TS2322: Type '(v: "preferred" | "common") => void' is not assignable to type '(value: "preferred" | "common" | null, eventDetails: SelectRootChangeEventDetails) => void'.
+  Types of parameters 'v' and 'value' are incompatible.
+    Type '"preferred" | "common" | null' is not assignable to type '"preferred" | "common"'.
+      Type 'null' is not assignable to type '"preferred" | "common"'.
+src/app/waterfall-analysis/page.tsx(383,57): error TS2322: Type '(v: "participating" | "non-participating") => void' is not assignable to type '(value: "participating" | "non-participating" | null, eventDetails: SelectRootChangeEventDetails) => void'.
+  Types of parameters 'v' and 'value' are incompatible.
+    Type '"participating" | "non-participating" | null' is not assignable to type '"participating" | "non-participating"'.
+      Type 'null' is not assignable to type '"participating" | "non-participating"'.
+src/app/waterfall-analysis/page.tsx(433,29): error TS2322: Type 'string | null' is not assignable to type 'string'.
+  Type 'null' is not assignable to type 'string'.
