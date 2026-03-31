@@ -1,0 +1,97 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Force Node 18+ for native fetch
+[build.environment]
+  NODE_VERSION = "20"
+
+# API Endpoints mapped cleanly to Edge Functions
+[[redirects]]
+  from = "/api/gemini-chat"
+  to = "/.netlify/functions/gemini-chat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/polygon-api"
+  to = "/.netlify/functions/polygon-api"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/gemini-news"
+  to = "/.netlify/functions/gemini-news"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/news-sentiment"
+  to = "/.netlify/functions/news-sentiment"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# Legacy URL compatibility - redirect old .html routes to new Next.js paths
+[[redirects]]
+  from = "/home"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/home.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/stock-screener.html"
+  to = "/stock-screener"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/news-sentiment.html"
+  to = "/news-sentiment"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/mortgage_calculator.html"
+  to = "/mortgage-calculator"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/budget-calculator.html"
+  to = "/budget-calculator"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/debt-snowball-calculator.html"
+  to = "/debt-snowball-calculator"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/espp-calculator.html"
+  to = "/espp-calculator"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/grant-calculator.html"
+  to = "/grant-calculator"
+  status = 301
+  force = true
