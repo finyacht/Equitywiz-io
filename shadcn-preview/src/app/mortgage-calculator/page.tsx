@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef, useDeferredValue } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,11 +41,18 @@ export default function MortgageCalculatorPage() {
 
   const [scheduleVisibility, setScheduleVisibility] = useState<number>(0); 
 
+  // Prevent keystroke lag by deferring math-heavy updates
+  const deferredHomePrice = useDeferredValue(homePrice);
+  const deferredDownPayment = useDeferredValue(downPayment);
+  const deferredInterestRate = useDeferredValue(interestRate);
+  const deferredLoanTermYears = useDeferredValue(loanTermYears);
+  const deferredExtraPayments = useDeferredValue(extraPayments);
+
   // Amortization Engine
   const metrics = useMemo(() => {
-    const loanAmount = Math.max(0, homePrice - downPayment);
-    const monthlyRate = (interestRate / 100) / 12;
-    const totalMonths = loanTermYears * 12;
+    const loanAmount = Math.max(0, deferredHomePrice - deferredDownPayment);
+    const monthlyRate = (deferredInterestRate / 100) / 12;
+    const totalMonths = deferredLoanTermYears * 12;
 
     let baseMonthlyPayment = 0;
     if (monthlyRate > 0) {
@@ -60,7 +67,7 @@ export default function MortgageCalculatorPage() {
     
     // Sort extra payments
     const extraMap = new Map();
-    extraPayments.forEach(ep => {
+    deferredExtraPayments.forEach(ep => {
       extraMap.set(ep.month, (extraMap.get(ep.month) || 0) + ep.amount);
     });
 
@@ -125,7 +132,7 @@ export default function MortgageCalculatorPage() {
       schedule,
       chartData
     };
-  }, [homePrice, downPayment, interestRate, loanTermYears, extraPayments]);
+  }, [deferredHomePrice, deferredDownPayment, deferredInterestRate, deferredLoanTermYears, deferredExtraPayments]);
 
   const addExtraPayment = () => {
     if (extraAmountInput > 0 && extraMonthInput > 0) {
